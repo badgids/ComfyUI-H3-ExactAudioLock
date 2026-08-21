@@ -75,6 +75,49 @@ def _autogrow_items(group: Any) -> list[tuple[str, Any]]:
     return sorted(rows, key=key)
 
 
+def _runtime_autogrow_items(
+    group: Any,
+    runtime_inputs: dict[str, Any],
+    *,
+    group_name: str,
+) -> list[tuple[str, Any]]:
+    """Merge normalized and flattened ComfyUI Autogrow runtime inputs.
+
+    ComfyUI's V3 API can expose Autogrow values to ``execute()`` in two forms,
+    depending on the runtime/version and execution path:
+
+    * one normalized mapping under ``group_name``; or
+    * flattened keyword arguments such as
+      ``timed_audios.timed_audio_0``.
+
+    Accept both forms so workflows remain compatible across those runtimes.
+    """
+    merged = {str(name): value for name, value in _autogrow_items(group)}
+    prefix = f"{group_name}."
+    unexpected: list[str] = []
+
+    for runtime_name, value in runtime_inputs.items():
+        runtime_name = str(runtime_name)
+        if not runtime_name.startswith(prefix):
+            unexpected.append(runtime_name)
+            continue
+        socket_name = runtime_name[len(prefix):]
+        if not socket_name:
+            raise ValueError(f"Malformed {group_name} Autogrow runtime input {runtime_name!r}.")
+        if socket_name in merged and merged[socket_name] is not value:
+            raise ValueError(
+                f"Duplicate {group_name} Autogrow input for {socket_name!r} was supplied "
+                "in both normalized and flattened forms."
+            )
+        merged[socket_name] = value
+
+    if unexpected:
+        names = ", ".join(sorted(unexpected))
+        raise TypeError(f"MiniMaxH3ExactAudioLock received unexpected runtime input(s): {names}")
+
+    return _autogrow_items(merged)
+
+
 def _to_stereo(waveform: torch.Tensor) -> torch.Tensor:
     """Normalize Comfy AUDIO waveform [B,C,T] to [1,2,T]."""
     if waveform.ndim == 2:
@@ -327,11 +370,12 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         cls,
         av_latent,
         audio_vae,
-        timed_audios: io.Autogrow.Type,
-        mix_policy: str,
-        overflow_policy: str,
+        timed_audios: io.Autogrow.Type | None = None,
+        mix_policy: str = "sum",
+        overflow_policy: str = "error",
         audio=None,
         legacy_start_frame: int = 0,
+        **runtime_inputs,
     ) -> io.NodeOutput:
         samples = av_latent.get("samples") if isinstance(av_latent, dict) else None
         if samples is None or not getattr(samples, "is_nested", False):
@@ -350,7 +394,12 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         target_samples = _target_sample_count(target_t, vae_rate)
 
         entries: list[dict[str, Any]] = []
-        for socket_name, value in _autogrow_items(timed_audios):
+        timed_audio_items = _runtime_autogrow_items(
+            timed_audios,
+            runtime_inputs,
+            group_name="timed_audios",
+        )
+        for socket_name, value in timed_audio_items:
             if value is None:
                 continue
             if not isinstance(value, dict):
