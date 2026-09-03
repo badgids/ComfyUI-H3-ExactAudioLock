@@ -73,3 +73,19 @@ For every milestone, explicitly review:
 This package currently creates no files, starts no threads/processes, opens no
 network connections, and maintains no persistent cache, so there is no package
 cleanup routine to run.
+
+## Partial-dialogue lock milestone
+
+Partial dialogue locking is a separate public behavior from the complete target-audio
+lock. The partial-lock nodes must preserve incoming video masks and any upstream
+audio constraints, must leave non-dialogue target regions generative, and must never
+label the dialogue reference stem as the final scene soundtrack.
+
+For partial locking, mask semantics are `1 = denoise/generate` and `0 = protect`.
+The dialogue core and configured hard margins are zero; optional feather regions are
+fractional transitions back toward one. Fully generative regions retain the incoming
+H3 audio latent rather than being replaced by encoded silence.
+
+Repository test/compile runs create Python bytecode caches. `.gitignore` excludes
+those generated artifacts so the working tree remains clean after the required
+verification commands.

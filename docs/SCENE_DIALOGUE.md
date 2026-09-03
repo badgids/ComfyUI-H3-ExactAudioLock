@@ -89,3 +89,17 @@ audio latent.
 
 For a Director workflow using this node pack, use the Scene Exact Audio Lock as
 the target owner and keep Context Loop's source target lock off.
+
+## Dialogue-only lock for H3-generated soundscapes
+
+When supplied speech must remain stable but H3 should generate room tone, ambience,
+music, Foley, footsteps, impacts, explosions, and other scene audio, use `MiniMax H3
+Scene Dialogue Audio Lock` instead of `MiniMax H3 Scene Exact Audio Lock`.
+
+The scene dialogue node uses the same Scene Timed Audio events and one-based
+`current_scene` routing, but protects only dialogue intervals and configured safety
+margins. Its `dialogue_reference_audio` output is a reference stem, not the final
+soundtrack. Use H3's decoded post-sampling audio for the final scene mix.
+
+See `docs/DIALOGUE_PARTIAL_LOCK.md` for mask semantics, defaults, and continuation
+behavior.

@@ -280,6 +280,189 @@ def _mix_tracks(
     return mixed, manifest
 
 
+def _validate_h3_av_latent(av_latent: Any, *, node_name: str) -> tuple[torch.Tensor, torch.Tensor]:
+    """Validate and return MiniMax H3's video/audio latent streams."""
+    samples = av_latent.get("samples") if isinstance(av_latent, dict) else None
+    if samples is None or not getattr(samples, "is_nested", False):
+        raise ValueError(f"{node_name} requires a joint MiniMax H3 AV latent.")
+    parts = samples.unbind()
+    if len(parts) != 2:
+        raise ValueError(
+            f"{node_name} requires exactly two H3 latent streams (video and audio)."
+        )
+    video_latent, audio_latent = parts
+    if video_latent.ndim != 5 or int(video_latent.shape[1]) != 24:
+        raise ValueError(
+            "Unexpected MiniMax H3 video latent shape; expected [B,24,T,H,W]."
+        )
+    if (
+        audio_latent.ndim != 4
+        or int(audio_latent.shape[1]) != 32
+        or int(audio_latent.shape[2]) != 2
+    ):
+        raise ValueError(
+            "Unexpected MiniMax H3 audio latent shape; expected [B,32,2,T]."
+        )
+    if int(video_latent.shape[0]) != 1 or int(audio_latent.shape[0]) != 1:
+        raise ValueError(f"{node_name} supports batch size 1 only.")
+    return video_latent, audio_latent
+
+
+def _existing_noise_masks(
+    av_latent: dict[str, Any],
+    video_latent: torch.Tensor,
+    audio_latent: torch.Tensor,
+    *,
+    node_name: str,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Return upstream masks, or all-denoisable masks when none are present."""
+    noise_mask = av_latent.get("noise_mask")
+    if noise_mask is None:
+        return torch.ones_like(video_latent), torch.ones_like(audio_latent)
+    if not getattr(noise_mask, "is_nested", False):
+        raise ValueError(f"{node_name} received a non-nested H3 noise_mask.")
+    parts = noise_mask.unbind()
+    if len(parts) != 2:
+        raise ValueError(f"{node_name} requires a two-stream H3 noise_mask.")
+    video_mask, audio_mask = parts
+    if tuple(video_mask.shape) != tuple(video_latent.shape):
+        raise ValueError(f"{node_name} video noise_mask shape does not match the video latent.")
+    if tuple(audio_mask.shape) != tuple(audio_latent.shape):
+        raise ValueError(f"{node_name} audio noise_mask shape does not match the audio latent.")
+    if not bool(torch.isfinite(video_mask).all().item()) or not bool(torch.isfinite(audio_mask).all().item()):
+        raise ValueError(f"{node_name} noise_mask contains NaN or infinite values.")
+    if bool((video_mask < 0).any().item()) or bool((video_mask > 1).any().item()):
+        raise ValueError(f"{node_name} video noise_mask values must be between 0 and 1.")
+    if bool((audio_mask < 0).any().item()) or bool((audio_mask > 1).any().item()):
+        raise ValueError(f"{node_name} audio noise_mask values must be between 0 and 1.")
+    return video_mask, audio_mask
+
+
+def _encode_target_audio(
+    audio_vae: Any,
+    waveform: torch.Tensor,
+    target_audio_template: torch.Tensor,
+) -> torch.Tensor:
+    """Encode one target waveform and align encoder boundary rounding to H3 T40."""
+    encoded = audio_vae.encode(waveform.movedim(1, -1))
+    if (
+        not isinstance(encoded, torch.Tensor)
+        or encoded.ndim != target_audio_template.ndim
+        or tuple(encoded.shape[:-1]) != tuple(target_audio_template.shape[:-1])
+    ):
+        raise ValueError(
+            "MiniMax H3 audio VAE returned an incompatible latent shape; "
+            "expected [1,32,2,T]."
+        )
+    target_t = int(target_audio_template.shape[-1])
+    have_t = int(encoded.shape[-1])
+    if have_t > target_t:
+        encoded = encoded[..., :target_t]
+    elif have_t < target_t:
+        if have_t <= 0:
+            raise ValueError("MiniMax H3 audio VAE returned an empty latent for the target waveform.")
+        tail = encoded[..., -1:].repeat_interleave(target_t - have_t, dim=-1)
+        encoded = torch.cat((encoded, tail), dim=-1)
+    if not bool(torch.isfinite(encoded).all().item()):
+        raise ValueError("MiniMax H3 audio VAE returned NaN or infinite latent values.")
+    return encoded
+
+
+def _validate_nonnegative_ms(value: Any, *, field_name: str, maximum: int = 5000) -> int:
+    if isinstance(value, bool):
+        raise ValueError(f"{field_name} must be an integer number of milliseconds.")
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field_name} must be an integer number of milliseconds.") from exc
+    if isinstance(value, float) and not value.is_integer():
+        raise ValueError(f"{field_name} must be an integer number of milliseconds.")
+    if result < 0 or result > maximum:
+        raise ValueError(f"{field_name} must be between 0 and {maximum} ms.")
+    return result
+
+
+def _ms_to_audio_frames(milliseconds: int) -> int:
+    """Round a millisecond safety interval up to H3's 40-Hz audio grid."""
+    return (int(milliseconds) * AUDIO_LATENT_FPS + 999) // 1000
+
+
+def _sample_interval_to_audio_frames(start_sample: int, end_sample: int, sample_rate: int) -> tuple[int, int]:
+    """Conservatively cover a waveform interval on H3's 40-Hz latent grid."""
+    start = max(0, int(start_sample))
+    end = max(start, int(end_sample))
+    sr = int(sample_rate)
+    if sr <= 0:
+        raise ValueError("H3 target audio sample rate must be positive.")
+    start_frame = (start * AUDIO_LATENT_FPS) // sr
+    end_frame = (end * AUDIO_LATENT_FPS + sr - 1) // sr
+    return start_frame, end_frame
+
+
+def _dialogue_noise_mask(
+    audio_template: torch.Tensor,
+    tracks: list[dict[str, Any]],
+    *,
+    sample_rate: int,
+    protect_before_ms: int,
+    protect_after_ms: int,
+    feather_ms: int,
+) -> tuple[torch.Tensor, list[dict[str, int]]]:
+    """Build 1=generate / 0=protect mask with exact cores and optional soft edges."""
+    before = _ms_to_audio_frames(protect_before_ms)
+    after = _ms_to_audio_frames(protect_after_ms)
+    feather = _ms_to_audio_frames(feather_ms)
+    target_t = int(audio_template.shape[-1])
+    temporal = torch.ones((target_t,), dtype=audio_template.dtype, device=audio_template.device)
+    protected: list[dict[str, int]] = []
+
+    for track in tracks:
+        mixed_samples = int(track.get("mixed_samples", 0))
+        if mixed_samples <= 0:
+            continue
+        core_start, core_end = _sample_interval_to_audio_frames(
+            int(track["start_sample"]), int(track["end_sample"]), sample_rate
+        )
+        core_start = min(target_t, core_start)
+        core_end = min(target_t, max(core_start, core_end))
+        hard_start = max(0, core_start - before)
+        hard_end = min(target_t, core_end + after)
+        if hard_end > hard_start:
+            temporal[hard_start:hard_end] = 0
+
+        left_start = max(0, hard_start - feather)
+        left_count = hard_start - left_start
+        if left_count > 0:
+            ramp = torch.arange(
+                left_count, 0, -1, dtype=audio_template.dtype, device=audio_template.device
+            ) / float(left_count + 1)
+            temporal[left_start:hard_start] = torch.minimum(
+                temporal[left_start:hard_start], ramp
+            )
+
+        right_end = min(target_t, hard_end + feather)
+        right_count = right_end - hard_end
+        if right_count > 0:
+            ramp = torch.arange(
+                1, right_count + 1, dtype=audio_template.dtype, device=audio_template.device
+            ) / float(right_count + 1)
+            temporal[hard_end:right_end] = torch.minimum(
+                temporal[hard_end:right_end], ramp
+            )
+
+        protected.append({
+            "core_start_audio_frame": core_start,
+            "core_end_audio_frame": core_end,
+            "hard_start_audio_frame": hard_start,
+            "hard_end_audio_frame": hard_end,
+            "feather_start_audio_frame": left_start,
+            "feather_end_audio_frame": right_end,
+        })
+
+    mask = temporal.reshape(1, 1, 1, target_t).expand_as(audio_template).clone()
+    return mask, protected
+
+
 class MiniMaxH3TimedAudio(io.ComfyNode):
     """One audio utterance/event plus its exact H3 target-frame placement."""
 
@@ -390,30 +573,13 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         legacy_start_frame: int = 0,
         **runtime_inputs,
     ) -> io.NodeOutput:
-        samples = av_latent.get("samples") if isinstance(av_latent, dict) else None
-        if samples is None or not getattr(samples, "is_nested", False):
-            raise ValueError("MiniMax H3 Exact Audio Lock requires a joint MiniMax H3 AV latent.")
-        parts = samples.unbind()
-        if len(parts) != 2:
-            raise ValueError(
-                "MiniMax H3 Exact Audio Lock requires exactly two H3 latent streams "
-                "(video and audio)."
-            )
-        video_latent, target_audio_template = parts
-        if video_latent.ndim != 5 or int(video_latent.shape[1]) != 24:
-            raise ValueError(
-                "Unexpected MiniMax H3 video latent shape; expected [B,24,T,H,W]."
-            )
-        if (
-            target_audio_template.ndim != 4
-            or int(target_audio_template.shape[1]) != 32
-            or int(target_audio_template.shape[2]) != 2
-        ):
-            raise ValueError(
-                "Unexpected MiniMax H3 audio latent shape; expected [B,32,2,T]."
-            )
-        if int(video_latent.shape[0]) != 1 or int(target_audio_template.shape[0]) != 1:
-            raise ValueError("MiniMax H3 Exact Audio Lock supports batch size 1 only.")
+        video_latent, target_audio_template = _validate_h3_av_latent(
+            av_latent, node_name="MiniMax H3 Exact Audio Lock"
+        )
+        video_mask, _ = _existing_noise_masks(
+            av_latent, video_latent, target_audio_template,
+            node_name="MiniMax H3 Exact Audio Lock",
+        )
 
         vae_rate = int(getattr(audio_vae, "audio_sample_rate", 32000))
         if vae_rate <= 0:
@@ -452,34 +618,144 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         )
         manifest["target_audio_latent_frames"] = target_t
 
-        encoded = audio_vae.encode(waveform.movedim(1, -1))
-        if (
-            not isinstance(encoded, torch.Tensor)
-            or encoded.ndim != target_audio_template.ndim
-            or tuple(encoded.shape[:-1]) != tuple(target_audio_template.shape[:-1])
-        ):
-            raise ValueError(
-                "MiniMax H3 audio VAE returned an incompatible latent shape; "
-                "expected [1,32,2,T]."
-            )
-        have_t = int(encoded.shape[-1])
-        if have_t > target_t:
-            encoded = encoded[..., :target_t]
-        elif have_t < target_t:
-            if have_t <= 0:
-                raise ValueError("MiniMax H3 audio VAE returned an empty latent for the target waveform.")
-            # Encoder boundary rounding can miss one or two frames. Repeating the
-            # final encoded frame avoids injecting arbitrary zero-valued latents.
-            tail = encoded[..., -1:].repeat_interleave(target_t - have_t, dim=-1)
-            encoded = torch.cat((encoded, tail), dim=-1)
+        encoded = _encode_target_audio(audio_vae, waveform, target_audio_template)
 
         locked = dict(av_latent)
         locked["samples"] = comfy.nested_tensor.NestedTensor((video_latent, encoded))
         locked["noise_mask"] = comfy.nested_tensor.NestedTensor(
-            (torch.ones_like(video_latent), torch.zeros_like(encoded))
+            (video_mask, torch.zeros_like(encoded))
         )
         exact_audio = {"waveform": waveform, "sample_rate": vae_rate}
         return io.NodeOutput(locked, exact_audio, json.dumps(manifest, sort_keys=True, separators=(",", ":")))
+
+
+class MiniMaxH3DialogueAudioLock(io.ComfyNode):
+    """Protect timed dialogue while leaving the rest of H3 audio generative."""
+
+    @classmethod
+    def define_schema(cls) -> io.Schema:
+        timed_template = io.Autogrow.TemplatePrefix(
+            input=H3_TIMED_AUDIO.Input("timed_audio"), prefix="timed_audio", min=0
+        )
+        return io.Schema(
+            node_id="MiniMaxH3DialogueAudioLock",
+            display_name="MiniMax H3 Dialogue Audio Lock",
+            category="MiniMax H3/Audio",
+            description=(
+                "Protect only supplied dialogue intervals in H3's target audio latent. "
+                "Unprotected intervals remain denoisable so H3 can generate ambience, "
+                "room tone, music, footsteps, effects, and other scene audio."
+            ),
+            inputs=[
+                io.Latent.Input("av_latent"),
+                io.Vae.Input("audio_vae"),
+                io.Autogrow.Input("timed_audios", template=timed_template),
+                io.Combo.Input(
+                    "mix_policy", options=["sum", "prevent_clipping", "reject_overlap"],
+                    default="prevent_clipping",
+                ),
+                io.Combo.Input("overflow_policy", options=["error", "crop"], default="error"),
+                io.Int.Input(
+                    "protect_before_ms", default=200, min=0, max=5000, step=25,
+                    tooltip="Hard-protected margin before each supplied dialogue event.",
+                ),
+                io.Int.Input(
+                    "protect_after_ms", default=250, min=0, max=5000, step=25,
+                    tooltip="Hard-protected margin after each supplied dialogue event.",
+                ),
+                io.Int.Input(
+                    "feather_ms", default=100, min=0, max=5000, step=25,
+                    tooltip="Soft transition outside hard-protected margins. Dialogue core stays mask=0.",
+                ),
+            ],
+            outputs=[
+                io.Latent.Output(display_name="dialogue_locked_av_latent"),
+                io.Audio.Output(display_name="dialogue_reference_audio"),
+                io.String.Output(display_name="dialogue_lock_manifest"),
+            ],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        av_latent,
+        audio_vae,
+        timed_audios: io.Autogrow.Type | None = None,
+        mix_policy: str = "prevent_clipping",
+        overflow_policy: str = "error",
+        protect_before_ms: int = 200,
+        protect_after_ms: int = 250,
+        feather_ms: int = 100,
+        **runtime_inputs,
+    ) -> io.NodeOutput:
+        before_ms = _validate_nonnegative_ms(protect_before_ms, field_name="protect_before_ms")
+        after_ms = _validate_nonnegative_ms(protect_after_ms, field_name="protect_after_ms")
+        feather = _validate_nonnegative_ms(feather_ms, field_name="feather_ms")
+        video_latent, target_audio_template = _validate_h3_av_latent(
+            av_latent, node_name="MiniMax H3 Dialogue Audio Lock"
+        )
+        video_mask, upstream_audio_mask = _existing_noise_masks(
+            av_latent, video_latent, target_audio_template,
+            node_name="MiniMax H3 Dialogue Audio Lock",
+        )
+        vae_rate = int(getattr(audio_vae, "audio_sample_rate", 32000))
+        if vae_rate <= 0:
+            raise ValueError("MiniMax H3 audio VAE reports an invalid sample rate.")
+        target_t = int(target_audio_template.shape[-1])
+        target_samples = _target_sample_count(target_t, vae_rate)
+
+        entries: list[dict[str, Any]] = []
+        for socket_name, value in _runtime_autogrow_items(
+            timed_audios, runtime_inputs, group_name="timed_audios",
+            node_name="MiniMaxH3DialogueAudioLock",
+        ):
+            if value is None:
+                continue
+            if not isinstance(value, dict):
+                raise ValueError(f"{socket_name} is not a MiniMax H3 Timed Audio value.")
+            row = dict(value)
+            row.setdefault("label", socket_name)
+            entries.append(row)
+        if not entries:
+            raise ValueError("MiniMax H3 Dialogue Audio Lock requires at least one Timed Audio event.")
+
+        waveform, manifest = _mix_tracks(
+            entries, target_samples=target_samples, sample_rate=vae_rate,
+            mix_policy=mix_policy, overflow_policy=overflow_policy,
+        )
+        encoded = _encode_target_audio(audio_vae, waveform, target_audio_template)
+        dialogue_mask, protection = _dialogue_noise_mask(
+            encoded, manifest["tracks"], sample_rate=vae_rate,
+            protect_before_ms=before_ms, protect_after_ms=after_ms, feather_ms=feather,
+        )
+        upstream_audio_mask = upstream_audio_mask.to(dialogue_mask.dtype)
+        # Only the dialogue/feather region may replace the incoming target audio.
+        # This preserves Context Loop audio carried in fully generative regions.
+        dialogue_weight = 1.0 - dialogue_mask
+        partial_audio = (
+            target_audio_template.to(encoded.dtype) * dialogue_mask
+            + encoded * dialogue_weight
+        )
+        combined_audio_mask = torch.minimum(upstream_audio_mask, dialogue_mask)
+
+        partial = dict(av_latent)
+        partial["samples"] = comfy.nested_tensor.NestedTensor((video_latent, partial_audio))
+        partial["noise_mask"] = comfy.nested_tensor.NestedTensor((video_mask, combined_audio_mask))
+        manifest.update({
+            "mode": "dialogue_partial_lock",
+            "target_audio_latent_frames": target_t,
+            "protect_before_ms": before_ms,
+            "protect_after_ms": after_ms,
+            "feather_ms": feather,
+            "protection": protection,
+            "reference_audio_is_final_mix": False,
+        })
+        reference_audio = {"waveform": waveform, "sample_rate": vae_rate}
+        return io.NodeOutput(
+            partial,
+            reference_audio,
+            json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+        )
 
 
 def _validate_scene_index(value: Any, *, field_name: str) -> int:
@@ -668,14 +944,139 @@ class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
         )
 
 
+class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
+    """Apply partial dialogue protection only to the current recursive scene."""
+
+    @classmethod
+    def define_schema(cls) -> io.Schema:
+        scene_template = io.Autogrow.TemplatePrefix(
+            input=H3_SCENE_TIMED_AUDIO.Input("scene_timed_audio"),
+            prefix="scene_timed_audio", min=0,
+        )
+        return io.Schema(
+            node_id="MiniMaxH3SceneDialogueAudioLock",
+            display_name="MiniMax H3 Scene Dialogue Audio Lock",
+            category="MiniMax H3/Audio",
+            description=(
+                "Pippa-style recursive film audio: protect supplied dialogue for the "
+                "current scene while H3 generates all unprotected scene audio."
+            ),
+            inputs=[
+                io.Latent.Input("av_latent"),
+                io.Vae.Input("audio_vae"),
+                io.Int.Input("current_scene", default=1, min=1, max=1_000_000, step=1),
+                io.Autogrow.Input("scene_timed_audios", template=scene_template),
+                io.Combo.Input(
+                    "mix_policy", options=["sum", "prevent_clipping", "reject_overlap"],
+                    default="prevent_clipping",
+                ),
+                io.Combo.Input("overflow_policy", options=["error", "crop"], default="error"),
+                io.Combo.Input(
+                    "empty_scene_policy", options=["generate", "error"], default="generate",
+                    tooltip="generate leaves scenes without dialogue fully generative; error catches missing schedules.",
+                ),
+                io.Int.Input("protect_before_ms", default=200, min=0, max=5000, step=25),
+                io.Int.Input("protect_after_ms", default=250, min=0, max=5000, step=25),
+                io.Int.Input("feather_ms", default=100, min=0, max=5000, step=25),
+            ],
+            outputs=[
+                io.Latent.Output(display_name="dialogue_locked_av_latent"),
+                io.Audio.Output(display_name="dialogue_reference_audio"),
+                io.String.Output(display_name="dialogue_lock_manifest"),
+            ],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        av_latent,
+        audio_vae,
+        current_scene: int,
+        scene_timed_audios: io.Autogrow.Type | None = None,
+        mix_policy: str = "prevent_clipping",
+        overflow_policy: str = "error",
+        empty_scene_policy: str = "generate",
+        protect_before_ms: int = 200,
+        protect_after_ms: int = 250,
+        feather_ms: int = 100,
+        **runtime_inputs,
+    ) -> io.NodeOutput:
+        scene_index = _validate_scene_index(current_scene, field_name="current_scene")
+        if empty_scene_policy not in {"generate", "error"}:
+            raise ValueError("empty_scene_policy must be 'generate' or 'error'.")
+        scene_items = _runtime_autogrow_items(
+            scene_timed_audios, runtime_inputs, group_name="scene_timed_audios",
+            node_name="MiniMaxH3SceneDialogueAudioLock",
+        )
+        selected: dict[str, dict[str, Any]] = {}
+        for socket_name, value in scene_items:
+            if value is None:
+                continue
+            if not isinstance(value, dict):
+                raise ValueError(f"{socket_name} is not a MiniMax H3 Scene Timed Audio value.")
+            event_scene = _validate_scene_index(
+                value.get("scene_index"), field_name=f"{socket_name}.scene_index"
+            )
+            if event_scene != scene_index:
+                continue
+            row = dict(value)
+            row.pop("scene_index", None)
+            row.setdefault("label", socket_name)
+            selected[f"timed_audio_{len(selected)}"] = row
+
+        if not selected:
+            if empty_scene_policy == "error":
+                raise ValueError(f"No Scene Timed Audio events are assigned to scene {scene_index}.")
+            video_latent, audio_template = _validate_h3_av_latent(
+                av_latent, node_name="MiniMax H3 Scene Dialogue Audio Lock"
+            )
+            vae_rate = int(getattr(audio_vae, "audio_sample_rate", 32000))
+            if vae_rate <= 0:
+                raise ValueError("MiniMax H3 audio VAE reports an invalid sample rate.")
+            target_samples = _target_sample_count(int(audio_template.shape[-1]), vae_rate)
+            silence = torch.zeros(
+                (1, 2, target_samples), dtype=torch.float32, device=audio_template.device
+            )
+            manifest = {
+                "version": 3,
+                "mode": "dialogue_partial_lock",
+                "scene_index": scene_index,
+                "track_count": 0,
+                "empty_scene_policy": "generate",
+                "reference_audio_is_final_mix": False,
+            }
+            return io.NodeOutput(
+                dict(av_latent),
+                {"waveform": silence, "sample_rate": vae_rate},
+                json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+            )
+
+        output = MiniMaxH3DialogueAudioLock.execute(
+            av_latent, audio_vae, timed_audios=selected,
+            mix_policy=mix_policy, overflow_policy=overflow_policy,
+            protect_before_ms=protect_before_ms, protect_after_ms=protect_after_ms,
+            feather_ms=feather_ms,
+        )
+        latent, reference_audio, manifest_json = output.values
+        manifest = json.loads(manifest_json)
+        manifest["scene_index"] = scene_index
+        manifest["empty_scene_policy"] = empty_scene_policy
+        return io.NodeOutput(
+            latent, reference_audio,
+            json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+        )
+
+
 class H3ExactAudioLockExtension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
         return [
             MiniMaxH3TimedAudio,
             MiniMaxH3ExactAudioLock,
+            MiniMaxH3DialogueAudioLock,
             MiniMaxH3SceneTimedAudio,
             MiniMaxH3SceneExactAudioLock,
+            MiniMaxH3SceneDialogueAudioLock,
         ]
 
 

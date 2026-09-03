@@ -131,3 +131,50 @@ the same exact waveform rather than regenerating the performance.
 - No developer-specific paths.
 - Audio tensors remain referenced only for the duration of normal ComfyUI graph
   execution; Python/ComfyUI owns their lifecycle.
+
+## Partial dialogue-lock contract
+
+`MiniMaxH3DialogueAudioLock` and `MiniMaxH3SceneDialogueAudioLock` are partial
+locks. They do **not** own the complete scene soundtrack.
+
+Their audio mask uses native ComfyUI sampling semantics:
+
+```text
+1.0 = H3 may denoise/generate this audio-latent region
+0.0 = preserve the supplied dialogue target exactly at sampling time
+0..1 = feathered transition
+```
+
+The supplied dialogue is mixed and encoded once. Only the dialogue core, configured
+hard margins, and optional feather regions are blended into the incoming target audio
+latent. Fully generative regions retain the incoming H3 audio target. Existing
+upstream video masks are preserved. Existing upstream audio masks are combined with
+the dialogue mask using the more restrictive value.
+
+The partial nodes output `dialogue_reference_audio`, which is the deterministic
+supplied-dialogue stem with digital silence outside supplied events. It is **not**
+the final soundtrack and must not be used to replace H3's post-sampling audio when
+room tone, ambience, music, effects, footsteps, or other generated audio is desired.
+
+The scene-aware partial node defaults to `empty_scene_policy = generate`. A scene
+without scheduled dialogue is a true pass-through for the latent and remains fully
+available to H3, subject to any mask already present upstream. `error` is available
+when a production wants missing dialogue schedules to fail closed.
+
+Default protection values are:
+
+```text
+protect_before_ms = 200
+protect_after_ms  = 250
+feather_ms        = 100
+```
+
+All three values are explicit workflow parameters and are validated in the range
+0..5000 ms. H3's audio latent is 40 Hz, so millisecond safety intervals are rounded
+up to the latent grid. The event core is conservatively mapped from waveform samples
+to the latent grid so no supplied dialogue sample is intentionally left outside the
+hard-protected core.
+
+Complete target-audio locks remain exclusive owners of the full audio target. Partial
+dialogue locks may coexist with upstream continuation masks because they preserve and
+combine those masks rather than replacing them.
