@@ -34,6 +34,7 @@ from typing_extensions import override
 VIDEO_FPS = 24
 AUDIO_LATENT_FPS = 40
 H3_TIMED_AUDIO = io.Custom("H3_TIMED_AUDIO")
+H3_SCENE_TIMED_AUDIO = io.Custom("H3_SCENE_TIMED_AUDIO")
 
 
 def _frame_to_sample(frame_idx: int, sample_rate: int) -> int:
@@ -80,6 +81,7 @@ def _runtime_autogrow_items(
     runtime_inputs: dict[str, Any],
     *,
     group_name: str,
+    node_name: str = "MiniMaxH3ExactAudioLock",
 ) -> list[tuple[str, Any]]:
     """Merge normalized and flattened ComfyUI Autogrow runtime inputs.
 
@@ -113,7 +115,7 @@ def _runtime_autogrow_items(
 
     if unexpected:
         names = ", ".join(sorted(unexpected))
-        raise TypeError(f"MiniMaxH3ExactAudioLock received unexpected runtime input(s): {names}")
+        raise TypeError(f"{node_name} received unexpected runtime input(s): {names}")
 
     return _autogrow_items(merged)
 
@@ -124,7 +126,12 @@ def _to_stereo(waveform: torch.Tensor) -> torch.Tensor:
         waveform = waveform.unsqueeze(0)
     if waveform.ndim != 3:
         raise ValueError(f"Expected AUDIO waveform [B,C,T], got shape {tuple(waveform.shape)}.")
-    waveform = waveform[:1].to(torch.float32)
+    if int(waveform.shape[0]) != 1:
+        raise ValueError(
+            "Timed Audio accepts exactly one waveform batch; "
+            f"received batch size {int(waveform.shape[0])}."
+        )
+    waveform = waveform.to(torch.float32)
     channels = int(waveform.shape[1])
     if channels == 1:
         return waveform.repeat(1, 2, 1)
@@ -155,6 +162,8 @@ def _prepare_track(entry: dict[str, Any], vae_rate: int) -> tuple[torch.Tensor, 
         waveform = torchaudio.functional.resample(waveform, source_rate, vae_rate)
     if gain_db != 0.0:
         waveform = waveform * (10.0 ** (gain_db / 20.0))
+    if not bool(torch.isfinite(waveform).all().item()):
+        raise ValueError("Timed Audio waveform contains NaN or infinite samples.")
     start_sample = _frame_to_sample(frame_idx, vae_rate)
     meta = {
         "label": label,
@@ -177,8 +186,12 @@ def _mix_tracks(
     overflow_policy: str,
 ) -> tuple[torch.Tensor, dict[str, Any]]:
     """Deterministically mix timed entries to one exact stereo target waveform."""
-    target_samples = max(0, int(target_samples))
+    target_samples = int(target_samples)
     sample_rate = int(sample_rate)
+    if target_samples <= 0:
+        raise ValueError("H3 target audio timeline must contain at least one waveform sample.")
+    if sample_rate <= 0:
+        raise ValueError("H3 target audio sample rate must be positive.")
     mix_policy = str(mix_policy)
     overflow_policy = str(overflow_policy)
     if mix_policy not in {"sum", "prevent_clipping", "reject_overlap"}:
@@ -381,11 +394,26 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         if samples is None or not getattr(samples, "is_nested", False):
             raise ValueError("MiniMax H3 Exact Audio Lock requires a joint MiniMax H3 AV latent.")
         parts = samples.unbind()
-        if len(parts) < 2:
-            raise ValueError("MiniMax H3 Exact Audio Lock received an H3 latent without an audio stream.")
-        video_latent, target_audio_template = parts[0], parts[1]
-        if target_audio_template.ndim < 4:
-            raise ValueError("Unexpected MiniMax H3 audio latent shape.")
+        if len(parts) != 2:
+            raise ValueError(
+                "MiniMax H3 Exact Audio Lock requires exactly two H3 latent streams "
+                "(video and audio)."
+            )
+        video_latent, target_audio_template = parts
+        if video_latent.ndim != 5 or int(video_latent.shape[1]) != 24:
+            raise ValueError(
+                "Unexpected MiniMax H3 video latent shape; expected [B,24,T,H,W]."
+            )
+        if (
+            target_audio_template.ndim != 4
+            or int(target_audio_template.shape[1]) != 32
+            or int(target_audio_template.shape[2]) != 2
+        ):
+            raise ValueError(
+                "Unexpected MiniMax H3 audio latent shape; expected [B,32,2,T]."
+            )
+        if int(video_latent.shape[0]) != 1 or int(target_audio_template.shape[0]) != 1:
+            raise ValueError("MiniMax H3 Exact Audio Lock supports batch size 1 only.")
 
         vae_rate = int(getattr(audio_vae, "audio_sample_rate", 32000))
         if vae_rate <= 0:
@@ -425,6 +453,15 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         manifest["target_audio_latent_frames"] = target_t
 
         encoded = audio_vae.encode(waveform.movedim(1, -1))
+        if (
+            not isinstance(encoded, torch.Tensor)
+            or encoded.ndim != target_audio_template.ndim
+            or tuple(encoded.shape[:-1]) != tuple(target_audio_template.shape[:-1])
+        ):
+            raise ValueError(
+                "MiniMax H3 audio VAE returned an incompatible latent shape; "
+                "expected [1,32,2,T]."
+            )
         have_t = int(encoded.shape[-1])
         if have_t > target_t:
             encoded = encoded[..., :target_t]
@@ -445,10 +482,201 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
         return io.NodeOutput(locked, exact_audio, json.dumps(manifest, sort_keys=True, separators=(",", ":")))
 
 
+def _validate_scene_index(value: Any, *, field_name: str) -> int:
+    """Validate the one-based scene index used by recursive H3 workflows."""
+    if isinstance(value, bool):
+        raise ValueError(f"{field_name} must be a one-based integer scene index.")
+    try:
+        scene_index = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field_name} must be a one-based integer scene index.") from exc
+    if isinstance(value, float) and not value.is_integer():
+        raise ValueError(f"{field_name} must be a one-based integer scene index.")
+    if scene_index < 1:
+        raise ValueError(f"{field_name} must be at least 1.")
+    return scene_index
+
+
+class MiniMaxH3SceneTimedAudio(io.ComfyNode):
+    """One audio event assigned to one recursive H3 scene."""
+
+    @classmethod
+    def define_schema(cls) -> io.Schema:
+        return io.Schema(
+            node_id="MiniMaxH3SceneTimedAudio",
+            display_name="MiniMax H3 Scene Timed Audio",
+            category="MiniMax H3/Audio",
+            description=(
+                "Assign one AUDIO event to one one-based scene and one scene-local "
+                "24 fps start frame. Designed for recursive H3 chain workflows."
+            ),
+            inputs=[
+                io.Audio.Input("audio", tooltip="One approved dialogue/singing/audio event."),
+                io.Int.Input(
+                    "scene_index", default=1, min=1, max=1_000_000, step=1,
+                    tooltip="One-based scene number. H3 Context Loop clip_index is one-based.",
+                ),
+                io.Int.Input(
+                    "start_frame", default=0, min=0, max=1_000_000, step=1,
+                    tooltip="Scene-local pixel-frame index on H3's 24 fps target timeline.",
+                ),
+                io.Float.Input(
+                    "gain_db", default=0.0, min=-60.0, max=24.0, step=0.1,
+                    tooltip="Gain applied before scene mixing. 0 dB preserves source level.",
+                ),
+                io.String.Input(
+                    "label", default="", multiline=False,
+                    tooltip="Optional speaker/event label written to the mix manifest.",
+                ),
+            ],
+            outputs=[H3_SCENE_TIMED_AUDIO.Output(display_name="scene_timed_audio")],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        audio,
+        scene_index: int,
+        start_frame: int,
+        gain_db: float,
+        label: str,
+    ) -> io.NodeOutput:
+        return io.NodeOutput({
+            "audio": audio,
+            "scene_index": _validate_scene_index(scene_index, field_name="scene_index"),
+            "start_frame": int(start_frame),
+            "gain_db": float(gain_db),
+            "label": str(label or ""),
+        })
+
+
+class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
+    """Select this recursive scene's events and delegate to the exact lock."""
+
+    @classmethod
+    def define_schema(cls) -> io.Schema:
+        scene_template = io.Autogrow.TemplatePrefix(
+            input=H3_SCENE_TIMED_AUDIO.Input("scene_timed_audio"),
+            prefix="scene_timed_audio",
+            min=0,
+        )
+        return io.Schema(
+            node_id="MiniMaxH3SceneExactAudioLock",
+            display_name="MiniMax H3 Scene Exact Audio Lock",
+            category="MiniMax H3/Audio",
+            description=(
+                "For recursive H3 workflows: select only the events assigned to "
+                "current_scene, then apply the normal exact target-audio lock."
+            ),
+            inputs=[
+                io.Latent.Input("av_latent", tooltip="Joint MiniMax H3 video/audio target latent."),
+                io.Vae.Input("audio_vae", tooltip="MiniMax H3 audio VAE."),
+                io.Int.Input(
+                    "current_scene", default=1, min=1, max=1_000_000, step=1,
+                    tooltip=(
+                        "One-based current scene. Connect MiniMax H3 Chain Current "
+                        "clip_index here."
+                    ),
+                ),
+                io.Autogrow.Input(
+                    "scene_timed_audios",
+                    template=scene_template,
+                    tooltip=(
+                        "Connect Scene Timed Audio events from every scene. Only the "
+                        "current scene is mixed during this recursive iteration."
+                    ),
+                ),
+                io.Combo.Input(
+                    "mix_policy",
+                    options=["sum", "prevent_clipping", "reject_overlap"],
+                    default="sum",
+                ),
+                io.Combo.Input(
+                    "overflow_policy", options=["error", "crop"], default="error",
+                ),
+                io.Combo.Input(
+                    "empty_scene_policy",
+                    options=["error", "lock_silence"],
+                    default="error",
+                    tooltip=(
+                        "error catches missing scene audio. lock_silence deliberately "
+                        "locks a digital-silence target for scenes with no events."
+                    ),
+                ),
+            ],
+            outputs=[
+                io.Latent.Output(display_name="locked_av_latent"),
+                io.Audio.Output(display_name="exact_audio"),
+                io.String.Output(display_name="mix_manifest"),
+            ],
+        )
+
+    @classmethod
+    def execute(
+        cls,
+        av_latent,
+        audio_vae,
+        current_scene: int,
+        scene_timed_audios: io.Autogrow.Type | None = None,
+        mix_policy: str = "sum",
+        overflow_policy: str = "error",
+        empty_scene_policy: str = "error",
+        **runtime_inputs,
+    ) -> io.NodeOutput:
+        scene_index = _validate_scene_index(current_scene, field_name="current_scene")
+        if empty_scene_policy not in {"error", "lock_silence"}:
+            raise ValueError(
+                "empty_scene_policy must be 'error' or 'lock_silence'."
+            )
+
+        scene_items = _runtime_autogrow_items(
+            scene_timed_audios,
+            runtime_inputs,
+            group_name="scene_timed_audios",
+            node_name="MiniMaxH3SceneExactAudioLock",
+        )
+        selected: dict[str, dict[str, Any]] = {}
+        for socket_name, value in scene_items:
+            if value is None:
+                continue
+            if not isinstance(value, dict):
+                raise ValueError(
+                    f"{socket_name} is not a MiniMax H3 Scene Timed Audio value."
+                )
+            event_scene = _validate_scene_index(
+                value.get("scene_index"), field_name=f"{socket_name}.scene_index"
+            )
+            if event_scene != scene_index:
+                continue
+            row = dict(value)
+            row.pop("scene_index", None)
+            row.setdefault("label", socket_name)
+            selected[f"timed_audio_{len(selected)}"] = row
+
+        if not selected and empty_scene_policy == "error":
+            raise ValueError(
+                f"No Scene Timed Audio events are assigned to scene {scene_index}. "
+                "Add an event or explicitly choose empty_scene_policy='lock_silence'."
+            )
+
+        return MiniMaxH3ExactAudioLock.execute(
+            av_latent,
+            audio_vae,
+            timed_audios=selected,
+            mix_policy=mix_policy,
+            overflow_policy=overflow_policy,
+        )
+
+
 class H3ExactAudioLockExtension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [MiniMaxH3TimedAudio, MiniMaxH3ExactAudioLock]
+        return [
+            MiniMaxH3TimedAudio,
+            MiniMaxH3ExactAudioLock,
+            MiniMaxH3SceneTimedAudio,
+            MiniMaxH3SceneExactAudioLock,
+        ]
 
 
 async def comfy_entrypoint() -> H3ExactAudioLockExtension:

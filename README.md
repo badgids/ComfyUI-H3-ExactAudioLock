@@ -303,6 +303,33 @@ Connected Timed Audio entries are sorted into a stable order before mixing. Plac
 
 The resulting encoded audio latent receives a zero-valued denoise mask while the video latent receives a one-valued denoise mask. H3 therefore denoises the picture while attending to the fixed target audio.
 
+## Scene-aware recursive dialogue
+
+For recursive H3 Director / Context Loop workflows, this package now provides:
+
+- **MiniMax H3 Scene Timed Audio** — assigns an approved `AUDIO` event to a
+  one-based scene and scene-local 24 fps start frame.
+- **MiniMax H3 Scene Exact Audio Lock** — accepts all scheduled scene events,
+  selects only the current scene, and delegates to the same deterministic exact
+  mixer/target lock used by the original node.
+
+Connect `MiniMax H3 Chain Current.clip_index` to the scene lock's
+`current_scene`. The integration uses only normal ComfyUI values; this package
+does not import or require H3 Context Loop.
+
+For persistent character voices, render/approve each line upstream with the TTS
+or voice-cloning workflow of your choice and feed that stable `AUDIO` into Scene
+Timed Audio. ExactAudioLock preserves the supplied waveform; it does not create
+or clone the voice itself.
+
+See [docs/SCENE_DIALOGUE.md](docs/SCENE_DIALOGUE.md) for wiring and production
+guidance. See [PROTOCOL.md](PROTOCOL.md) for compatibility rules.
+
+> [!IMPORTANT]
+> Do not enable H3 Context Loop's complete `lock_source_audio` /
+> `source_audio_target=locked` target lock on the same sampler path. Use one
+> owner for the complete H3 target-audio latent.
+
 ## Troubleshooting
 
 ### The node does not appear
@@ -329,7 +356,13 @@ The locked waveform tells H3 exactly what audio exists and when, but the single 
 
 ```text
 ComfyUI-H3-ExactAudioLock/
+├── docs/
+│   └── SCENE_DIALOGUE.md
+├── tests/
+│   └── test_exact_audio_lock.py
+├── DEVELOPMENT.md
 ├── LICENSE
+├── PROTOCOL.md
 ├── README.md
 └── __init__.py
 ```
