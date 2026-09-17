@@ -14,8 +14,8 @@ MiniMax H3 Timed Audio
     Wraps one ComfyUI AUDIO value with an exact target start frame and gain.
 
 MiniMax H3 Exact Audio Lock
-    Accepts an Autogrow collection of as many Timed Audio inputs as the user
-    connects, mixes them deterministically on H3's target timeline, encodes the
+    Accepts an Autogrow collection of up to 100 Timed Audio inputs, mixes them
+    deterministically on H3's target timeline, encodes the
     resulting waveform into H3's target audio latent, and freezes audio while
     video remains denoisable.
 
@@ -43,7 +43,7 @@ WEB_DIRECTORY = "./web"
 
 VIDEO_FPS = 24
 AUDIO_LATENT_FPS = 40
-MAX_TIMED_AUDIO_INPUTS = 1000
+MAX_TIMED_AUDIO_INPUTS = 100
 H3_TIMED_AUDIO = io.Custom("H3_TIMED_AUDIO")
 H3_SCENE_TIMED_AUDIO = io.Custom("H3_SCENE_TIMED_AUDIO")
 
@@ -485,7 +485,7 @@ class MiniMaxH3TimedAudio(io.ComfyNode):
             category="MiniMax H3/Audio",
             description=(
                 "Wrap one AUDIO source with its exact MiniMax H3 target start frame. "
-                "Connect any number of these to MiniMax H3 Exact Audio Lock."
+                "Connect up to 100 of these to MiniMax H3 Exact Audio Lock."
             ),
             inputs=[
                 io.Audio.Input("audio", tooltip="One dialogue/singing/audio event."),
@@ -526,7 +526,7 @@ class MiniMaxH3TimedAudio(io.ComfyNode):
 
 
 class MiniMaxH3ExactAudioLock(io.ComfyNode):
-    """Mix up to 1,000 timed AUDIO events into one locked MiniMax H3 target stream."""
+    """Mix up to 100 timed AUDIO events into one locked MiniMax H3 target stream."""
 
     @classmethod
     def define_schema(cls) -> io.Schema:
@@ -541,7 +541,7 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
             display_name="MiniMax H3 Exact Audio Lock",
             category="MiniMax H3/Audio",
             description=(
-                "Deterministically mixes any number of timed audio events on H3's exact target timeline, "
+                "Deterministically mixes up to 100 timed audio events on H3's exact target timeline, "
                 "encodes that one waveform into the target audio latent, freezes audio, and denoises video only."
             ),
             inputs=[
@@ -550,7 +550,7 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
                 io.Autogrow.Input(
                     "timed_audios",
                     template=timed_template,
-                    tooltip="Connect up to 1,000 MiniMax H3 Timed Audio nodes.",
+                    tooltip="Connect up to 100 MiniMax H3 Timed Audio nodes.",
                 ),
                 io.Combo.Input(
                     "mix_policy", options=["sum", "prevent_clipping", "reject_overlap"], default="sum",

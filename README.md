@@ -151,7 +151,7 @@ For full installation details, Windows portable examples, upgrades, and dependen
 - Provides an embedded Audio Review / Accept Gate for choosing one candidate and optionally saving alternate takes.
 - Accepts normal ComfyUI `AUDIO` from TTS, voice-cloning, music, audio-loader, or processing nodes.
 - Reviews WAV, MP3, FLAC, OGG/OGA, and Opus files from ComfyUI's managed input directory.
-- Accepts up to 1,000 timed audio events through ComfyUI's native `Autogrow` inputs.
+- Accepts up to 100 timed audio events through ComfyUI's native `Autogrow` inputs.
 - Places every source on H3's 24 fps target-video timeline using deterministic integer frame-to-sample conversion.
 - Mixes multiple speakers or sound sources sample-accurately into one H3 target waveform.
 - Supports overlapping dialogue and layered audio.
@@ -226,7 +226,7 @@ Create one Timed Audio node for each independently placed event. The node also e
 
 **Class ID:** `MiniMaxH3ExactAudioLock`
 
-Accepts the H3 AV latent, MiniMax H3 audio VAE, and up to 1,000 `MiniMax H3 Timed Audio` inputs. It builds one exact target waveform, encodes it once, replaces H3's target audio latent, locks the entire audio stream against denoising, and leaves video denoisable.
+Accepts the H3 AV latent, MiniMax H3 audio VAE, and up to 100 `MiniMax H3 Timed Audio` inputs. It builds one exact target waveform, encodes it once, replaces H3's target audio latent, locks the entire audio stream against denoising, and leaves video denoisable.
 
 | Input | Purpose |
 | --- | --- |
@@ -441,7 +441,7 @@ The lock node expects an H3 joint AV latent, not a standalone image/video latent
 
 ## Large timed audio input sets
 
-The lock nodes use ComfyUI's native `Autogrow` socket mechanism. This package explicitly raises the template maximum to **1,000 timed inputs** so it does not inherit ComfyUI's default `TemplatePrefix` maximum of 10.
+The lock nodes use ComfyUI's native `Autogrow` socket mechanism. This package explicitly raises the template maximum to **100 timed inputs**, which is ComfyUI's native `Autogrow` hard limit and avoids the default `TemplatePrefix` maximum of 10.
 
 ```text
 Speaker 1 AUDIO -> MiniMax H3 Timed Audio --\
@@ -451,7 +451,7 @@ Speaker 4 AUDIO -> MiniMax H3 Timed Audio ----/
 ...                                         --/
 ```
 
-The explicit 1,000-input ceiling is a safety/UI bound; practical limits are usually the ComfyUI graph size and available system resources long before that value.
+The explicit 100-input ceiling is imposed by ComfyUI's native `Autogrow` API.
 
 ## Layering and overlapping audio
 

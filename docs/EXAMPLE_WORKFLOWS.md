@@ -9,7 +9,7 @@ Every shipped example is required to satisfy two layout rules:
 
 `tests/test_example_workflows.py` enforces node/link integrity, exact-audio output routing, dialogue finalizer routing, native Add Guide timing wiring, and node-layout overlap checks.
 
-ExactAudioLock timed-audio Autogrow templates explicitly allow up to 1,000 inputs; this avoids ComfyUI's default `TemplatePrefix` maximum of 10.
+ExactAudioLock timed-audio Autogrow templates explicitly allow up to 100 inputs, ComfyUI's native hard limit; this avoids the default `TemplatePrefix` maximum of 10.
 
 ## Naming policy
 

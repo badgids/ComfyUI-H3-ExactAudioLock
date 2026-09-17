@@ -54,7 +54,9 @@ class _Autogrow:
 
     class TemplatePrefix:
         def __init__(self, *args, **kwargs):
-            pass
+            max_inputs = int(kwargs.get("max", 10))
+            assert max_inputs >= 1
+            assert max_inputs <= 100
 
     @staticmethod
     def Input(*args, **kwargs):
@@ -144,6 +146,16 @@ class ExactAudioLockTests(unittest.TestCase):
                 "AudioReviewAcceptGate",
             ],
         )
+
+    def test_exact_audio_lock_schemas_respect_comfy_autogrow_hard_limit(self):
+        self.assertEqual(mod.MAX_TIMED_AUDIO_INPUTS, 100)
+        for node in (
+            mod.MiniMaxH3ExactAudioLock,
+            mod.MiniMaxH3DialogueAudioLock,
+            mod.MiniMaxH3SceneExactAudioLock,
+            mod.MiniMaxH3SceneDialogueAudioLock,
+        ):
+            node.define_schema()
 
     def test_scene_timed_audio_requires_one_based_scene(self):
         audio = {"waveform": torch.zeros((1, 1, 8)), "sample_rate": 32000}
