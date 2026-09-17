@@ -10,6 +10,24 @@ The gate is deliberately engine-agnostic. Connected candidates use ComfyUI's nor
 `AUDIO` contract. File candidates are selected/uploaded through ComfyUI's managed
 input directory and decoded into the same `AUDIO` contract.
 
+## Requirements and installation
+
+The gate's managed-file mode uses PyAV. This repository provides a standard
+[`requirements.txt`](../requirements.txt) containing `av>=14.2.0`.
+
+Install it with the same Python interpreter or virtual environment that runs ComfyUI:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+PyTorch and TorchAudio are supplied by ComfyUI and are intentionally not redeclared
+in this custom node's requirements file, so installing the gate dependency does not
+replace a CUDA/ROCm/XPU-specific Torch build.
+
+See [INSTALLATION.md](INSTALLATION.md) for Linux, WSL2, macOS, Windows venv, and
+ComfyUI Windows portable commands.
+
 ## Candidate-review behavior
 
 A review can contain one or many candidates. The browser UI presents them as a

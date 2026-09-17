@@ -1,0 +1,6 @@
+# Direct Python dependency used by ComfyUI-H3-ExactAudioLock.
+#
+# PyTorch and TorchAudio are supplied by ComfyUI and are intentionally not
+# redeclared here. Reinstalling them from a custom-node requirements file can
+# replace a working CUDA, ROCm, XPU, or other backend-specific build.
+av>=14.2.0

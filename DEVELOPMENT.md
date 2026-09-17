@@ -8,11 +8,35 @@ public node IDs and data contracts used by saved workflows.
 - Current ComfyUI with `comfy_api.latest` and native `Autogrow`.
 - Native MiniMax H3 joint AV latents.
 - PyTorch and TorchAudio from the active ComfyUI Python environment.
+- PyAV `14.2.0` or newer, installed from the repository `requirements.txt`.
 - Python 3.11+.
 
 The package must not depend on developer-specific filesystem paths, environment
 variables, a separate virtual environment, or imports from another custom-node
 package.
+
+## Dependency policy
+
+`requirements.txt` is the standard pip-installable dependency contract for this
+custom node. It currently declares only:
+
+```text
+av>=14.2.0
+```
+
+Do not add `torch` or `torchaudio` to this repository's requirements file. Those
+packages belong to the ComfyUI runtime and may be installed from backend-specific
+CUDA, ROCm, XPU, or other package indexes. A custom-node install must not silently
+replace the user's working Torch stack.
+
+Install or refresh this repository's dependencies with the same interpreter that
+runs ComfyUI:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+See `docs/INSTALLATION.md` for venv and Windows portable examples.
 
 ## Compatibility rules
 
@@ -70,9 +94,12 @@ For every milestone, explicitly review:
 - README/protocol/development documentation;
 - tests for success paths and error paths.
 
-This package currently creates no files, starts no threads/processes, opens no
-network connections, and maintains no persistent cache, so there is no package
-cleanup routine to run.
+The core lock nodes do not create persistent files or perform network access. The
+Audio Review / Accept Gate is the documented exception: it creates temporary preview
+files under ComfyUI temp and optional retained alternates under ComfyUI output. Those
+preview files must be cleaned on accept, reject, timeout, and failure paths. The gate
+does not start subprocesses or background worker threads and performs no external
+network access.
 
 ## Partial-dialogue lock milestone
 
@@ -89,6 +116,7 @@ H3 audio latent rather than being replaced by encoded silence.
 Repository test/compile runs create Python bytecode caches. `.gitignore` excludes
 those generated artifacts so the working tree remains clean after the required
 verification commands.
+
 ## Audio review gate milestone
 
 `H3ExactAudioLockAudioReviewGate` is an engine-agnostic human review boundary for
