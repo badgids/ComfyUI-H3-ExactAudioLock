@@ -1,15 +1,15 @@
 {
   "id": "a76330f3-7473-4041-84ae-d4fb01503b77",
   "revision": 0,
-  "last_node_id": 18,
-  "last_link_id": 23,
+  "last_node_id": 19,
+  "last_link_id": 30,
   "nodes": [
     {
       "id": 1,
       "type": "UNETLoader",
       "pos": [
-        40,
-        40
+        80,
+        80
       ],
       "size": [
         320,
@@ -41,15 +41,15 @@
       "id": 2,
       "type": "CLIPLoader",
       "pos": [
-        40,
-        220
+        80,
+        740.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 1,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -74,15 +74,15 @@
       "id": 3,
       "type": "VAELoader",
       "pos": [
-        40,
-        400
+        80,
+        960.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 2,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -106,15 +106,15 @@
       "id": 4,
       "type": "VAELoader",
       "pos": [
-        40,
-        550
+        80,
+        1400.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 3,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -124,7 +124,7 @@
           "links": [
             5,
             10,
-            20
+            25
           ]
         }
       ],
@@ -139,15 +139,15 @@
       "id": 5,
       "type": "RandomNoise",
       "pos": [
-        1460,
-        40
+        80,
+        300.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 4,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -171,15 +171,15 @@
       "id": 6,
       "type": "KSamplerSelect",
       "pos": [
-        1460,
-        200
+        80,
+        520.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 5,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -202,15 +202,15 @@
       "id": 7,
       "type": "BasicScheduler",
       "pos": [
-        1460,
-        360
+        620.0,
+        600.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 6,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -249,15 +249,15 @@
       "id": 8,
       "type": "BasicGuider",
       "pos": [
-        1460,
-        560
+        1970.0,
+        80
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 7,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -268,7 +268,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 7
+          "link": 29
         }
       ],
       "outputs": [
@@ -289,15 +289,15 @@
       "id": 9,
       "type": "LoadImage",
       "pos": [
-        520,
-        520
+        80,
+        1180.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -326,7 +326,7 @@
       "id": 10,
       "type": "MiniMaxH3ReferenceToVideo",
       "pos": [
-        520,
+        620.0,
         80
       ],
       "size": [
@@ -334,7 +334,7 @@
         420
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -432,14 +432,15 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            7
+            24
           ]
         },
         {
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            9
+            9,
+            26
           ]
         }
       ],
@@ -458,15 +459,15 @@
       "id": 11,
       "type": "LoadAudio",
       "pos": [
-        520,
-        760
+        80,
+        1620.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 10,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -474,7 +475,8 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            8
+            8,
+            27
           ]
         }
       ],
@@ -491,15 +493,15 @@
       "id": 12,
       "type": "MiniMaxH3TimedAudio",
       "pos": [
-        900,
-        760
+        620.0,
+        820.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 11,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -539,13 +541,20 @@
           "links": [
             11
           ]
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "links": [
+            28
+          ]
         }
       ],
       "properties": {
         "Node name for S&R": "MiniMaxH3TimedAudio"
       },
       "widgets_values": [
-        0,
+        24,
         0.0,
         "speaker 1"
       ]
@@ -554,8 +563,8 @@
       "id": 13,
       "type": "MiniMaxH3ExactAudioLock",
       "pos": [
-        1300,
-        850
+        1300.0,
+        430.0
       ],
       "size": [
         450,
@@ -599,7 +608,9 @@
         {
           "name": "exact_audio",
           "type": "AUDIO",
-          "links": []
+          "links": [
+            30
+          ]
         },
         {
           "name": "mix_manifest",
@@ -620,7 +631,7 @@
       "id": 14,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        1900,
+        2510.0,
         80
       ],
       "size": [
@@ -628,7 +639,7 @@
         120
       ],
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -662,8 +673,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            17,
-            19
+            17
           ]
         },
         {
@@ -681,7 +691,7 @@
       "id": 15,
       "type": "VAEDecode",
       "pos": [
-        2320,
+        3050.0,
         80
       ],
       "size": [
@@ -689,7 +699,7 @@
         120
       ],
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -718,50 +728,10 @@
       "widgets_values": []
     },
     {
-      "id": 16,
-      "type": "VAEDecodeAudio",
-      "pos": [
-        2320,
-        250
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 19
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 20
-        }
-      ],
-      "outputs": [
-        {
-          "name": "AUDIO",
-          "type": "AUDIO",
-          "links": [
-            22
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecodeAudio"
-      },
-      "widgets_values": []
-    },
-    {
       "id": 17,
       "type": "CreateVideo",
       "pos": [
-        2720,
+        3590.0,
         80
       ],
       "size": [
@@ -780,7 +750,7 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 22,
+          "link": 30,
           "shape": 7
         }
       ],
@@ -805,7 +775,7 @@
       "id": 18,
       "type": "SaveVideo",
       "pos": [
-        3060,
+        4130.0,
         80
       ],
       "size": [
@@ -836,6 +806,76 @@
         "video/04_ref2v_exact_lock_load_audio",
         "auto",
         "auto"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "MiniMaxH3AddGuide",
+      "pos": [
+        1300.0,
+        80
+      ],
+      "size": [
+        390,
+        250
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 24
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 25
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 26
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 27
+        },
+        {
+          "name": "frame_idx",
+          "type": "INT",
+          "link": 28,
+          "widget": {
+            "name": "frame_idx"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3AddGuide"
+      },
+      "widgets_values": [
+        0
       ]
     }
   ],
@@ -887,14 +927,6 @@
       10,
       3,
       "IMAGE"
-    ],
-    [
-      7,
-      10,
-      0,
-      8,
-      1,
-      "CONDITIONING"
     ],
     [
       8,
@@ -985,22 +1017,6 @@
       "VAE"
     ],
     [
-      19,
-      14,
-      0,
-      16,
-      0,
-      "LATENT"
-    ],
-    [
-      20,
-      4,
-      0,
-      16,
-      1,
-      "VAE"
-    ],
-    [
       21,
       15,
       0,
@@ -1009,20 +1025,68 @@
       "IMAGE"
     ],
     [
-      22,
-      16,
-      0,
-      17,
-      1,
-      "AUDIO"
-    ],
-    [
       23,
       17,
       0,
       18,
       0,
       "VIDEO"
+    ],
+    [
+      24,
+      10,
+      0,
+      19,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      25,
+      4,
+      0,
+      19,
+      2,
+      "VAE"
+    ],
+    [
+      26,
+      10,
+      1,
+      19,
+      3,
+      "LATENT"
+    ],
+    [
+      27,
+      11,
+      0,
+      19,
+      5,
+      "AUDIO"
+    ],
+    [
+      28,
+      12,
+      1,
+      19,
+      6,
+      "INT"
+    ],
+    [
+      29,
+      19,
+      0,
+      8,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      30,
+      13,
+      1,
+      17,
+      1,
+      "AUDIO"
     ]
   ],
   "groups": [],

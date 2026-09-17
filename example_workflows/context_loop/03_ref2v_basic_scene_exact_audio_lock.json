@@ -2,14 +2,14 @@
   "id": "cb280ed9-b88f-4117-85b8-e51e7b4a25b8",
   "revision": 0,
   "last_node_id": 32,
-  "last_link_id": 59,
+  "last_link_id": 60,
   "nodes": [
     {
       "id": 1,
       "type": "MiniMaxH3GenerationProfile",
       "pos": [
-        40,
-        40
+        80,
+        80
       ],
       "size": [
         360,
@@ -51,15 +51,15 @@
       "id": 2,
       "type": "MiniMaxH3ChainPlanModern",
       "pos": [
-        40,
-        250
+        660.0,
+        80
       ],
       "size": [
         760,
         520
       ],
       "flags": {},
-      "order": 1,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -134,15 +134,15 @@
       "id": 3,
       "type": "MiniMaxH3ChainScenePromptEditor",
       "pos": [
-        850,
-        250
+        1640.0,
+        80
       ],
       "size": [
         760,
         520
       ],
       "flags": {},
-      "order": 2,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -169,15 +169,15 @@
       "id": 4,
       "type": "MiniMaxH3ChainLoopStart",
       "pos": [
-        1660,
-        250
+        2620.0,
+        80
       ],
       "size": [
         360,
         220
       ],
       "flags": {},
-      "order": 3,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -235,15 +235,15 @@
       "id": 5,
       "type": "MiniMaxH3ChainCurrent",
       "pos": [
-        2070,
-        250
+        3200.0,
+        80
       ],
       "size": [
         440,
         400
       ],
       "flags": {},
-      "order": 4,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -365,15 +365,15 @@
       "id": 6,
       "type": "UNETLoader",
       "pos": [
-        40,
-        840
+        80,
+        330.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 5,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -397,15 +397,15 @@
       "id": 7,
       "type": "ModelAttentionBackend",
       "pos": [
-        410,
-        840
+        660.0,
+        700.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 6,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -434,15 +434,15 @@
       "id": 8,
       "type": "MiniMaxH3SigmaShift",
       "pos": [
-        780,
-        840
+        1640.0,
+        700.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 7,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -473,15 +473,15 @@
       "id": 9,
       "type": "CLIPLoader",
       "pos": [
-        40,
-        1020
+        80,
+        550.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -506,15 +506,15 @@
       "id": 10,
       "type": "VAELoader",
       "pos": [
-        40,
-        1200
+        80,
+        1210.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 9,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -539,15 +539,15 @@
       "id": 11,
       "type": "VAELoader",
       "pos": [
-        40,
-        1360
+        80,
+        1870.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -557,7 +557,6 @@
           "links": [
             17,
             21,
-            38,
             57
           ]
         }
@@ -573,15 +572,15 @@
       "id": 12,
       "type": "MiniMaxH3ReferenceToVideo",
       "pos": [
-        2070,
-        720
+        3860.0,
+        80
       ],
       "size": [
         520,
         500
       ],
       "flags": {},
-      "order": 11,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -705,15 +704,15 @@
       "id": 13,
       "type": "MiniMaxH3ChainContext",
       "pos": [
-        2580,
-        720
+        4600.0,
+        80
       ],
       "size": [
         420,
         260
       ],
       "flags": {},
-      "order": 12,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -799,15 +798,15 @@
       "id": 14,
       "type": "LoadAudio",
       "pos": [
-        850,
-        1160
+        80,
+        770.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 13,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -832,15 +831,15 @@
       "id": 15,
       "type": "MiniMaxH3SceneTimedAudio",
       "pos": [
-        1210,
-        1160
+        660.0,
+        920.0
       ],
       "size": [
         390,
         180
       ],
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -888,6 +887,11 @@
           "links": [
             23
           ]
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "links": []
         }
       ],
       "properties": {
@@ -904,15 +908,15 @@
       "id": 16,
       "type": "LoadAudio",
       "pos": [
-        850,
-        1340
+        80,
+        1650.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 15,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -937,15 +941,15 @@
       "id": 17,
       "type": "MiniMaxH3SceneTimedAudio",
       "pos": [
-        1210,
-        1340
+        660.0,
+        1200.0
       ],
       "size": [
         390,
         180
       ],
       "flags": {},
-      "order": 16,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -993,6 +997,11 @@
           "links": [
             24
           ]
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "links": []
         }
       ],
       "properties": {
@@ -1009,15 +1018,15 @@
       "id": 18,
       "type": "MiniMaxH3SceneExactAudioLock",
       "pos": [
-        3060,
-        720
+        5240.0,
+        80
       ],
       "size": [
         490,
         280
       ],
       "flags": {},
-      "order": 17,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -1064,7 +1073,9 @@
         {
           "name": "exact_audio",
           "type": "AUDIO",
-          "links": []
+          "links": [
+            60
+          ]
         },
         {
           "name": "mix_manifest",
@@ -1086,15 +1097,15 @@
       "id": 19,
       "type": "RandomNoise",
       "pos": [
-        2580,
-        1040
+        3860.0,
+        680.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -1127,15 +1138,15 @@
       "id": 20,
       "type": "KSamplerSelect",
       "pos": [
-        2580,
-        1200
+        80,
+        1430.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 19,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1158,8 +1169,8 @@
       "id": 21,
       "type": "BasicScheduler",
       "pos": [
-        2580,
-        1360
+        3860.0,
+        900.0
       ],
       "size": [
         320,
@@ -1205,15 +1216,15 @@
       "id": 22,
       "type": "BasicGuider",
       "pos": [
-        3060,
-        1060
+        5240.0,
+        460.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 21,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -1245,15 +1256,15 @@
       "id": 23,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        3600,
-        720
+        5950.0,
+        80
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 22,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -1288,7 +1299,6 @@
           "type": "LATENT",
           "links": [
             35,
-            37,
             45,
             54
           ]
@@ -1308,15 +1318,15 @@
       "id": 24,
       "type": "VAEDecode",
       "pos": [
-        4020,
-        720
+        6490.0,
+        80
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 23,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1345,58 +1355,18 @@
       "widgets_values": []
     },
     {
-      "id": 25,
-      "type": "VAEDecodeAudio",
-      "pos": [
-        4020,
-        880
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 37
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 38
-        }
-      ],
-      "outputs": [
-        {
-          "name": "AUDIO",
-          "type": "AUDIO",
-          "links": [
-            41
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecodeAudio"
-      },
-      "widgets_values": []
-    },
-    {
       "id": 26,
       "type": "MiniMaxH3LoopTrim",
       "pos": [
-        4440,
-        720
+        7030.0,
+        80
       ],
       "size": [
         420,
         250
       ],
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -1415,7 +1385,7 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 41
+          "link": 60
         },
         {
           "name": "state",
@@ -1467,15 +1437,15 @@
       "id": 27,
       "type": "MiniMaxH3ChainSegmentSave",
       "pos": [
-        4910,
-        720
+        7670.0,
+        80
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1532,15 +1502,15 @@
       "id": 28,
       "type": "MiniMaxH3ChainReview",
       "pos": [
-        5400,
-        720
+        8210.0,
+        80
       ],
       "size": [
         620,
         500
       ],
       "flags": {},
-      "order": 27,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1596,15 +1566,15 @@
       "id": 29,
       "type": "MiniMaxH3ChainLoopEnd",
       "pos": [
-        6060,
-        720
+        9050.0,
+        80
       ],
       "size": [
         420,
         230
       ],
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -1668,15 +1638,15 @@
       "id": 30,
       "type": "MiniMaxH3ChainAssemble",
       "pos": [
-        6520,
-        720
+        9690.0,
+        80
       ],
       "size": [
         440,
         330
       ],
       "flags": {},
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -1726,15 +1696,15 @@
       "id": 31,
       "type": "LoadImage",
       "pos": [
-        1660,
-        1160
+        80,
+        990.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 30,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1763,15 +1733,15 @@
       "id": 32,
       "type": "LoadImage",
       "pos": [
-        1660,
-        1360
+        80,
+        2090.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 31,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2087,22 +2057,6 @@
       "VAE"
     ],
     [
-      37,
-      23,
-      0,
-      25,
-      0,
-      "LATENT"
-    ],
-    [
-      38,
-      11,
-      0,
-      25,
-      1,
-      "VAE"
-    ],
-    [
       39,
       24,
       0,
@@ -2117,14 +2071,6 @@
       26,
       1,
       "INT"
-    ],
-    [
-      41,
-      25,
-      0,
-      26,
-      2,
-      "AUDIO"
     ],
     [
       42,
@@ -2269,6 +2215,14 @@
       12,
       8,
       "IMAGE"
+    ],
+    [
+      60,
+      18,
+      1,
+      26,
+      2,
+      "AUDIO"
     ]
   ],
   "groups": [],

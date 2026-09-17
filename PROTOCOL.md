@@ -11,7 +11,7 @@ The milestone was reviewed against:
   shape, 24 fps target-video timeline, 40 Hz audio-latent timeline, and
   `MiniMaxH3AddGuide` behavior.
 - ComfyUI V3 `comfy_api.latest` node schema and native `Autogrow` usage.
-- `ethanfel/ComfyUI-MiniMaxH3-Context-Loop` current 0.5 contracts, especially
+- `ethanfel/ComfyUI-MiniMaxH3-Context-Loop` current 0.6 contracts, especially
   one-based `clip_index` and `source_audio_target = locked`.
 
 ExactAudioLock intentionally does not import that custom node pack. Compatibility
@@ -40,6 +40,11 @@ video mask = 1  # video remains denoisable
 audio mask = 0  # exact target audio is protected
 ```
 
+For complete locks, `exact_audio` is the authoritative final soundtrack waveform.
+A workflow that requires exact source timing must mux/assemble `exact_audio` with the
+decoded video instead of replacing it with a second `VAEDecodeAudio` result from the
+sampled AV latent.
+
 ## Timed Audio contract
 
 `MiniMaxH3TimedAudio` values contain:
@@ -50,6 +55,11 @@ start_frame zero-based frame within the current H3 target at 24 fps
 gain_db     finite pre-mix gain
 label       diagnostic label
 ```
+
+The node also outputs the validated `start_frame` as an ordinary `INT`. Standalone
+dialogue workflows may connect that output directly to native
+`Add Guide for MiniMax H3.frame_idx`, giving conditioning and exact-lock placement
+one shared frame value.
 
 ## Scene Timed Audio contract
 
@@ -151,10 +161,17 @@ latent. Fully generative regions retain the incoming H3 audio target. Existing
 upstream video masks are preserved. Existing upstream audio masks are combined with
 the dialogue mask using the more restrictive value.
 
-The partial nodes output `dialogue_reference_audio`, which is the deterministic
-supplied-dialogue stem with digital silence outside supplied events. It is **not**
-the final soundtrack and must not be used to replace H3's post-sampling audio when
-room tone, ambience, music, effects, footsteps, or other generated audio is desired.
+The partial nodes output `dialogue_reference_audio`, the deterministic full-length
+supplied-dialogue reference bus with digital silence outside supplied events, plus
+`dialogue_lock_manifest`, which records every exact waveform interval.
+
+Raw post-sampling H3 audio is not the final timing authority for supplied dialogue.
+`MiniMax H3 Dialogue Audio Finalize` takes the decoded generated audio, the matching
+`dialogue_reference_audio`, and the matching `dialogue_lock_manifest`. For every
+track with mixed samples it replaces exactly `[start_sample,end_sample)` with the
+deterministic reference samples and preserves H3-generated samples outside those
+core intervals. This makes the supplied voice onset waveform-sample authoritative
+while retaining generated ambience/effects elsewhere.
 
 The scene-aware partial node defaults to `empty_scene_policy = generate`. A scene
 without scheduled dialogue is a true pass-through for the latent and remains fully

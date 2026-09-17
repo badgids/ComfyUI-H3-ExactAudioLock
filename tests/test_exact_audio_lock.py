@@ -137,6 +137,7 @@ class ExactAudioLockTests(unittest.TestCase):
                 "MiniMaxH3TimedAudio",
                 "MiniMaxH3ExactAudioLock",
                 "MiniMaxH3DialogueAudioLock",
+                "MiniMaxH3DialogueAudioFinalize",
                 "MiniMaxH3SceneTimedAudio",
                 "MiniMaxH3SceneExactAudioLock",
                 "MiniMaxH3SceneDialogueAudioLock",
@@ -150,6 +151,7 @@ class ExactAudioLockTests(unittest.TestCase):
         event = output.values[0]
         self.assertEqual(event["scene_index"], 2)
         self.assertEqual(event["start_frame"], 24)
+        self.assertEqual(output.values[1], 24)
         self.assertIs(event["audio"], audio)
 
         with self.assertRaisesRegex(ValueError, "at least 1"):
@@ -467,6 +469,85 @@ class ExactAudioLockTests(unittest.TestCase):
             mod.MiniMaxH3SceneDialogueAudioLock.execute(
                 "latent", "vae", 2, {}, empty_scene_policy="error"
             )
+
+    def test_timed_audio_exposes_validated_start_frame(self):
+        audio = {"waveform": torch.zeros((1, 1, 8)), "sample_rate": 32000}
+        output = mod.MiniMaxH3TimedAudio.execute(audio, 24, -3.0, "line")
+        event, frame = output.values
+        self.assertEqual(frame, 24)
+        self.assertEqual(event["start_frame"], 24)
+        self.assertEqual(event["gain_db"], -3.0)
+        with self.assertRaisesRegex(ValueError, "non-negative"):
+            mod.MiniMaxH3TimedAudio.execute(audio, -1, 0.0, "")
+        with self.assertRaisesRegex(ValueError, "finite"):
+            mod.MiniMaxH3TimedAudio.execute(audio, 0, float("nan"), "")
+
+    def test_exact_lock_nonzero_start_frame_survives_to_exact_audio(self):
+        video = torch.zeros((1, 24, 2, 2, 2))
+        audio_latent = torch.zeros((1, 32, 2, 50))
+        latent = {"samples": _FakeNestedTensor((video, audio_latent))}
+        source = {"waveform": torch.ones((1, 1, 800)), "sample_rate": 32000}
+        event = {"audio": source, "start_frame": 24, "gain_db": 0.0, "label": "line"}
+        output = mod.MiniMaxH3ExactAudioLock.execute(
+            latent, _AudioVAE(), timed_audios={"timed_audio_0": event}
+        )
+        _, exact_audio, manifest_json = output.values
+        waveform = exact_audio["waveform"]
+        self.assertEqual(int(waveform.shape[-1]), 40000)
+        self.assertEqual(float(waveform[..., :32000].abs().max()), 0.0)
+        self.assertTrue(torch.equal(waveform[..., 32000:32800], torch.ones((1, 2, 800))))
+        manifest = __import__("json").loads(manifest_json)
+        self.assertEqual(manifest["tracks"][0]["start_frame"], 24)
+        self.assertEqual(manifest["tracks"][0]["start_sample"], 32000)
+        self.assertEqual(manifest["tracks"][0]["end_sample"], 32800)
+
+    def test_dialogue_partial_nonzero_start_frame_is_exact_and_masked(self):
+        video = torch.zeros((1, 24, 2, 2, 2))
+        audio_latent = torch.zeros((1, 32, 2, 50))
+        latent = {"samples": _FakeNestedTensor((video, audio_latent))}
+        source = {"waveform": torch.ones((1, 1, 800)), "sample_rate": 32000}
+        event = {"audio": source, "start_frame": 24, "gain_db": 0.0, "label": "line"}
+        output = mod.MiniMaxH3DialogueAudioLock.execute(
+            latent,
+            _AudioVAE(),
+            timed_audios={"timed_audio_0": event},
+            mix_policy="sum",
+            protect_before_ms=0,
+            protect_after_ms=0,
+            feather_ms=0,
+        )
+        locked, reference, manifest_json = output.values
+        waveform = reference["waveform"]
+        self.assertEqual(float(waveform[..., :32000].abs().max()), 0.0)
+        self.assertTrue(torch.equal(waveform[..., 32000:32800], torch.ones((1, 2, 800))))
+        _, mask = locked["noise_mask"].unbind()
+        temporal = mask[0, 0, 0]
+        self.assertEqual(float(temporal[39]), 1.0)
+        self.assertEqual(float(temporal[40]), 0.0)
+        self.assertEqual(float(temporal[41]), 1.0)
+        manifest = __import__("json").loads(manifest_json)
+        self.assertEqual(manifest["tracks"][0]["start_sample"], 32000)
+        self.assertEqual(manifest["protection"][0]["core_start_audio_frame"], 40)
+        self.assertEqual(manifest["protection"][0]["core_end_audio_frame"], 41)
+
+    def test_dialogue_finalize_restores_only_exact_dialogue_interval(self):
+        generated = {"waveform": torch.full((1, 2, 40000), 0.25), "sample_rate": 32000}
+        reference_waveform = torch.zeros((1, 2, 40000))
+        reference_waveform[..., 32000:32800] = 1.0
+        reference = {"waveform": reference_waveform, "sample_rate": 32000}
+        manifest = __import__("json").dumps({
+            "mode": "dialogue_partial_lock",
+            "tracks": [{
+                "start_sample": 32000,
+                "end_sample": 32800,
+                "mixed_samples": 800,
+            }],
+        })
+        output = mod.MiniMaxH3DialogueAudioFinalize.execute(generated, reference, manifest)
+        final = output.values[0]["waveform"]
+        self.assertTrue(torch.equal(final[..., :32000], generated["waveform"][..., :32000]))
+        self.assertTrue(torch.equal(final[..., 32000:32800], reference_waveform[..., 32000:32800]))
+        self.assertTrue(torch.equal(final[..., 32800:], generated["waveform"][..., 32800:]))
 
 
 if __name__ == "__main__":

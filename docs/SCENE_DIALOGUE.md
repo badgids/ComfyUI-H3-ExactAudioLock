@@ -1,13 +1,12 @@
 # Scene-aware dialogue for recursive H3 workflows
 
-The scene-aware nodes let one recursive H3 sampling body reuse a complete set of
-approved spoken lines without leaking scene 1's dialogue into scene 2.
+The scene-aware nodes let one recursive H3 sampling body reuse a complete set of approved spoken lines without leaking one scene's dialogue into another.
 
 ## Nodes
 
 ### MiniMax H3 Scene Timed Audio
 
-Create one node for each approved line or other audio event.
+Create one node for each approved line or other scene audio event.
 
 Set:
 
@@ -16,90 +15,103 @@ Set:
 - `gain_db`: optional pre-mix gain.
 - `label`: speaker/event name for diagnostics.
 
-The `AUDIO` input can come from Qwen3-TTS, another TTS/voice clone, a normal
-audio loader, or any ComfyUI node that returns `AUDIO`.
+The node also exposes the validated scene-local `start_frame` as an `INT` output.
 
-### MiniMax H3 Scene Exact Audio Lock
+The `AUDIO` input can come from Qwen3-TTS, another TTS/voice clone, a normal audio loader, or any ComfyUI node that returns `AUDIO`.
 
-Connect:
+## Scene full lock
+
+`MiniMax H3 Scene Exact Audio Lock` selects only the events for `current_scene`, delegates them to the normal full Exact Audio Lock, and returns that scene's deterministic `exact_audio`.
 
 ```text
-Scheduled Ref2VA / H3 joint AV latent
-        -> av_latent
+MiniMax H3 Chain Current.clip_index ─────────► current_scene
+all Scene Timed Audio events ────────────────► scene_timed_audios
+MiniMax H3 Chain Context.latent ─────────────► av_latent
+MiniMax H3 audio VAE ────────────────────────► audio_vae
 
-MiniMax H3 audio VAE
-        -> audio_vae
-
-MiniMax H3 Chain Current.clip_index
-        -> current_scene
-
-all MiniMax H3 Scene Timed Audio nodes
-        -> scene_timed_audios (Autogrow)
-
-locked_av_latent
-        -> H3 sampler latent input
+                                  MiniMax H3 Scene Exact Audio Lock
+                                             │
+                   ┌─────────────────────────┴─────────────────────────┐
+                   ▼                                                   ▼
+            locked_av_latent                                      exact_audio
+                   │                                                   │
+                   ▼                                                   │
+        SamplerCustomAdvanced                                         │
+                   │                                                   │
+                   ▼                                                   │
+              VAEDecode ───────────────────────────────────────────────┤
+                                                                       ▼
+                                                         MiniMax H3 Loop Trim.audio
 ```
 
-Only the current scene's events are mixed. Other scene events remain inactive for
-that recursive iteration.
+For a full scene lock, use `exact_audio` in the segment/trim/final mux path. Do not substitute sampler-decoded H3 audio for the deterministic scene master.
 
-## Recommended dialogue workflow
+Only the current scene's events are mixed. Other scene events remain inactive for that recursive iteration.
+
+## Scene dialogue-partial lock
+
+Use `MiniMax H3 Scene Dialogue Audio Lock` when supplied speech must remain exact but H3 should generate room tone, ambience, music, Foley, footsteps, impacts, explosions, and other unsupplied scene audio.
+
+```text
+MiniMax H3 Chain Current.clip_index ─────────► Scene Dialogue Audio Lock.current_scene
+Scene Timed Audio events ────────────────────► Scene Dialogue Audio Lock.scene_timed_audios
+MiniMax H3 Chain Context.latent ─────────────► Scene Dialogue Audio Lock.av_latent
+
+Scene Dialogue Audio Lock.dialogue_locked_av_latent ─► SamplerCustomAdvanced
+                                                            │
+                                                            ▼
+                                                     VAEDecodeAudio
+                                                            │ generated_audio
+                                                            ▼
+                                             MiniMax H3 Dialogue Audio Finalize
+Scene Dialogue Audio Lock.dialogue_reference_audio ─────────►
+Scene Dialogue Audio Lock.dialogue_lock_manifest ───────────►
+                                                            │
+                                                            ▼
+                                                      final_audio
+                                                            │
+                                                            ▼
+                                                 MiniMax H3 Loop Trim.audio
+```
+
+The voice start frame remains authoritative in partial mode. H3 generative freedom applies only outside the supplied dialogue cores. The finalizer restores those cores sample-for-sample after H3 audio decode.
+
+## Recommended production workflow
 
 ```text
 persistent character voice / voice clone
         -> render and approve each spoken line once
         -> Scene Timed Audio (scene + local frame)
-        -> Scene Exact Audio Lock
+        -> Scene Exact Audio Lock OR Scene Dialogue Audio Lock
         -> H3 sampler
-        -> draft review
+        -> deterministic final audio path
+        -> review
 ```
 
-Changing the video seed, camera, prompt, or upscale pass does not change the
-approved waveform. If a performance changes, rerender that TTS line deliberately
-and update the corresponding Scene Timed Audio input.
+Changing the video seed, camera, prompt, or upscale pass does not change the approved waveform. If a performance changes, rerender that TTS line deliberately and update the corresponding Scene Timed Audio input.
 
 ## Empty scenes
 
-Keep `empty_scene_policy=error` while building the schedule. It catches missing
-scene assignments immediately.
+For `MiniMax H3 Scene Exact Audio Lock`, keep `empty_scene_policy=error` while building a strict complete schedule. It catches missing scene assignments immediately. Use `lock_silence` only when a scene intentionally has no target sound.
 
-Choose `lock_silence` only for a scene that intentionally has no target sound.
-If the film needs room tone, ambience, music, or effects, schedule those AUDIO
-events rather than using silence.
+For `MiniMax H3 Scene Dialogue Audio Lock`, `empty_scene_policy=generate` is normally correct. Scenes with no supplied dialogue retain H3's generated audio.
 
 ## Multi-speaker scenes
 
-Multiple lines can share a scene and can overlap. `mix_policy=sum` preserves the
-exact arithmetic mix. `prevent_clipping` applies one deterministic global scale
-only when needed. `reject_overlap` is available for strict dialogue layouts.
+Multiple lines can share a scene and can overlap. `mix_policy=sum` preserves the exact arithmetic mix. `prevent_clipping` applies one deterministic global scale only when needed. `reject_overlap` is available for strict dialogue layouts.
 
-ExactAudioLock controls the one H3 target audio stream. Put speaker ownership in
-the H3 prompt, for example by stating who speaks each line and that other visible
-characters keep their mouths closed.
+ExactAudioLock controls one H3 target-audio stream. Put speaker ownership in the H3 prompt, for example by stating who speaks each line and that other visible characters keep their mouths closed.
 
-`MiniMaxH3AddGuide` can still reinforce an utterance, but it is a conditioning
-mechanism and must be scheduled consistently with the same scene/frame. This
-milestone does not add a recursive AddGuide scheduler.
+## Native Add Guide conditioning
+
+ComfyUI's `Add Guide for MiniMax H3` (`MiniMaxH3AddGuide`) can reinforce an utterance at the same video frame. In a static standalone graph, wire Timed Audio's `start_frame` output directly to `frame_idx` so the values cannot diverge.
+
+A recursive Context Loop graph needs current-scene-aware routing before a static Add Guide can safely select one scene's event. The scene lock/finalizer does not depend on Add Guide for final soundtrack placement; its timing comes from the selected Scene Timed Audio event and manifest.
 
 ## H3 Context Loop audio policy
 
-Do not enable Context Loop's complete `lock_source_audio` target lock on the same
-sampler path when Scene Exact Audio Lock is active. Pick one owner for the target
-audio latent.
+Do not enable Context Loop's complete `lock_source_audio` target lock on the same sampler path when `MiniMax H3 Scene Exact Audio Lock` owns the target audio. Pick one owner for the complete audio target.
 
-For a Director workflow using this node pack, use the Scene Exact Audio Lock as
-the target owner and keep Context Loop's source target lock off.
+With scene dialogue-partial locking, use the scene dialogue lock before sampling and `MiniMax H3 Dialogue Audio Finalize` after H3 audio decode.
 
-## Dialogue-only lock for H3-generated soundscapes
-
-When supplied speech must remain stable but H3 should generate room tone, ambience,
-music, Foley, footsteps, impacts, explosions, and other scene audio, use `MiniMax H3
-Scene Dialogue Audio Lock` instead of `MiniMax H3 Scene Exact Audio Lock`.
-
-The scene dialogue node uses the same Scene Timed Audio events and one-based
-`current_scene` routing, but protects only dialogue intervals and configured safety
-margins. Its `dialogue_reference_audio` output is a reference stem, not the final
-soundtrack. Use H3's decoded post-sampling audio for the final scene mix.
-
-See `docs/DIALOGUE_PARTIAL_LOCK.md` for mask semantics, defaults, and continuation
-behavior.
+See `docs/DIALOGUE_PARTIAL_LOCK.md` for mask semantics, exact finalization, defaults, and continuation behavior.

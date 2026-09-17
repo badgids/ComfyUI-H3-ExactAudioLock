@@ -37,11 +37,13 @@ from comfy_api.latest import ComfyExtension, io
 from typing_extensions import override
 
 from .audio_review_gate import AudioReviewAcceptGate, register_audio_review_routes
+from .dialogue_audio_finalize import MiniMaxH3DialogueAudioFinalize
 
 WEB_DIRECTORY = "./web"
 
 VIDEO_FPS = 24
 AUDIO_LATENT_FPS = 40
+MAX_TIMED_AUDIO_INPUTS = 1000
 H3_TIMED_AUDIO = io.Custom("H3_TIMED_AUDIO")
 H3_SCENE_TIMED_AUDIO = io.Custom("H3_SCENE_TIMED_AUDIO")
 
@@ -500,21 +502,31 @@ class MiniMaxH3TimedAudio(io.ComfyNode):
                     tooltip="Optional speaker/event label used only in the mix manifest.",
                 ),
             ],
-            outputs=[H3_TIMED_AUDIO.Output(display_name="timed_audio")],
+            outputs=[
+                H3_TIMED_AUDIO.Output(display_name="timed_audio"),
+                io.Int.Output(display_name="start_frame"),
+            ],
         )
 
     @classmethod
     def execute(cls, audio, start_frame: int, gain_db: float, label: str) -> io.NodeOutput:
-        return io.NodeOutput({
+        frame = int(start_frame)
+        if frame < 0:
+            raise ValueError("Timed Audio start_frame must be non-negative.")
+        gain = float(gain_db)
+        if not math.isfinite(gain):
+            raise ValueError("Timed Audio gain_db must be finite.")
+        event = {
             "audio": audio,
-            "start_frame": int(start_frame),
-            "gain_db": float(gain_db),
+            "start_frame": frame,
+            "gain_db": gain,
             "label": str(label or ""),
-        })
+        }
+        return io.NodeOutput(event, frame)
 
 
 class MiniMaxH3ExactAudioLock(io.ComfyNode):
-    """Mix unlimited timed AUDIO events into one locked MiniMax H3 target stream."""
+    """Mix up to 1,000 timed AUDIO events into one locked MiniMax H3 target stream."""
 
     @classmethod
     def define_schema(cls) -> io.Schema:
@@ -522,8 +534,7 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
             input=H3_TIMED_AUDIO.Input("timed_audio"),
             prefix="timed_audio",
             min=0,
-            # Intentionally no max: ComfyUI keeps growing sockets as the user
-            # connects them. Practical limits are only graph/system resources.
+            max=MAX_TIMED_AUDIO_INPUTS,
         )
         return io.Schema(
             node_id="MiniMaxH3ExactAudioLock",
@@ -539,7 +550,7 @@ class MiniMaxH3ExactAudioLock(io.ComfyNode):
                 io.Autogrow.Input(
                     "timed_audios",
                     template=timed_template,
-                    tooltip="Connect as many MiniMax H3 Timed Audio nodes as needed. There is no node-level maximum.",
+                    tooltip="Connect up to 1,000 MiniMax H3 Timed Audio nodes.",
                 ),
                 io.Combo.Input(
                     "mix_policy", options=["sum", "prevent_clipping", "reject_overlap"], default="sum",
@@ -644,7 +655,10 @@ class MiniMaxH3DialogueAudioLock(io.ComfyNode):
     @classmethod
     def define_schema(cls) -> io.Schema:
         timed_template = io.Autogrow.TemplatePrefix(
-            input=H3_TIMED_AUDIO.Input("timed_audio"), prefix="timed_audio", min=0
+            input=H3_TIMED_AUDIO.Input("timed_audio"),
+            prefix="timed_audio",
+            min=0,
+            max=MAX_TIMED_AUDIO_INPUTS,
         )
         return io.Schema(
             node_id="MiniMaxH3DialogueAudioLock",
@@ -814,7 +828,10 @@ class MiniMaxH3SceneTimedAudio(io.ComfyNode):
                     tooltip="Optional speaker/event label written to the mix manifest.",
                 ),
             ],
-            outputs=[H3_SCENE_TIMED_AUDIO.Output(display_name="scene_timed_audio")],
+            outputs=[
+                H3_SCENE_TIMED_AUDIO.Output(display_name="scene_timed_audio"),
+                io.Int.Output(display_name="start_frame"),
+            ],
         )
 
     @classmethod
@@ -826,13 +843,20 @@ class MiniMaxH3SceneTimedAudio(io.ComfyNode):
         gain_db: float,
         label: str,
     ) -> io.NodeOutput:
-        return io.NodeOutput({
+        frame = int(start_frame)
+        if frame < 0:
+            raise ValueError("Scene Timed Audio start_frame must be non-negative.")
+        gain = float(gain_db)
+        if not math.isfinite(gain):
+            raise ValueError("Scene Timed Audio gain_db must be finite.")
+        event = {
             "audio": audio,
             "scene_index": _validate_scene_index(scene_index, field_name="scene_index"),
-            "start_frame": int(start_frame),
-            "gain_db": float(gain_db),
+            "start_frame": frame,
+            "gain_db": gain,
             "label": str(label or ""),
-        })
+        }
+        return io.NodeOutput(event, frame)
 
 
 class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
@@ -844,6 +868,7 @@ class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
             input=H3_SCENE_TIMED_AUDIO.Input("scene_timed_audio"),
             prefix="scene_timed_audio",
             min=0,
+            max=MAX_TIMED_AUDIO_INPUTS,
         )
         return io.Schema(
             node_id="MiniMaxH3SceneExactAudioLock",
@@ -960,7 +985,9 @@ class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
     def define_schema(cls) -> io.Schema:
         scene_template = io.Autogrow.TemplatePrefix(
             input=H3_SCENE_TIMED_AUDIO.Input("scene_timed_audio"),
-            prefix="scene_timed_audio", min=0,
+            prefix="scene_timed_audio",
+            min=0,
+            max=MAX_TIMED_AUDIO_INPUTS,
         )
         return io.Schema(
             node_id="MiniMaxH3SceneDialogueAudioLock",
@@ -1087,6 +1114,7 @@ class H3ExactAudioLockExtension(ComfyExtension):
             MiniMaxH3TimedAudio,
             MiniMaxH3ExactAudioLock,
             MiniMaxH3DialogueAudioLock,
+            MiniMaxH3DialogueAudioFinalize,
             MiniMaxH3SceneTimedAudio,
             MiniMaxH3SceneExactAudioLock,
             MiniMaxH3SceneDialogueAudioLock,

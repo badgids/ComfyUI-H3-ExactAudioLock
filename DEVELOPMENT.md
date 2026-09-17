@@ -67,8 +67,10 @@ python -m unittest discover -s tests -v
 ```
 
 The tests stub only ComfyUI's schema/extension plumbing. They exercise the actual
-audio validation, scene filtering, flattened Autogrow handling, H3 latent-shape
-checks, audio/video denoise-mask behavior, and node registration.
+audio validation, nonzero frame-to-sample placement, scene filtering, flattened
+Autogrow handling, H3 latent-shape checks, audio/video denoise-mask behavior,
+dialogue finalization, node registration, example-workflow wiring, and workflow
+layout overlap checks.
 
 Before committing a patch:
 
@@ -105,17 +107,29 @@ network access.
 
 Partial dialogue locking is a separate public behavior from the complete target-audio
 lock. The partial-lock nodes must preserve incoming video masks and any upstream
-audio constraints, must leave non-dialogue target regions generative, and must never
-label the dialogue reference stem as the final scene soundtrack.
+audio constraints and must leave non-dialogue target regions generative. Supplied dialogue timing remains
+authoritative: the post-sampling `MiniMax H3 Dialogue Audio Finalize` node restores
+the deterministic dialogue waveform at the exact manifest sample intervals while
+preserving H3-generated audio outside those intervals.
 
 For partial locking, mask semantics are `1 = denoise/generate` and `0 = protect`.
 The dialogue core and configured hard margins are zero; optional feather regions are
 fractional transitions back toward one. Fully generative regions retain the incoming
-H3 audio latent rather than being replaced by encoded silence.
+H3 audio latent rather than being replaced by encoded silence. The raw sampled H3
+audio is not the final timing authority for supplied dialogue; partial-lock workflows
+must pass sampled audio through the dialogue finalizer before final mux/assembly.
 
 Repository test/compile runs create Python bytecode caches. `.gitignore` excludes
 those generated artifacts so the working tree remains clean after the required
 verification commands.
+
+Example workflows are part of the tested public documentation. No two node bounding
+boxes may overlap or hide one another, and the graph should read left-to-right without
+manual rearrangement. Full-lock examples must mux the lock node's `exact_audio`;
+dialogue-partial examples must mux `MiniMax H3 Dialogue Audio Finalize.final_audio`.
+For standalone timed dialogue, use the Timed Audio node's `start_frame` output to
+drive native `Add Guide for MiniMax H3.frame_idx` so conditioning and lock placement
+share one frame value.
 
 ## Audio review gate milestone
 

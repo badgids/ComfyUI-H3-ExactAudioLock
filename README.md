@@ -25,13 +25,14 @@ It is designed for dialogue, multi-speaker scenes, overlapping speech, singing, 
   - [MiniMax H3 Timed Audio](#minimax-h3-timed-audio)
   - [MiniMax H3 Exact Audio Lock](#minimax-h3-exact-audio-lock)
   - [MiniMax H3 Dialogue Audio Lock](#minimax-h3-dialogue-audio-lock)
+  - [MiniMax H3 Dialogue Audio Finalize](#minimax-h3-dialogue-audio-finalize)
   - [MiniMax H3 Scene Timed Audio](#minimax-h3-scene-timed-audio)
   - [MiniMax H3 Scene Exact Audio Lock](#minimax-h3-scene-exact-audio-lock)
   - [MiniMax H3 Scene Dialogue Audio Lock](#minimax-h3-scene-dialogue-audio-lock)
 - [Audio review workflow](#audio-review-workflow)
 - [Example workflows](#example-workflows)
 - [Basic H3 usage](#basic-h3-usage)
-- [Unlimited timed audio inputs](#unlimited-timed-audio-inputs)
+- [Large timed audio input sets](#large-timed-audio-input-sets)
 - [Layering and overlapping audio](#layering-and-overlapping-audio)
 - [How timing works](#how-timing-works)
 - [Multi-speaker lip sync](#multi-speaker-lip-sync)
@@ -150,7 +151,7 @@ For full installation details, Windows portable examples, upgrades, and dependen
 - Provides an embedded Audio Review / Accept Gate for choosing one candidate and optionally saving alternate takes.
 - Accepts normal ComfyUI `AUDIO` from TTS, voice-cloning, music, audio-loader, or processing nodes.
 - Reviews WAV, MP3, FLAC, OGG/OGA, and Opus files from ComfyUI's managed input directory.
-- Accepts an effectively unlimited number of timed audio events through ComfyUI's native `Autogrow` inputs.
+- Accepts up to 1,000 timed audio events through ComfyUI's native `Autogrow` inputs.
 - Places every source on H3's 24 fps target-video timeline using deterministic integer frame-to-sample conversion.
 - Mixes multiple speakers or sound sources sample-accurately into one H3 target waveform.
 - Supports overlapping dialogue and layered audio.
@@ -159,6 +160,7 @@ For full installation details, Windows portable examples, upgrades, and dependen
 - Provides per-source gain control and optional speaker/event labels.
 - Provides deterministic overlap and overflow policies.
 - Returns diagnostic manifests for reproducibility and troubleshooting.
+- Provides `MiniMax H3 Dialogue Audio Finalize` so partial-lock dialogue is restored at the exact scheduled waveform samples after H3 generates the unsupplied soundtrack.
 - Preserves the original single-audio input as a backward-compatible path for older workflows.
 - Can be used with ComfyUI's core `MiniMaxH3AddGuide` for event-level audio reinforcement at the same target frame.
 
@@ -213,13 +215,18 @@ Wraps one normal ComfyUI `AUDIO` value with its target placement and source meta
 | `gain_db` | Gain applied before mixing. `0.0` dB preserves the source level. |
 | `label` | Optional speaker or event label written to the mix manifest. |
 
-Create one Timed Audio node for each independently placed event.
+Create one Timed Audio node for each independently placed event. The node also exposes the resolved `start_frame` as an `INT` output so the exact same value can drive ComfyUI's native `Add Guide for MiniMax H3.frame_idx` input. This prevents the conditioning frame and the lock frame from drifting apart.
+
+| Output | Purpose |
+| --- | --- |
+| `timed_audio` | ExactAudioLock event containing the AUDIO, frame, gain, and label. |
+| `start_frame` | The same validated frame as an `INT`, intended for same-frame H3 guide conditioning. |
 
 ### MiniMax H3 Exact Audio Lock
 
 **Class ID:** `MiniMaxH3ExactAudioLock`
 
-Accepts the H3 AV latent, MiniMax H3 audio VAE, and any number of `MiniMax H3 Timed Audio` inputs. It builds one exact target waveform, encodes it once, replaces H3's target audio latent, locks the entire audio stream against denoising, and leaves video denoisable.
+Accepts the H3 AV latent, MiniMax H3 audio VAE, and up to 1,000 `MiniMax H3 Timed Audio` inputs. It builds one exact target waveform, encodes it once, replaces H3's target audio latent, locks the entire audio stream against denoising, and leaves video denoisable.
 
 | Input | Purpose |
 | --- | --- |
@@ -245,15 +252,31 @@ A partial lock for non-recursive workflows. It protects supplied dialogue interv
 
 Use it when speech must remain exact but H3 should still generate room tone, ambience, music, footsteps, impacts, and other scene sound.
 
-Its `dialogue_reference_audio` output is a reference stem, not the finished soundtrack. Use the sampled H3 audio for the final mix.
+Its `dialogue_reference_audio` output is the deterministic full-length dialogue reference bus. The sampled H3 audio is **not** by itself the final authority for dialogue timing. Feed the sampled H3 audio, `dialogue_reference_audio`, and `dialogue_lock_manifest` into `MiniMax H3 Dialogue Audio Finalize`. That finalizer preserves H3-generated audio outside the supplied dialogue cores and restores the supplied voices sample-for-sample inside the scheduled dialogue intervals.
 
 See [docs/DIALOGUE_PARTIAL_LOCK.md](docs/DIALOGUE_PARTIAL_LOCK.md).
+
+### MiniMax H3 Dialogue Audio Finalize
+
+**Class ID:** `MiniMaxH3DialogueAudioFinalize`
+
+Post-sampling finalizer for dialogue-partial workflows. It takes H3's decoded generated soundtrack plus the deterministic dialogue reference and lock manifest. For each scheduled dialogue interval it replaces the corresponding generated samples with the exact supplied dialogue samples. Everything outside those dialogue intervals remains H3-generated.
+
+| Input | Purpose |
+| --- | --- |
+| `generated_audio` | Audio decoded from the sampled H3 AV latent. |
+| `dialogue_reference_audio` | Full-length deterministic dialogue bus from `MiniMax H3 Dialogue Audio Lock` or `MiniMax H3 Scene Dialogue Audio Lock`. |
+| `dialogue_lock_manifest` | Manifest from the matching dialogue lock; contains the exact sample intervals. |
+
+| Output | Purpose |
+| --- | --- |
+| `final_audio` | H3-generated soundtrack with the supplied dialogue restored at the exact scheduled samples. |
 
 ### MiniMax H3 Scene Timed Audio
 
 **Class ID:** `MiniMaxH3SceneTimedAudio`
 
-Adds a one-based `scene_index` to an approved audio event plus its scene-local start frame, gain, and label. It lets one recursive graph carry a complete schedule while only the current scene's events become active.
+Adds a one-based `scene_index` to an approved audio event plus its scene-local start frame, gain, and label. It lets one recursive graph carry a complete schedule while only the current scene's events become active. Like the non-scene Timed Audio node, it also exposes `start_frame` as an `INT` output.
 
 See [docs/SCENE_DIALOGUE.md](docs/SCENE_DIALOGUE.md).
 
@@ -306,7 +329,7 @@ Loaded audio take D -------/              |
                                                      H3 sampler
 ```
 
-For dialogue-only H3 soundscape generation, replace `MiniMax H3 Exact Audio Lock` with `MiniMax H3 Dialogue Audio Lock`.
+For dialogue-only H3 soundscape generation, replace `MiniMax H3 Exact Audio Lock` with `MiniMax H3 Dialogue Audio Lock`, then pass decoded H3 audio through `MiniMax H3 Dialogue Audio Finalize` before muxing. The supplied voice remains exact at its scheduled frame while H3 remains free to generate unsupplied audio outside the dialogue cores.
 
 For recursive/Director workflows:
 
@@ -329,7 +352,9 @@ The gate does not control another TTS/music node pack's private reroll logic. To
 
 Loadable, editable ComfyUI workflows are included under [`example_workflows/`](example_workflows/).
 
-They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `MiniMax H3 Add Guide`; Qwen3-TTS integrations; and current H3 Context Loop scene-aware full and dialogue-only locking.
+They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking and finalization; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `Add Guide for MiniMax H3`; Qwen3-TTS integrations; and current H3 Context Loop scene-aware full and dialogue-only locking.
+
+Every shipped workflow is laid out with non-overlapping node rectangles and a left-to-right dependency flow. The tests reject example workflows whose nodes overlap.
 
 The Qwen3-TTS examples use the real upstream nodes from `flybirdxx/ComfyUI-Qwen-TTS`, `vantagewithai/Vantage-Nodes`, and `DarioFT/ComfyUI-Qwen3-TTS`.
 
@@ -350,13 +375,20 @@ ComfyUI already creates the joint H3 audio/video latent. This package does **not
 For Ref2VA, use ComfyUI's native `MiniMax H3 Reference to Video` node. Its `latent` output is the joint MiniMax H3 AV latent expected by the lock nodes.
 
 ```text
-MiniMax H3 Reference to Video (Ref2VA)
-    ├── positive ───────────────────────────────► normal H3 conditioning path
-    └── latent ───────────────┐
-                              ▼
-                     MiniMax H3 Exact Audio Lock
-                              │
-                              └── locked_av_latent ─────────────► H3 sampler
+Approved AUDIO ───────────────┬────────────► MiniMax H3 Timed Audio
+                              │                     │ timed_audio
+                              │                     └───────────────┐
+                              │                                     │
+                              └────────────► Add Guide for MiniMax H3│
+Timed Audio.start_frame ───────────────────► frame_idx               │
+                                                                     ▼
+MiniMax H3 Reference to Video.latent ───────────────► MiniMax H3 Exact Audio Lock
+MiniMax H3 audio VAE ───────────────────────────────►          │
+                                                               ├── locked_av_latent ─► H3 sampler ─► video decode
+                                                               │
+                                                               └── exact_audio ───────────────┐
+                                                                                               ▼
+video decode ───────────────────────────────────────────────────────────────► Create Video / mux
 ```
 
 Then add timed audio:
@@ -369,25 +401,35 @@ Then add timed audio:
 6. Set each event's exact `start_frame`, optional `gain_db`, and label.
 7. Connect every Timed Audio output to the Autogrow `timed_audios` inputs.
 8. Select the desired `mix_policy` and `overflow_policy`.
-9. Connect `locked_av_latent` to the sampler instead of the original unlocked H3 latent.
-10. Continue the normal H3 sampling and decoding workflow.
-11. Use `exact_audio` when you need the exact mixed waveform for muxing, review, or verification.
-12. Inspect `mix_manifest` when diagnosing placement, gain, overlap, or overflow behavior.
+9. For dialogue or another event that must influence H3 at the same instant, connect the Timed Audio node's `start_frame` output to native `Add Guide for MiniMax H3.frame_idx`, and feed the same approved `AUDIO` into that guide.
+10. Connect `locked_av_latent` to the sampler instead of the original unlocked H3 latent.
+11. Decode the sampled **video** normally.
+12. For a full Exact Audio Lock, connect `exact_audio` to the final video/mux node. Do **not** replace it with `VAEDecodeAudio` from the sampler if exact waveform timing is required.
+13. Inspect `mix_manifest` when diagnosing placement, gain, overlap, or overflow behavior.
 
 ### Using `MiniMaxH3AddGuide` at the same time
 
-`MiniMax H3 Exact Audio Lock` controls the H3 target-audio latent. `MiniMaxH3AddGuide` controls event-level conditioning. They can be used together.
+ComfyUI's native display label is **`Add Guide for MiniMax H3`** (`MiniMaxH3AddGuide`). ExactAudioLock owns the target waveform/latent; Add Guide provides event-level conditioning so H3 knows that the same sound occurs at that same video frame.
+
+Use one frame value as the single source of truth:
 
 ```text
-Approved Speaker AUDIO
-        |-----------------------------> MiniMaxH3AddGuide @ exact frame
-        |
-        +-> MiniMax H3 Timed Audio ----> MiniMax H3 Exact Audio Lock
-                                             |
-                                      locked target audio
-                                             |
-                                           H3
+Approved AUDIO ────────┬────────► MiniMax H3 Timed Audio
+                       │                    │
+                       │                    ├── timed_audio ─► Exact/Dialogue Audio Lock
+                       │                    │
+                       │                    └── start_frame (INT) ──────────────┐
+                       │                                                       │
+                       └────────────────────────────► Add Guide for MiniMax H3 │
+                                                                             │
+Timed Audio.start_frame ───────────────────────────► Add Guide.frame_idx ◄────┘
+
+H3 positive conditioning ─► Add Guide.positive ─► Basic Guider
+H3 joint AV latent ────────► Add Guide.latent
+MiniMax H3 audio VAE ──────► Add Guide.audio_vae
 ```
+
+Do not type one frame into Timed Audio and a different frame into Add Guide. The shipped examples wire the Timed Audio `start_frame` output directly into `Add Guide for MiniMax H3.frame_idx`.
 
 For visible non-speaking characters, explicitly instruct H3 that their mouths remain closed during the other speaker's line.
 
@@ -397,9 +439,9 @@ If you are not using Ref2VA, connect the joint AV `LATENT` produced by the appro
 
 The lock node expects an H3 joint AV latent, not a standalone image/video latent.
 
-## Unlimited timed audio inputs
+## Large timed audio input sets
 
-`MiniMaxH3ExactAudioLock` uses ComfyUI's native `Autogrow` socket mechanism and does not impose a custom speaker or utterance limit.
+The lock nodes use ComfyUI's native `Autogrow` socket mechanism. This package explicitly raises the template maximum to **1,000 timed inputs** so it does not inherit ComfyUI's default `TemplatePrefix` maximum of 10.
 
 ```text
 Speaker 1 AUDIO -> MiniMax H3 Timed Audio --\
@@ -409,7 +451,7 @@ Speaker 4 AUDIO -> MiniMax H3 Timed Audio ----/
 ...                                         --/
 ```
 
-Practical limits are the ComfyUI graph size and available system resources.
+The explicit 1,000-input ceiling is a safety/UI bound; practical limits are usually the ComfyUI graph size and available system resources long before that value.
 
 ## Layering and overlapping audio
 
@@ -447,6 +489,8 @@ MiniMax H3 uses:
 
 Every `start_frame` is converted to a waveform sample with deterministic integer arithmetic. Each full-lock source is resampled to the H3 audio VAE's sample rate before placement.
 
+`MiniMax H3 Timed Audio` does not prepend silence to the source object itself. The lock builds the full target-length waveform and places the source at the exact converted sample. For full locks, the returned `exact_audio` is the final soundtrack authority.
+
 The target waveform length is derived from the actual H3 target audio latent. Empty regions are real waveform-domain zero samples, so silence is encoded as silence instead of being represented by arbitrary zero-valued audio-latent vectors.
 
 ```text
@@ -469,7 +513,7 @@ Timed Audio 3 ------> deterministic waveform mixer
 
 MiniMax H3 has one target-audio stream, not separate hidden audio channels for each visible speaker.
 
-For multi-speaker scenes, use one Timed Audio event per utterance and identify the active speaker in the MiniMax H3 prompt. `MiniMaxH3AddGuide` can reinforce the same event at the same target frame.
+For multi-speaker scenes, use one Timed Audio event per utterance and identify the active speaker in the MiniMax H3 prompt. Native `Add Guide for MiniMax H3` should receive the same utterance and the Timed Audio node's `start_frame` output when event-level conditioning is needed.
 
 The audio lock guarantees the supplied waveform and timing. Speaker ownership still needs to be expressed in the H3 conditioning/prompt.
 
@@ -482,6 +526,8 @@ For recursive H3 Director / Context Loop workflows:
 - `MiniMax H3 Scene Dialogue Audio Lock` protects only supplied dialogue while leaving unsupplied scene sound generative.
 
 Connect `MiniMax H3 Chain Current.clip_index` to the scene lock's `current_scene`.
+
+For `MiniMax H3 Scene Exact Audio Lock`, send its `exact_audio` output into the Context Loop segment/trim audio path. For `MiniMax H3 Scene Dialogue Audio Lock`, decode H3's sampled audio and pass it through `MiniMax H3 Dialogue Audio Finalize` together with the scene lock's `dialogue_reference_audio` and `dialogue_lock_manifest` before the segment/trim audio path.
 
 > [!IMPORTANT]
 > Do not enable H3 Context Loop's complete `lock_source_audio` / `source_audio_target=locked` target lock on the same sampler path as `MiniMax H3 Scene Exact Audio Lock`. Use one owner for the complete H3 target-audio latent.
@@ -511,7 +557,7 @@ Connected Timed Audio entries are sorted into a stable order before mixing. Plac
 
 A complete ExactAudioLock gives the H3 audio target a zero-valued denoise mask while video remains denoisable.
 
-Dialogue-only locks protect only supplied dialogue regions and configured margins while preserving generative gaps and any existing upstream protection.
+Dialogue-only locks protect only supplied dialogue regions and configured margins while preserving generative gaps and any existing upstream protection. `MiniMax H3 Dialogue Audio Finalize` then restores the deterministic supplied waveform inside the exact core sample intervals after sampling.
 
 ## Documentation
 
@@ -542,6 +588,12 @@ Do not blindly install a random TorchAudio wheel into the system Python. Confirm
 ### The node does not appear
 
 Restart ComfyUI and check the ComfyUI console for an import error from `ComfyUI-H3-ExactAudioLock`.
+
+### Timed audio still starts at frame 0 in the saved video
+
+Check the **final audio wire**, not only the Timed Audio widget. With a full lock, the video/mux node must receive `MiniMax H3 Exact Audio Lock.exact_audio` (or `MiniMax H3 Scene Exact Audio Lock.exact_audio`). `VAEDecodeAudio` from the sampled latent is not the deterministic final soundtrack authority.
+
+For dialogue-partial mode, use `MiniMax H3 Dialogue Audio Finalize` after `VAEDecodeAudio`; feed it the matching dialogue lock's reference audio and manifest. For same-frame H3 event conditioning, wire Timed Audio's `start_frame` output to `Add Guide for MiniMax H3.frame_idx`.
 
 ### A source extends past the end of the clip
 
