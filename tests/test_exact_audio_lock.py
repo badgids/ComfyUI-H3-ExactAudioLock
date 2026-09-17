@@ -140,6 +140,7 @@ class ExactAudioLockTests(unittest.TestCase):
                 "MiniMaxH3SceneTimedAudio",
                 "MiniMaxH3SceneExactAudioLock",
                 "MiniMaxH3SceneDialogueAudioLock",
+                "AudioReviewAcceptGate",
             ],
         )
 

@@ -178,3 +178,60 @@ hard-protected core.
 Complete target-audio locks remain exclusive owners of the full audio target. Partial
 dialogue locks may coexist with upstream continuation masks because they preserve and
 combine those masks rather than replacing them.
+## Audio Review / Accept Gate contract
+
+`H3ExactAudioLockAudioReviewGate` provides Context-Loop-style candidate review
+without importing H3 Context Loop or any TTS/music implementation. It consumes
+ordinary ComfyUI values and therefore works with any producer that exposes standard
+`AUDIO`.
+
+Two source modes are public:
+
+```text
+connected_audio:
+    audio + Autogrow audio_candidates -> candidate set
+
+audio_file:
+    audio_file + Autogrow audio_files -> candidate set
+```
+
+Connected `AUDIO` with waveform batch size greater than one is split into individual
+review candidates. Direct file candidates are managed ComfyUI input selections only;
+supported extensions are `.wav`, `.mp3`, `.flac`, `.ogg`, `.oga`, and `.opus`.
+
+For one pending review, the browser may navigate all candidates, select one candidate
+for acceptance, and mark zero or more other candidates as kept alternates. The public
+decision contract is:
+
+```text
+selected candidate -> accepted_audio output only
+kept candidates     -> durable alternate files only
+other candidates    -> rejected/discarded
+```
+
+The selected candidate is never concatenated with another candidate. Resolving one
+review removes that review's backend pending state and frontend candidate state, so a
+later loop/requeue review starts only with its own candidates and cannot emit prior
+accepted takes.
+
+Marked connected alternates are written as float WAV below
+`output/h3_exact_audio_lock_review/alternates/<review-token>/`. Marked direct-file
+alternates are copied there while preserving their original supported encoded format.
+The selected candidate is not duplicated as an alternate.
+
+Temporary candidate previews exist only under the gate-owned ComfyUI temp subtree.
+Preview transforms are UI-only and never replace the selected workflow `AUDIO`.
+More-than-stereo audio may be downmixed only for its disposable browser preview.
+
+`delete_rejected_audio_files` is source-aware. Connected `AUDIO` never causes an
+upstream file deletion. In `audio_file` mode, after an explicit decision and only
+when deletion is enabled, the gate may delete exact unselected/unkept managed input
+files after revalidating confinement. Selected and kept files are retained. Timeouts,
+decode failures, notification failures, and alternate-save failures do not delete
+source files. Gate-owned previews are cleaned after accept, reject, timeout, or
+failure.
+
+The frontend routes review state to the matching embedded node panel using ComfyUI's
+node `unique_id`. Review communication uses ComfyUI's same-origin server/websocket
+infrastructure. The gate performs no external network access and starts no subprocess
+or background worker thread.

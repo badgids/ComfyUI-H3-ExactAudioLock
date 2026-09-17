@@ -89,3 +89,36 @@ H3 audio latent rather than being replaced by encoded silence.
 Repository test/compile runs create Python bytecode caches. `.gitignore` excludes
 those generated artifacts so the working tree remains clean after the required
 verification commands.
+## Audio review gate milestone
+
+`H3ExactAudioLockAudioReviewGate` is an engine-agnostic human review boundary for
+normal ComfyUI `AUDIO` values and managed audio files. Candidate review is selection,
+not concatenation: exactly one accepted candidate is emitted from `accepted_audio`;
+kept alternates are saved separately and previous-loop accepts never become part of
+a later review's output.
+
+Connected candidates use native ComfyUI `AUDIO` plus Autogrow sockets and must accept
+both normalized and flattened V3 runtime forms. Batched `AUDIO` may be split into
+individual review candidates without mutating the source tensor. Direct file review
+is confined to ComfyUI's managed input directory and supports WAV, MP3, FLAC, OGG,
+OGA, and Opus. PyAV from the active ComfyUI environment performs managed-file decode.
+
+The review gate is the package's narrow filesystem/UI exception. Disposable previews
+live only under ComfyUI temp. Explicitly marked alternates live only below
+`output/h3_exact_audio_lock_review/alternates/`. Connected alternates are saved as
+float WAV; direct-file alternates preserve their original supported encoded format.
+The selected candidate is not duplicated as an alternate.
+
+`delete_rejected_audio_files` may delete only unselected/unkept managed input files
+after an explicit review decision and only after path confinement is revalidated.
+Connected `AUDIO` never causes an inferred upstream filepath deletion. Timeouts,
+decode failures, notification failures, and alternate-save failures retain source
+files and clean gate-owned previews. The gate starts no subprocess or background
+worker thread and performs no external network access; review communication is
+same-origin through ComfyUI.
+
+Tests for this milestone must cover candidate selection, alternate retention, batch
+splitting, Autogrow normalized/flattened inputs, managed-file decoding/fingerprints,
+path confinement, deletion ownership, sequential-loop isolation, timeout/failure
+cleanup, frontend node routing, and the guarantee that only the selected candidate
+leaves `accepted_audio`.

@@ -5,6 +5,11 @@
 
 Public nodes
 ============
+Audio Review / Accept Gate
+    Context-Loop-style candidate review for connected AUDIO or managed
+    WAV/MP3/FLAC/Ogg/Opus files. Select one take, optionally save alternates,
+    and pass only the selected AUDIO downstream.
+
 MiniMax H3 Timed Audio
     Wraps one ComfyUI AUDIO value with an exact target start frame and gain.
 
@@ -30,6 +35,10 @@ import torchaudio
 import comfy.nested_tensor
 from comfy_api.latest import ComfyExtension, io
 from typing_extensions import override
+
+from .audio_review_gate import AudioReviewAcceptGate, register_audio_review_routes
+
+WEB_DIRECTORY = "./web"
 
 VIDEO_FPS = 24
 AUDIO_LATENT_FPS = 40
@@ -1069,6 +1078,10 @@ class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
 
 class H3ExactAudioLockExtension(ComfyExtension):
     @override
+    async def on_load(self) -> None:
+        register_audio_review_routes()
+
+    @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
         return [
             MiniMaxH3TimedAudio,
@@ -1077,6 +1090,7 @@ class H3ExactAudioLockExtension(ComfyExtension):
             MiniMaxH3SceneTimedAudio,
             MiniMaxH3SceneExactAudioLock,
             MiniMaxH3SceneDialogueAudioLock,
+            AudioReviewAcceptGate,
         ]
 
 

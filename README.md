@@ -386,3 +386,62 @@ If you redistribute or substantially reuse the software, preserve the copyright 
 ComfyUI-H3-ExactAudioLock is released under the **MIT License**. See [LICENSE](LICENSE) for the full license text.
 
 Copyright © 2026 Alan Guice (Badgids).
+## Audio Review / Accept Gate
+
+**Class ID:** `H3ExactAudioLockAudioReviewGate`
+
+Audio Review / Accept Gate provides a Context-Loop-style human review carousel for
+generic audio. It is embedded in the node: listen to each candidate, move backward
+and forward through the current candidate set, mark any take worth retaining as an
+alternate, then choose the one candidate that should continue downstream.
+
+The gate supports two source modes:
+
+- `connected_audio` accepts normal ComfyUI `AUDIO`. The first candidate uses `audio`;
+  native Autogrow `audio_candidates` sockets add more candidates. Batched `AUDIO` is
+  split into individual takes for review. This keeps the node compatible with Qwen3
+  TTS implementations, ACE-Step, YuE/YuE2, core audio nodes, loaders, and any other
+  producer that returns standard `AUDIO`.
+- `audio_file` reviews managed ComfyUI input files. The first candidate uses
+  `audio_file`; native Autogrow `audio_files` slots add more files. Supported formats
+  are WAV, MP3, FLAC, OGG/OGA, and Opus. PyAV decodes them to standard ComfyUI
+  `AUDIO` without accepting arbitrary filesystem paths.
+
+The review actions follow one simple rule: **only the selected candidate leaves the
+`accepted_audio` output**. Candidates marked **Save this take as an alternate** are
+persisted separately and are never bundled into the output. Everything else is
+rejected. Connected alternates are saved as float WAV; direct-file alternates keep
+their original supported encoded format under:
+
+```text
+ComfyUI/output/h3_exact_audio_lock_review/alternates/<review-token>/
+```
+
+With `delete_rejected_audio_files = true`, only unselected/unkept managed file
+candidates may be deleted after an explicit decision. The gate never guesses a
+filepath from connected `AUDIO`, never deletes selected or kept files, and does not
+delete source files on timeout or infrastructure failure.
+
+Loop/requeue reviews are isolated. Resolving one iteration removes that iteration's
+pending backend state and candidate UI. The next iteration shows only its new
+candidates. Previously accepted audio is not displayed again, appended to the new
+selection, or emitted alongside the newly accepted take.
+
+Typical candidate review:
+
+```text
+Take A --\
+Take B ----\
+Take C ------> Audio Review / Accept Gate ---> accepted_audio = selected take only
+Take D ----/                       |
+                                  +---- marked alternates saved separately
+```
+
+The gate does not depend on another custom node's private requeue implementation. To
+compare several generated takes in one review, present those takes to the same gate
+invocation through the growable candidate sockets, a batched `AUDIO`, or the managed
+file candidate slots. This keeps compatibility based on normal ComfyUI contracts.
+
+See [docs/AUDIO_REVIEW_GATE.md](docs/AUDIO_REVIEW_GATE.md) for detailed candidate,
+alternate, cleanup, caching, file-ownership, ExactAudioLock, and recursive-loop
+semantics.
