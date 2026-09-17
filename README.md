@@ -29,6 +29,7 @@ It is designed for dialogue, multi-speaker scenes, overlapping speech, singing, 
   - [MiniMax H3 Scene Exact Audio Lock](#minimax-h3-scene-exact-audio-lock)
   - [MiniMax H3 Scene Dialogue Audio Lock](#minimax-h3-scene-dialogue-audio-lock)
 - [Audio review workflow](#audio-review-workflow)
+- [Example workflows](#example-workflows)
 - [Basic H3 usage](#basic-h3-usage)
 - [Unlimited timed audio inputs](#unlimited-timed-audio-inputs)
 - [Layering and overlapping audio](#layering-and-overlapping-audio)
@@ -324,6 +325,22 @@ MiniMax H3 Chain Current.clip_index
 
 The gate does not control another TTS/music node pack's private reroll logic. To review several generated takes at once, present those takes to the gate through its candidate sockets, a batched `AUDIO`, or managed file candidates.
 
+## Example workflows
+
+Loadable, editable ComfyUI workflows are included under [`example_workflows/`](example_workflows/).
+
+They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `MiniMax H3 Add Guide`; Qwen3-TTS integrations; and current H3 Context Loop scene-aware full and dialogue-only locking.
+
+The Qwen3-TTS examples use the real upstream nodes from `flybirdxx/ComfyUI-Qwen-TTS`, `vantagewithai/Vantage-Nodes`, and `DarioFT/ComfyUI-Qwen3-TTS`.
+
+The workflow JSON uses each node's real registered type and does **not** add a custom title override to the ExactAudioLock or Qwen3-TTS nodes. ComfyUI therefore shows the node's actual upstream display label, including labels such as `🎨 Qwen3-TTS VoiceDesign`, `Qwen TTS Voice Design Node`, and `Qwen3-TTS Custom Voice`.
+
+No built-in ComfyUI Qwen3-TTS example is included because the current ComfyUI core checked for these templates does not expose a core Qwen3-TTS generation node.
+
+The Context Loop examples use Ethan Felty's current 0.6 T2V Normal and Ref2V Basic topology and place the scene lock between `MiniMax H3 Chain Context.latent` and `SamplerCustomAdvanced.latent_image`, with `MiniMax H3 Chain Current.clip_index` driving `current_scene`.
+
+See [docs/EXAMPLE_WORKFLOWS.md](docs/EXAMPLE_WORKFLOWS.md) for the complete workflow matrix, required node packs, upstream revisions, model filenames, placeholder input files, and Context Loop wiring notes.
+
 ## Basic H3 usage
 
 ### Ref2VA workflow
@@ -500,6 +517,7 @@ Dialogue-only locks protect only supplied dialogue regions and configured margin
 
 - [Installation and Python dependencies](docs/INSTALLATION.md)
 - [Audio Review / Accept Gate](docs/AUDIO_REVIEW_GATE.md)
+- [Loadable example workflows](docs/EXAMPLE_WORKFLOWS.md)
 - [Scene-aware recursive dialogue](docs/SCENE_DIALOGUE.md)
 - [Dialogue-only / partial audio lock](docs/DIALOGUE_PARTIAL_LOCK.md)
 - [Protocol and compatibility contracts](PROTOCOL.md)
@@ -548,10 +566,16 @@ ComfyUI-H3-ExactAudioLock/
 ├── docs/
 │   ├── AUDIO_REVIEW_GATE.md
 │   ├── DIALOGUE_PARTIAL_LOCK.md
+│   ├── EXAMPLE_WORKFLOWS.md
 │   ├── INSTALLATION.md
 │   └── SCENE_DIALOGUE.md
+├── example_workflows/
+│   ├── context_loop/
+│   ├── qwen3_tts/
+│   └── standalone/
 ├── tests/
 │   ├── test_audio_review_gate.py
+│   ├── test_example_workflows.py
 │   └── test_exact_audio_lock.py
 ├── web/
 │   └── audio_review_gate.js

@@ -1,0 +1,2146 @@
+{
+  "id": "a2280fb4-9699-4aa5-9a36-47e802d4e2c3",
+  "revision": 0,
+  "last_node_id": 30,
+  "last_link_id": 56,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MiniMaxH3GenerationProfile",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        360,
+        150
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "lip_sync_options",
+          "type": "H3_LIP_SYNC_OPTIONS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "chain_policy",
+          "type": "H3_CHAIN_POLICY",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3GenerationProfile"
+      },
+      "widgets_values": [
+        "Visual continuity",
+        "Generate audio"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "MiniMaxH3ChainPlanModern",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        760,
+        520
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "chain_policy",
+          "type": "H3_CHAIN_POLICY",
+          "link": 1
+        },
+        {
+          "name": "plan_json_input",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "project_assets",
+          "type": "H3_PROJECT_ASSETS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plan",
+          "type": "H3_CHAIN_PLAN",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "clip_count",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "video_blend_frames",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainPlanModern"
+      },
+      "widgets_values": [
+        "{\n  \"defaults\": {\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"scene_1\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\\n\\noverall_soundscape:\\nQuiet room tone and subtle workshop ambience.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6101\"\n    },\n    {\n      \"id\": \"scene_2\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a small recording room. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\\n\\noverall_soundscape:\\nQuiet room tone and subtle workshop ambience.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6102\"\n    }\n  ]\n}",
+        "exact_audio_lock_context_loop",
+        "exact-audio-lock-example",
+        544,
+        960,
+        "video",
+        "disabled",
+        10,
+        20,
+        0,
+        20,
+        0
+      ]
+    },
+    {
+      "id": 3,
+      "type": "MiniMaxH3ChainScenePromptEditor",
+      "pos": [
+        850,
+        250
+      ],
+      "size": [
+        760,
+        520
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "plan",
+          "type": "H3_CHAIN_PLAN",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plan",
+          "type": "H3_CHAIN_PLAN",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainScenePromptEditor"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "MiniMaxH3ChainLoopStart",
+      "pos": [
+        1660,
+        250
+      ],
+      "size": [
+        360,
+        220
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "plan",
+          "type": "H3_CHAIN_PLAN",
+          "link": 3
+        },
+        {
+          "name": "source_audio",
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "external_context",
+          "type": "H3_CHAIN_EXTERNAL_CONTEXT",
+          "link": null
+        },
+        {
+          "name": "source_timeline",
+          "type": "H3_SOURCE_TIMELINE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "flow",
+          "type": "H3_CHAIN_FLOW",
+          "links": [
+            51
+          ]
+        },
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainLoopStart"
+      },
+      "widgets_values": [
+        1,
+        "",
+        true
+      ]
+    },
+    {
+      "id": 5,
+      "type": "MiniMaxH3ChainCurrent",
+      "pos": [
+        2070,
+        250
+      ],
+      "size": [
+        440,
+        400
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 4
+        },
+        {
+          "name": "source_audio",
+          "type": "AUDIO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "links": [
+            13,
+            42,
+            43,
+            48,
+            52
+          ]
+        },
+        {
+          "name": "clip_index",
+          "type": "INT",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "clip_count",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "shot_id",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "noise_seed",
+          "type": "INT",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "audio_start",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "audio_duration",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "source_audio_slice",
+          "type": "AUDIO",
+          "links": []
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "video_blend_frames",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainCurrent"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "UNETLoader",
+      "pos": [
+        40,
+        840
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "ModelAttentionBackend",
+      "pos": [
+        410,
+        840
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelAttentionBackend"
+      },
+      "widgets_values": [
+        "pytorch attention"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "MiniMaxH3SigmaShift",
+      "pos": [
+        780,
+        840
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            26,
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3SigmaShift"
+      },
+      "widgets_values": [
+        12,
+        3
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CLIPLoader",
+      "pos": [
+        40,
+        1020
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "minimax",
+        "default"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        1200
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            8,
+            15,
+            36
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "minimax_h3_video_vae_fp16.safetensors"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        1360
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            17,
+            21,
+            38
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "MiniMaxH3ImageToVideo",
+      "pos": [
+        2070,
+        720
+      ],
+      "size": [
+        460,
+        380
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 8
+        },
+        {
+          "name": "prompt",
+          "type": "STRING",
+          "link": 9,
+          "widget": {
+            "name": "prompt"
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 10,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 11,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "link": 12,
+          "widget": {
+            "name": "length"
+          }
+        },
+        {
+          "name": "first_frame",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "last_frame",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ImageToVideo"
+      },
+      "widgets_values": [
+        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        544,
+        960,
+        124
+      ]
+    },
+    {
+      "id": 13,
+      "type": "MiniMaxH3ChainContext",
+      "pos": [
+        2580,
+        720
+      ],
+      "size": [
+        420,
+        260
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 13
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 14
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 15
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 16
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 17
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "drift_sigmas",
+          "type": "SIGMAS",
+          "link": null
+        },
+        {
+          "name": "lip_sync_voice",
+          "type": "AUDIO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "trim_frames",
+          "type": "INT",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "is_continuation",
+          "type": "BOOLEAN",
+          "links": []
+        },
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainContext"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "LoadAudio",
+      "pos": [
+        850,
+        1160
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "context_scene_1.wav",
+        null,
+        null
+      ]
+    },
+    {
+      "id": 15,
+      "type": "MiniMaxH3SceneTimedAudio",
+      "pos": [
+        1210,
+        1160
+      ],
+      "size": [
+        390,
+        180
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 18
+        },
+        {
+          "name": "scene_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "scene_index"
+          }
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "start_frame"
+          }
+        },
+        {
+          "name": "gain_db",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "gain_db"
+          }
+        },
+        {
+          "name": "label",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "label"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scene_timed_audio",
+          "type": "H3_SCENE_TIMED_AUDIO",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3SceneTimedAudio"
+      },
+      "widgets_values": [
+        1,
+        0,
+        0.0,
+        "scene 1 dialogue"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "LoadAudio",
+      "pos": [
+        850,
+        1340
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "context_scene_2.wav",
+        null,
+        null
+      ]
+    },
+    {
+      "id": 17,
+      "type": "MiniMaxH3SceneTimedAudio",
+      "pos": [
+        1210,
+        1340
+      ],
+      "size": [
+        390,
+        180
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 19
+        },
+        {
+          "name": "scene_index",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "scene_index"
+          }
+        },
+        {
+          "name": "start_frame",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "start_frame"
+          }
+        },
+        {
+          "name": "gain_db",
+          "type": "FLOAT",
+          "link": null,
+          "widget": {
+            "name": "gain_db"
+          }
+        },
+        {
+          "name": "label",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "label"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scene_timed_audio",
+          "type": "H3_SCENE_TIMED_AUDIO",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3SceneTimedAudio"
+      },
+      "widgets_values": [
+        2,
+        0,
+        0.0,
+        "scene 2 dialogue"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "MiniMaxH3SceneDialogueAudioLock",
+      "pos": [
+        3060,
+        720
+      ],
+      "size": [
+        490,
+        300
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "av_latent",
+          "type": "LATENT",
+          "link": 20
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 21
+        },
+        {
+          "name": "current_scene",
+          "type": "INT",
+          "link": 22,
+          "widget": {
+            "name": "current_scene"
+          }
+        },
+        {
+          "name": "scene_timed_audios.scene_timed_audio_0",
+          "type": "H3_SCENE_TIMED_AUDIO",
+          "link": 23,
+          "label": "scene_timed_audio_0",
+          "shape": 7
+        },
+        {
+          "name": "scene_timed_audios.scene_timed_audio_1",
+          "type": "H3_SCENE_TIMED_AUDIO",
+          "link": 24,
+          "label": "scene_timed_audio_1",
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dialogue_locked_av_latent",
+          "type": "LATENT",
+          "links": [
+            34
+          ]
+        },
+        {
+          "name": "dialogue_reference_audio",
+          "type": "AUDIO",
+          "links": []
+        },
+        {
+          "name": "dialogue_lock_manifest",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3SceneDialogueAudioLock"
+      },
+      "widgets_values": [
+        1,
+        "prevent_clipping",
+        "error",
+        "generate",
+        200,
+        250,
+        100
+      ]
+    },
+    {
+      "id": 19,
+      "type": "RandomNoise",
+      "pos": [
+        2580,
+        1040
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise_seed",
+          "type": "INT",
+          "link": 25,
+          "widget": {
+            "name": "noise_seed"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        0,
+        "fixed"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "KSamplerSelect",
+      "pos": [
+        2580,
+        1200
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "res_multistep"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "BasicScheduler",
+      "pos": [
+        2580,
+        1360
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 26
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "link": 27,
+          "widget": {
+            "name": "steps"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicScheduler"
+      },
+      "widgets_values": [
+        "simple",
+        20,
+        1
+      ]
+    },
+    {
+      "id": 22,
+      "type": "BasicGuider",
+      "pos": [
+        3060,
+        1060
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 28
+        },
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicGuider"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        3600,
+        720
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 30
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 31
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 32
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 33
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            35,
+            37,
+            45,
+            54
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "VAEDecode",
+      "pos": [
+        4020,
+        720
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 35
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "VAEDecodeAudio",
+      "pos": [
+        4020,
+        880
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 37
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeAudio"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "MiniMaxH3LoopTrim",
+      "pos": [
+        4440,
+        720
+      ],
+      "size": [
+        420,
+        250
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 39
+        },
+        {
+          "name": "trim_frames",
+          "type": "INT",
+          "link": 40,
+          "widget": {
+            "name": "trim_frames"
+          }
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 41
+        },
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            44,
+            53
+          ]
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            46,
+            50
+          ]
+        },
+        {
+          "name": "images_with_overlap",
+          "type": "IMAGE",
+          "links": [
+            47
+          ]
+        },
+        {
+          "name": "overlap_frames",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3LoopTrim"
+      },
+      "widgets_values": [
+        0,
+        24,
+        true,
+        0
+      ]
+    },
+    {
+      "id": 27,
+      "type": "MiniMaxH3ChainSegmentSave",
+      "pos": [
+        4910,
+        720
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 43
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 44
+        },
+        {
+          "name": "sampled_latent",
+          "type": "LATENT",
+          "link": 45
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 46
+        },
+        {
+          "name": "images_with_overlap",
+          "type": "IMAGE",
+          "link": 47
+        },
+        {
+          "name": "denoised_latent",
+          "type": "LATENT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "segment",
+          "type": "H3_CHAIN_SEGMENT",
+          "links": [
+            49
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainSegmentSave"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "MiniMaxH3ChainReview",
+      "pos": [
+        5400,
+        720
+      ],
+      "size": [
+        620,
+        500
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 48
+        },
+        {
+          "name": "segment",
+          "type": "H3_CHAIN_SEGMENT",
+          "link": 49
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 50
+        },
+        {
+          "name": "source_audio",
+          "type": "AUDIO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "segment",
+          "type": "H3_CHAIN_SEGMENT",
+          "links": [
+            55
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainReview"
+      },
+      "widgets_values": [
+        true,
+        false,
+        0,
+        false,
+        true,
+        "checkpointed",
+        1,
+        false
+      ]
+    },
+    {
+      "id": 29,
+      "type": "MiniMaxH3ChainLoopEnd",
+      "pos": [
+        6060,
+        720
+      ],
+      "size": [
+        420,
+        230
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "flow",
+          "type": "H3_CHAIN_FLOW",
+          "link": 51
+        },
+        {
+          "name": "state",
+          "type": "H3_CHAIN_STATE",
+          "link": 52
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 53
+        },
+        {
+          "name": "sampled_latent",
+          "type": "LATENT",
+          "link": 54
+        },
+        {
+          "name": "segment",
+          "type": "H3_CHAIN_SEGMENT",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "manifest",
+          "type": "H3_CHAIN_MANIFEST",
+          "links": [
+            56
+          ]
+        },
+        {
+          "name": "manifest_json",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "last_context_frames",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "last_context_latent",
+          "type": "LATENT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainLoopEnd"
+      },
+      "widgets_values": [
+        "off"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "MiniMaxH3ChainAssemble",
+      "pos": [
+        6520,
+        720
+      ],
+      "size": [
+        440,
+        330
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "manifest",
+          "type": "H3_CHAIN_MANIFEST",
+          "link": 56
+        },
+        {
+          "name": "source_audio",
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "source_timeline",
+          "type": "H3_SOURCE_TIMELINE",
+          "link": null
+        },
+        {
+          "name": "blend_video_vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "video_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MiniMaxH3ChainAssemble"
+      },
+      "widgets_values": [
+        "plan",
+        "exact_audio_lock_context_%date:yyyy-MM-dd%",
+        256,
+        false,
+        "",
+        "plan",
+        "off",
+        "off",
+        false
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "H3_CHAIN_POLICY"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "H3_CHAIN_PLAN"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "H3_CHAIN_PLAN"
+    ],
+    [
+      4,
+      4,
+      1,
+      5,
+      0,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      5,
+      6,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      0,
+      "MODEL"
+    ],
+    [
+      7,
+      9,
+      0,
+      12,
+      0,
+      "CLIP"
+    ],
+    [
+      8,
+      10,
+      0,
+      12,
+      1,
+      "VAE"
+    ],
+    [
+      9,
+      5,
+      4,
+      12,
+      2,
+      "STRING"
+    ],
+    [
+      10,
+      5,
+      8,
+      12,
+      3,
+      "INT"
+    ],
+    [
+      11,
+      5,
+      9,
+      12,
+      4,
+      "INT"
+    ],
+    [
+      12,
+      5,
+      6,
+      12,
+      5,
+      "INT"
+    ],
+    [
+      13,
+      5,
+      0,
+      13,
+      0,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      14,
+      12,
+      0,
+      13,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      15,
+      10,
+      0,
+      13,
+      2,
+      "VAE"
+    ],
+    [
+      16,
+      12,
+      1,
+      13,
+      3,
+      "LATENT"
+    ],
+    [
+      17,
+      11,
+      0,
+      13,
+      4,
+      "VAE"
+    ],
+    [
+      18,
+      14,
+      0,
+      15,
+      0,
+      "AUDIO"
+    ],
+    [
+      19,
+      16,
+      0,
+      17,
+      0,
+      "AUDIO"
+    ],
+    [
+      20,
+      13,
+      3,
+      18,
+      0,
+      "LATENT"
+    ],
+    [
+      21,
+      11,
+      0,
+      18,
+      1,
+      "VAE"
+    ],
+    [
+      22,
+      5,
+      1,
+      18,
+      2,
+      "INT"
+    ],
+    [
+      23,
+      15,
+      0,
+      18,
+      3,
+      "H3_SCENE_TIMED_AUDIO"
+    ],
+    [
+      24,
+      17,
+      0,
+      18,
+      4,
+      "H3_SCENE_TIMED_AUDIO"
+    ],
+    [
+      25,
+      5,
+      5,
+      19,
+      0,
+      "INT"
+    ],
+    [
+      26,
+      8,
+      0,
+      21,
+      0,
+      "MODEL"
+    ],
+    [
+      27,
+      5,
+      7,
+      21,
+      1,
+      "INT"
+    ],
+    [
+      28,
+      8,
+      0,
+      22,
+      0,
+      "MODEL"
+    ],
+    [
+      29,
+      13,
+      0,
+      22,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      30,
+      19,
+      0,
+      23,
+      0,
+      "NOISE"
+    ],
+    [
+      31,
+      22,
+      0,
+      23,
+      1,
+      "GUIDER"
+    ],
+    [
+      32,
+      20,
+      0,
+      23,
+      2,
+      "SAMPLER"
+    ],
+    [
+      33,
+      21,
+      0,
+      23,
+      3,
+      "SIGMAS"
+    ],
+    [
+      34,
+      18,
+      0,
+      23,
+      4,
+      "LATENT"
+    ],
+    [
+      35,
+      23,
+      0,
+      24,
+      0,
+      "LATENT"
+    ],
+    [
+      36,
+      10,
+      0,
+      24,
+      1,
+      "VAE"
+    ],
+    [
+      37,
+      23,
+      0,
+      25,
+      0,
+      "LATENT"
+    ],
+    [
+      38,
+      11,
+      0,
+      25,
+      1,
+      "VAE"
+    ],
+    [
+      39,
+      24,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      40,
+      13,
+      1,
+      26,
+      1,
+      "INT"
+    ],
+    [
+      41,
+      25,
+      0,
+      26,
+      2,
+      "AUDIO"
+    ],
+    [
+      42,
+      5,
+      0,
+      26,
+      3,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      43,
+      5,
+      0,
+      27,
+      0,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      44,
+      26,
+      0,
+      27,
+      1,
+      "IMAGE"
+    ],
+    [
+      45,
+      23,
+      0,
+      27,
+      2,
+      "LATENT"
+    ],
+    [
+      46,
+      26,
+      1,
+      27,
+      3,
+      "AUDIO"
+    ],
+    [
+      47,
+      26,
+      2,
+      27,
+      4,
+      "IMAGE"
+    ],
+    [
+      48,
+      5,
+      0,
+      28,
+      0,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      49,
+      27,
+      0,
+      28,
+      1,
+      "H3_CHAIN_SEGMENT"
+    ],
+    [
+      50,
+      26,
+      1,
+      28,
+      2,
+      "AUDIO"
+    ],
+    [
+      51,
+      4,
+      0,
+      29,
+      0,
+      "H3_CHAIN_FLOW"
+    ],
+    [
+      52,
+      5,
+      0,
+      29,
+      1,
+      "H3_CHAIN_STATE"
+    ],
+    [
+      53,
+      26,
+      0,
+      29,
+      2,
+      "IMAGE"
+    ],
+    [
+      54,
+      23,
+      0,
+      29,
+      3,
+      "LATENT"
+    ],
+    [
+      55,
+      28,
+      0,
+      29,
+      4,
+      "H3_CHAIN_SEGMENT"
+    ],
+    [
+      56,
+      29,
+      0,
+      30,
+      0,
+      "H3_CHAIN_MANIFEST"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "workflowRendererVersion": "LG"
+  },
+  "version": 0.4
+}
