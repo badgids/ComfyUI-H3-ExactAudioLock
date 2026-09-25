@@ -402,12 +402,13 @@ The gate does not control another TTS/music node pack's private reroll logic. To
 
 Loadable, editable ComfyUI workflows are included under [`example_workflows/`](example_workflows/).
 
-They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking and finalization; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `Add Guide for MiniMax H3`; Qwen3-TTS integrations; and current H3 Context Loop scene-aware full and dialogue-only locking.
+**Every shipped workflow is a complete video-and-audio generation graph, not a component fragment.** Each example includes the required MiniMax H3 model loader, text encoder, video VAE, audio VAE, latent builder, sampler path, audio finalization/mux path, and final video output/assembly node for that topology.
+
 They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking and finalization; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `Add Guide for MiniMax H3`; Qwen3-TTS integrations; current H3 Context Loop scene-aware full and dialogue-only locking; and the production-wide Dialogue Timeline / Approval Board / Current Scene Dialogue path.
 
-The Context Loop examples `04_dialogue_timeline_review_board.json` and `05_context_loop_current_scene_dialogue.json` demonstrate batch dialogue preflight and one-based current-scene filtering without a forest of per-line review gates.
+The Context Loop examples `04_dialogue_timeline_review_board.json` and `05_context_loop_current_scene_dialogue.json` are complete H3 render workflows. They compile and review the production-wide dialogue set, route only the current scene's approved events, run the H3 sampler, produce final audio, save/review recursive segments, and assemble the final video.
 
-Every shipped workflow is laid out with non-overlapping node rectangles and a left-to-right dependency flow. The tests reject example workflows whose nodes overlap.
+Every shipped workflow is laid out with non-overlapping node rectangles and a left-to-right dependency flow. The tests reject example workflows whose nodes overlap or omit the required end-to-end generation/output path.
 
 The Qwen3-TTS examples use the real upstream nodes from `flybirdxx/ComfyUI-Qwen-TTS`, `vantagewithai/Vantage-Nodes`, and `DarioFT/ComfyUI-Qwen3-TTS`.
 

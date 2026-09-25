@@ -2,12 +2,14 @@
 
 The `example_workflows/` directory contains loadable, editable ComfyUI workflow JSON files for the supported ExactAudioLock integration patterns.
 
-Every shipped example is required to satisfy two layout rules:
+Every shipped example is required to be a **complete executable video-and-audio generation workflow** and satisfy two layout rules:
 
 1. no node rectangle may overlap another node rectangle; and
 2. the graph must remain readable left-to-right without moving nodes to reveal hidden nodes.
 
-`tests/test_example_workflows.py` enforces node/link integrity, exact-audio output routing, dialogue finalizer routing, native Add Guide timing wiring, and node-layout overlap checks.
+A complete example must include its MiniMax H3 model loader, text encoder, video VAE, audio VAE, H3 latent builder, sampler path, final audio path, and a final video output (`SaveVideo` for standalone workflows or `MiniMax H3 Chain Assemble` for Context Loop).
+
+`tests/test_example_workflows.py` enforces node/link integrity, end-to-end generation/output coverage, exact-audio output routing, dialogue finalizer routing, native Add Guide timing wiring, and node-layout overlap checks.
 
 ExactAudioLock timed-audio Autogrow templates explicitly allow up to 100 inputs, ComfyUI's native hard limit; this avoids the default `TemplatePrefix` maximum of 10.
 
@@ -131,6 +133,8 @@ No built-in Qwen3-TTS generation workflow is included because current ComfyUI co
 | `context_loop/01_t2v_normal_scene_exact_audio_lock.json` | Current 0.6 T2V Normal topology + Scene Exact Audio Lock + scene `exact_audio` into Loop Trim |
 | `context_loop/02_t2v_normal_scene_dialogue_audio_lock.json` | Current 0.6 T2V Normal topology + Scene Dialogue Audio Lock + post-sampling Dialogue Audio Finalize into Loop Trim |
 | `context_loop/03_ref2v_basic_scene_exact_audio_lock.json` | Current 0.6 Ref2V Basic-style topology + native reference conditioning + scene exact lock + scene `exact_audio` into Loop Trim |
+| `context_loop/04_dialogue_timeline_review_board.json` | Complete T2V Normal render + Dialogue Timeline + one production-wide Approval Board + current-scene routing + Scene Dialogue Audio Lock + Dialogue Audio Finalize + final Context Loop assembly |
+| `context_loop/05_context_loop_current_scene_dialogue.json` | Complete T2V Normal render + Dialogue Timeline + Approval Board + current-scene routing + Scene Exact Audio Lock + scene `exact_audio` + final Context Loop assembly |
 
 The scene lock remains between Context Loop's post-context latent and the sampler:
 
@@ -174,23 +178,37 @@ The examples use the current official MiniMax H3 local model filenames already u
 If your installation uses another supported quantization or filename, choose that model in the corresponding loader after opening the workflow.
 ## Batch dialogue / Context Loop examples
 
-Two additional component workflows demonstrate the production-wide dialogue path:
+The two batch-dialogue examples are complete Context Loop generation workflows. They are not routing fragments.
 
-- `context_loop/04_dialogue_timeline_review_board.json`
-  - Context Loop Plan (Modern) with `<d>...</d>` dialogue;
-  - three example `LoadAudio` inputs;
-  - `MiniMax H3 Dialogue Timeline`;
-  - one `Dialogue Review / Approval Board` that reviews all required lines.
+`context_loop/04_dialogue_timeline_review_board.json` uses the dialogue-partial production path:
 
-- `context_loop/05_context_loop_current_scene_dialogue.json`
-  - the same production-wide preflight;
-  - `MiniMax H3 Chain Loop Start` and `MiniMax H3 Chain Current`;
-  - `Chain Current.clip_index -> MiniMax H3 Current Scene Dialogue.current_scene`;
-  - the approved production set filtered to one current-scene event set.
+```text
+Plan + three dialogue AUDIO inputs
+  -> Dialogue Timeline
+  -> Dialogue Review / Approval Board
+  -> Current Scene Dialogue <- Chain Current.clip_index
+  -> Scene Dialogue Audio Lock
+  -> H3 sampler
+  -> VAEDecode + VAEDecodeAudio
+  -> Dialogue Audio Finalize
+  -> Loop Trim / Segment Save / Chain Review / Loop End
+  -> Chain Assemble
+```
 
-The second example is intentionally the routing component that is inserted ahead
-of a normal Context Loop scene lock. Connect
-`current_scene_dialogue_set -> MiniMax H3 Scene Dialogue Audio Lock.dialogue_event_set`
-or the equivalent Scene Exact Audio Lock input in the sampling workflow.
+`context_loop/05_context_loop_current_scene_dialogue.json` uses the full exact-audio production path:
 
-See `DIALOGUE_REVIEW_BOARD.md` for the complete production path.
+```text
+Plan + three dialogue AUDIO inputs
+  -> Dialogue Timeline
+  -> Dialogue Review / Approval Board
+  -> Current Scene Dialogue <- Chain Current.clip_index
+  -> Scene Exact Audio Lock
+  -> H3 sampler -> VAEDecode
+  -> exact_audio -> Loop Trim
+  -> Segment Save / Chain Review / Loop End
+  -> Chain Assemble
+```
+
+Both workflows include `UNETLoader`, `CLIPLoader`, the MiniMax H3 video and audio `VAELoader` nodes, `MiniMaxH3ImageToVideo`, the complete sampler stack, recursive Context Loop save/review/assembly nodes, and final audio routing. Put the three placeholder dialogue files in `ComfyUI/input` or choose your own files after loading the workflow.
+
+See `DIALOGUE_REVIEW_BOARD.md` for the dialogue event/timing contract.
