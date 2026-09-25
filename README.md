@@ -22,6 +22,9 @@ It is designed for dialogue, multi-speaker scenes, overlapping speech, singing, 
 - [Features](#features)
 - [Nodes](#nodes)
   - [Audio Review / Accept Gate](#audio-review--accept-gate)
+  - [MiniMax H3 Dialogue Timeline](#minimax-h3-dialogue-timeline)
+  - [Dialogue Review / Approval Board](#dialogue-review--approval-board)
+  - [MiniMax H3 Current Scene Dialogue](#minimax-h3-current-scene-dialogue)
   - [MiniMax H3 Timed Audio](#minimax-h3-timed-audio)
   - [MiniMax H3 Exact Audio Lock](#minimax-h3-exact-audio-lock)
   - [MiniMax H3 Dialogue Audio Lock](#minimax-h3-dialogue-audio-lock)
@@ -300,6 +303,53 @@ For normal film production, `empty_scene_policy=generate` allows scenes without 
 
 See [docs/DIALOGUE_PARTIAL_LOCK.md](docs/DIALOGUE_PARTIAL_LOCK.md) and [docs/SCENE_DIALOGUE.md](docs/SCENE_DIALOGUE.md).
 
+### MiniMax H3 Dialogue Timeline
+
+**Class ID:** `MiniMaxH3DialogueTimeline`
+
+Compiles a Context-Loop `H3_CHAIN_PLAN` plus one AUDIO per `<d>...</d>` prompt
+line into one production-wide `H3_DIALOGUE_EVENT_SET`. It uses Context Loop's
+scene identity and raw/delivered frame counts, maps AUDIO in prompt order, and
+creates an initial deterministic scene-local layout from real clip durations.
+
+For continuation scenes, the repeated head-context length is included
+automatically so an initial line does not accidentally begin in frames that
+Loop Trim will later remove.
+
+### Dialogue Review / Approval Board
+
+**Class ID:** `H3ExactAudioLockDialogueReviewBoard`
+
+Reviews many required dialogue events in one browser panel. Unlike Audio Review /
+Accept Gate, it does not choose one event and discard the rest. Every event must
+be approved. The exact raw scene-local `start_frame` can be edited before commit.
+The board is an execution barrier: downstream H3 generation cannot use its
+`approved_dialogue_set` until the user commits the complete review.
+
+### MiniMax H3 Current Scene Dialogue
+
+**Class ID:** `MiniMaxH3CurrentSceneDialogue`
+
+Filters the approved production-wide set by Context Loop's one-based
+`MiniMax H3 Chain Current.clip_index`. Only the current shot's dialogue events
+continue to the scene lock. Connect its `current_scene_dialogue_set` to the new
+`dialogue_event_set` input on `MiniMax H3 Scene Dialogue Audio Lock` or
+`MiniMax H3 Scene Exact Audio Lock`.
+
+```text
+Context Loop Plan + all dialogue AUDIO
+        -> Dialogue Timeline
+        -> Dialogue Review / Approval Board
+        -> approved_dialogue_set
+        -> Current Scene Dialogue <- Chain Current.clip_index
+        -> current_scene_dialogue_set
+        -> Scene Dialogue/Exact Audio Lock
+        -> H3 sampler
+```
+
+See [docs/DIALOGUE_REVIEW_BOARD.md](docs/DIALOGUE_REVIEW_BOARD.md) for the
+complete event contract, timing rules, review behavior, and Context Loop wiring.
+
 ## Audio review workflow
 
 The review gate belongs **before** the Timed Audio / ExactAudioLock stage. Generate or load multiple candidate takes, approve exactly one, and then schedule that approved `AUDIO` on the H3 timeline.
@@ -353,6 +403,9 @@ The gate does not control another TTS/music node pack's private reroll logic. To
 Loadable, editable ComfyUI workflows are included under [`example_workflows/`](example_workflows/).
 
 They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking and finalization; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `Add Guide for MiniMax H3`; Qwen3-TTS integrations; and current H3 Context Loop scene-aware full and dialogue-only locking.
+They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, and Ref2V paths; full Exact Audio Lock; dialogue-only partial locking and finalization; multi-track timing; connected and managed-file review; the legacy single-AUDIO input; native `Add Guide for MiniMax H3`; Qwen3-TTS integrations; current H3 Context Loop scene-aware full and dialogue-only locking; and the production-wide Dialogue Timeline / Approval Board / Current Scene Dialogue path.
+
+The Context Loop examples `04_dialogue_timeline_review_board.json` and `05_context_loop_current_scene_dialogue.json` demonstrate batch dialogue preflight and one-based current-scene filtering without a forest of per-line review gates.
 
 Every shipped workflow is laid out with non-overlapping node rectangles and a left-to-right dependency flow. The tests reject example workflows whose nodes overlap.
 
@@ -563,6 +616,7 @@ Dialogue-only locks protect only supplied dialogue regions and configured margin
 
 - [Installation and Python dependencies](docs/INSTALLATION.md)
 - [Audio Review / Accept Gate](docs/AUDIO_REVIEW_GATE.md)
+- [Dialogue Timeline and Approval Board](docs/DIALOGUE_REVIEW_BOARD.md)
 - [Loadable example workflows](docs/EXAMPLE_WORKFLOWS.md)
 - [Scene-aware recursive dialogue](docs/SCENE_DIALOGUE.md)
 - [Dialogue-only / partial audio lock](docs/DIALOGUE_PARTIAL_LOCK.md)
@@ -617,6 +671,7 @@ The locked waveform tells H3 what audio exists and when, but the single target a
 ComfyUI-H3-ExactAudioLock/
 ├── docs/
 │   ├── AUDIO_REVIEW_GATE.md
+│   ├── DIALOGUE_REVIEW_BOARD.md
 │   ├── DIALOGUE_PARTIAL_LOCK.md
 │   ├── EXAMPLE_WORKFLOWS.md
 │   ├── INSTALLATION.md
@@ -631,6 +686,8 @@ ComfyUI-H3-ExactAudioLock/
 │   └── test_exact_audio_lock.py
 ├── web/
 │   └── audio_review_gate.js
+│   ├── audio_review_gate.js
+│   └── dialogue_review_board.js
 ├── .gitignore
 ├── DEVELOPMENT.md
 ├── LICENSE
@@ -638,6 +695,7 @@ ComfyUI-H3-ExactAudioLock/
 ├── README.md
 ├── __init__.py              # ExactAudioLock nodes and ComfyUI extension entrypoint
 ├── audio_review_gate.py     # Audio Review / Accept Gate backend
+├── dialogue_review_board.py # Batch dialogue timeline/review backend
 └── requirements.txt
 ```
 

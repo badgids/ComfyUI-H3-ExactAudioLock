@@ -7,6 +7,9 @@ WF_ROOT = ROOT / "example_workflows"
 
 NO_TITLE_TYPES = {
     "H3ExactAudioLockAudioReviewGate",
+    "H3ExactAudioLockDialogueReviewBoard",
+    "MiniMaxH3DialogueTimeline",
+    "MiniMaxH3CurrentSceneDialogue",
     "MiniMaxH3TimedAudio",
     "MiniMaxH3ExactAudioLock",
     "MiniMaxH3DialogueAudioLock",
@@ -24,6 +27,9 @@ NO_TITLE_TYPES = {
 
 REQUIRED_TYPES = {
     "H3ExactAudioLockAudioReviewGate",
+    "H3ExactAudioLockDialogueReviewBoard",
+    "MiniMaxH3DialogueTimeline",
+    "MiniMaxH3CurrentSceneDialogue",
     "MiniMaxH3TimedAudio",
     "MiniMaxH3ExactAudioLock",
     "MiniMaxH3DialogueAudioLock",

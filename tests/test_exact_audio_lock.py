@@ -77,6 +77,10 @@ class _ComfyExtension:
     pass
 
 
+class _Hidden:
+    unique_id = object()
+
+
 def _load_module():
     comfy = types.ModuleType("comfy")
     nested = types.ModuleType("comfy.nested_tensor")
@@ -100,6 +104,7 @@ def _load_module():
         Latent=_SocketType,
         Vae=_SocketType,
         Combo=_SocketType,
+        Hidden=_Hidden,
     )
     latest.ComfyExtension = _ComfyExtension
     latest.io = io
@@ -140,6 +145,9 @@ class ExactAudioLockTests(unittest.TestCase):
                 "MiniMaxH3ExactAudioLock",
                 "MiniMaxH3DialogueAudioLock",
                 "MiniMaxH3DialogueAudioFinalize",
+                "MiniMaxH3DialogueTimeline",
+                "DialogueReviewApprovalBoard",
+                "MiniMaxH3CurrentSceneDialogue",
                 "MiniMaxH3SceneTimedAudio",
                 "MiniMaxH3SceneExactAudioLock",
                 "MiniMaxH3SceneDialogueAudioLock",
@@ -156,6 +164,64 @@ class ExactAudioLockTests(unittest.TestCase):
             mod.MiniMaxH3SceneDialogueAudioLock,
         ):
             node.define_schema()
+
+    def test_dialogue_timeline_compiles_context_loop_plan_in_prompt_order(self):
+        def audio(samples):
+            return {
+                "waveform": torch.zeros((1, 1, samples), dtype=torch.float32),
+                "sample_rate": 32000,
+            }
+
+        plan = {
+            "plan_hash": "plan-v1",
+            "shots": [
+                {
+                    "index": 1,
+                    "id": "scene_1",
+                    "scene_prompt": (
+                        "Kendra: <d>Hello there.</d>\n"
+                        "Jinx: <d>Hi.</d>"
+                    ),
+                    "prompt_hash": "p1",
+                    "raw_frames": 124,
+                    "delivered_frames": 124,
+                },
+                {
+                    "index": 2,
+                    "id": "scene_2",
+                    "scene_prompt": "<d>Kendra: Not an answer.</d>",
+                    "prompt_hash": "p2",
+                    "raw_frames": 124,
+                    "delivered_frames": 102,
+                },
+            ],
+        }
+        audios = {
+            "audio_0": audio(800),
+            "audio_1": audio(1600),
+            "audio_2": audio(800),
+        }
+        output = mod.MiniMaxH3DialogueTimeline.execute(
+            plan, audios, initial_lead_frames=12, gap_frames=8, gain_db=0.0
+        )
+        event_set, count, _summary = output.values
+        self.assertEqual(count, 3)
+        self.assertEqual(
+            [event["speaker"] for event in event_set["events"]],
+            ["Kendra", "Jinx", "Kendra"],
+        )
+        self.assertEqual(
+            [event["start_frame"] for event in event_set["events"]],
+            [12, 21, 34],
+        )
+        self.assertEqual(event_set["events"][2]["context_frames"], 22)
+
+        for event in event_set["events"]:
+            event["approved"] = True
+        selected = mod.MiniMaxH3CurrentSceneDialogue.execute(event_set, 2)
+        scene_set, scene_count, _ = selected.values
+        self.assertEqual(scene_count, 1)
+        self.assertEqual(scene_set["events"][0]["event_id"], "scene_002_line_001")
 
     def test_scene_timed_audio_requires_one_based_scene(self):
         audio = {"waveform": torch.zeros((1, 1, 8)), "sample_rate": 32000}

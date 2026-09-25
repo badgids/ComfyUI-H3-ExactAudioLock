@@ -10,6 +10,18 @@ Audio Review / Accept Gate
     WAV/MP3/FLAC/Ogg/Opus files. Select one take, optionally save alternates,
     and pass only the selected AUDIO downstream.
 
+MiniMax H3 Dialogue Timeline
+    Compiles Context-Loop <d> dialogue and matching AUDIO into one production
+    event set with deterministic initial scene-local timing.
+
+Dialogue Review / Approval Board
+    Reviews every required event in one UI session, permits exact start-frame
+    edits, and releases the complete set only after all events are approved.
+
+MiniMax H3 Current Scene Dialogue
+    Filters the approved production event set by Context-Loop clip_index so only
+    the current scene's dialogue reaches the H3 scene lock.
+
 MiniMax H3 Timed Audio
     Wraps one ComfyUI AUDIO value with an exact target start frame and gain.
 
@@ -38,6 +50,12 @@ from typing_extensions import override
 
 from .audio_review_gate import AudioReviewAcceptGate, register_audio_review_routes
 from .dialogue_audio_finalize import MiniMaxH3DialogueAudioFinalize
+from .dialogue_review_board import (
+    DialogueReviewApprovalBoard,
+    MiniMaxH3CurrentSceneDialogue,
+    MiniMaxH3DialogueTimeline,
+    register_dialogue_review_routes,
+)
 
 WEB_DIRECTORY = "./web"
 
@@ -46,6 +64,7 @@ AUDIO_LATENT_FPS = 40
 MAX_TIMED_AUDIO_INPUTS = 100
 H3_TIMED_AUDIO = io.Custom("H3_TIMED_AUDIO")
 H3_SCENE_TIMED_AUDIO = io.Custom("H3_SCENE_TIMED_AUDIO")
+H3_DIALOGUE_EVENT_SET = io.Custom("H3_DIALOGUE_EVENT_SET")
 
 
 def _frame_to_sample(frame_idx: int, sample_rate: int) -> int:
@@ -796,6 +815,54 @@ def _validate_scene_index(value: Any, *, field_name: str) -> int:
     return scene_index
 
 
+def _dialogue_event_rows(
+    dialogue_event_set: Any,
+    *,
+    current_scene: int,
+) -> list[dict[str, Any]]:
+    """Return approved event-set rows for one Context-Loop scene."""
+    if dialogue_event_set is None:
+        return []
+    if not isinstance(dialogue_event_set, dict) or dialogue_event_set.get("version") != 1:
+        raise ValueError("dialogue_event_set is missing or has an unsupported version.")
+    events = dialogue_event_set.get("events")
+    if not isinstance(events, list):
+        raise ValueError("dialogue_event_set does not contain an events list.")
+
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for index, event in enumerate(events, 1):
+        if not isinstance(event, dict):
+            raise ValueError(f"dialogue_event_set event {index} is not an object.")
+        event_id = str(event.get("event_id") or "")
+        if not event_id or event_id in seen:
+            raise ValueError("dialogue_event_set event IDs must be non-empty and unique.")
+        seen.add(event_id)
+        if not bool(event.get("approved")):
+            raise ValueError(
+                f"dialogue_event_set event {event_id!r} has not been approved."
+            )
+        event_scene = _validate_scene_index(
+            event.get("scene_index"), field_name=f"{event_id}.scene_index"
+        )
+        if event_scene != current_scene:
+            continue
+        if "audio" not in event:
+            raise ValueError(f"dialogue_event_set event {event_id!r} has no AUDIO.")
+        start_frame = int(event.get("start_frame", -1))
+        if start_frame < 0:
+            raise ValueError(
+                f"dialogue_event_set event {event_id!r} has an invalid start_frame."
+            )
+        selected.append({
+            "audio": event["audio"],
+            "start_frame": start_frame,
+            "gain_db": float(event.get("gain_db", 0.0)),
+            "label": str(event.get("label") or event_id),
+        })
+    return selected
+
+
 class MiniMaxH3SceneTimedAudio(io.ComfyNode):
     """One audio event assigned to one recursive H3 scene."""
 
@@ -896,6 +963,13 @@ class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
                         "current scene is mixed during this recursive iteration."
                     ),
                 ),
+                H3_DIALOGUE_EVENT_SET.Input(
+                    "dialogue_event_set",
+                    optional=True,
+                    tooltip=(
+                        "Optional approved Dialogue Review event set. Only current_scene is used."
+                    ),
+                ),
                 io.Combo.Input(
                     "mix_policy",
                     options=["sum", "prevent_clipping", "reject_overlap"],
@@ -928,6 +1002,7 @@ class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
         audio_vae,
         current_scene: int,
         scene_timed_audios: io.Autogrow.Type | None = None,
+        dialogue_event_set=None,
         mix_policy: str = "sum",
         overflow_policy: str = "error",
         empty_scene_policy: str = "error",
@@ -961,6 +1036,11 @@ class MiniMaxH3SceneExactAudioLock(io.ComfyNode):
             row = dict(value)
             row.pop("scene_index", None)
             row.setdefault("label", socket_name)
+            selected[f"timed_audio_{len(selected)}"] = row
+
+        for row in _dialogue_event_rows(
+            dialogue_event_set, current_scene=scene_index
+        ):
             selected[f"timed_audio_{len(selected)}"] = row
 
         if not selected and empty_scene_policy == "error":
@@ -1002,6 +1082,13 @@ class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
                 io.Vae.Input("audio_vae"),
                 io.Int.Input("current_scene", default=1, min=1, max=1_000_000, step=1),
                 io.Autogrow.Input("scene_timed_audios", template=scene_template),
+                H3_DIALOGUE_EVENT_SET.Input(
+                    "dialogue_event_set",
+                    optional=True,
+                    tooltip=(
+                        "Optional approved Dialogue Review event set. Only current_scene is used."
+                    ),
+                ),
                 io.Combo.Input(
                     "mix_policy", options=["sum", "prevent_clipping", "reject_overlap"],
                     default="prevent_clipping",
@@ -1029,6 +1116,7 @@ class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
         audio_vae,
         current_scene: int,
         scene_timed_audios: io.Autogrow.Type | None = None,
+        dialogue_event_set=None,
         mix_policy: str = "prevent_clipping",
         overflow_policy: str = "error",
         empty_scene_policy: str = "generate",
@@ -1058,6 +1146,11 @@ class MiniMaxH3SceneDialogueAudioLock(io.ComfyNode):
             row = dict(value)
             row.pop("scene_index", None)
             row.setdefault("label", socket_name)
+            selected[f"timed_audio_{len(selected)}"] = row
+
+        for row in _dialogue_event_rows(
+            dialogue_event_set, current_scene=scene_index
+        ):
             selected[f"timed_audio_{len(selected)}"] = row
 
         if not selected:
@@ -1107,6 +1200,7 @@ class H3ExactAudioLockExtension(ComfyExtension):
     @override
     async def on_load(self) -> None:
         register_audio_review_routes()
+        register_dialogue_review_routes()
 
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
@@ -1115,6 +1209,9 @@ class H3ExactAudioLockExtension(ComfyExtension):
             MiniMaxH3ExactAudioLock,
             MiniMaxH3DialogueAudioLock,
             MiniMaxH3DialogueAudioFinalize,
+            MiniMaxH3DialogueTimeline,
+            DialogueReviewApprovalBoard,
+            MiniMaxH3CurrentSceneDialogue,
             MiniMaxH3SceneTimedAudio,
             MiniMaxH3SceneExactAudioLock,
             MiniMaxH3SceneDialogueAudioLock,

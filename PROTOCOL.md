@@ -252,3 +252,44 @@ The frontend routes review state to the matching embedded node panel using Comfy
 node `unique_id`. Review communication uses ComfyUI's same-origin server/websocket
 infrastructure. The gate performs no external network access and starts no subprocess
 or background worker thread.
+## H3_DIALOGUE_EVENT_SET contract
+
+The batch dialogue path uses custom type `H3_DIALOGUE_EVENT_SET`, version 1.
+It contains a production-wide or scene-filtered `events` list. Each approved
+event contains at least:
+
+```text
+event_id
+scene_index
+shot_id
+speaker
+text
+audio
+start_frame
+duration_frames
+raw_frames
+delivered_frames
+context_frames
+gain_db
+label
+prompt_hash
+approved
+```
+
+`scene_index` is one-based and matches Context Loop `Chain Current.clip_index`.
+`start_frame` is the raw H3 scene-local 24 fps frame index. On continuation
+scenes it therefore includes any repeated head-context frames that Loop Trim
+later removes from delivered output.
+
+`MiniMaxH3DialogueTimeline` is the only automatic compiler for this contract.
+It maps plan `<d>...</d>` tags to AUDIO in stable production order.
+`DialogueReviewApprovalBoard` is the human approval/timing barrier.
+`MiniMaxH3CurrentSceneDialogue` performs deterministic scene filtering.
+
+Scene lock nodes reject unapproved event-set rows. The same logical event must
+not be duplicated simultaneously through `dialogue_event_set` and legacy
+`scene_timed_audios`.
+
+Changing the Context Loop plan or dialogue AUDIO changes the upstream compiled
+event set and must require review again; an old approved timeline must not be
+silently substituted for changed production inputs.

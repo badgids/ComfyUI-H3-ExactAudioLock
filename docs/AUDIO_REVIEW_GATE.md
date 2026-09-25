@@ -241,3 +241,19 @@ The gate fails closed when:
 Timeouts, decode failures, notification failures, and alternate-save failures never
 delete the original file candidates. Temporary previews are cleaned on those failure
 paths.
+## Relationship to the Dialogue Review / Approval Board
+
+This gate remains a **single logical event selector**. Candidates connected to
+one gate are mutually exclusive alternatives for that same event, and exactly
+one accepted AUDIO leaves the node.
+
+Do not connect distinct required speakers or distinct required dialogue lines to
+one Audio Review / Accept Gate merely because they belong to the same H3 shot.
+Those lines would compete with each other and only one would survive.
+
+For production-scale dialogue, use `MiniMax H3 Dialogue Timeline` followed by
+`Dialogue Review / Approval Board`. That path reviews many required lines in one
+UI session and releases the complete approved event set. Context Loop can then
+select only the current scene's approved events.
+
+See [DIALOGUE_REVIEW_BOARD.md](DIALOGUE_REVIEW_BOARD.md).

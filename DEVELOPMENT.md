@@ -164,3 +164,26 @@ splitting, Autogrow normalized/flattened inputs, managed-file decoding/fingerpri
 path confinement, deletion ownership, sequential-loop isolation, timeout/failure
 cleanup, frontend node routing, and the guarantee that only the selected candidate
 leaves `accepted_audio`.
+## Batch dialogue review milestone
+
+The batch dialogue path must remain separate from candidate selection.
+`MiniMaxH3DialogueTimeline` compiles Context Loop `<d>...</d>` lines and matching
+AUDIO into `H3_DIALOGUE_EVENT_SET`. `DialogueReviewApprovalBoard` is a
+production-wide approval barrier that returns **all** required events only after
+every event is approved. `MiniMaxH3CurrentSceneDialogue` filters that immutable
+approved set by one-based Context Loop `clip_index`.
+
+Automatic timing is deterministic but is only an initial layout. It starts after
+the scene's repeated head-context frames plus `initial_lead_frames`, advances by
+the real AUDIO duration plus `gap_frames`, and must fit inside `raw_frames`.
+The review UI owns the final editable raw scene-local `start_frame`.
+
+Scene Exact and Scene Dialogue locks accept both the new event-set input and the
+legacy `scene_timed_audios` Autogrow. Backward compatibility tests must keep the
+legacy path valid while new tests verify plan-order extraction, continuation
+head offsets, strict AUDIO/dialogue counts, approval enforcement, current-scene
+selection, scene overflow rejection, and real ComfyUI schema registration.
+
+The browser board uses same-origin ComfyUI routes and temporary WAV previews only.
+It must fail closed on reject, timeout, malformed edits, missing approvals, or
+scene overflow. No network service or background worker is introduced.

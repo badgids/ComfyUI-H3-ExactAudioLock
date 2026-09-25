@@ -115,3 +115,35 @@ Do not enable Context Loop's complete `lock_source_audio` target lock on the sam
 With scene dialogue-partial locking, use the scene dialogue lock before sampling and `MiniMax H3 Dialogue Audio Finalize` after H3 audio decode.
 
 See `docs/DIALOGUE_PARTIAL_LOCK.md` for mask semantics, exact finalization, defaults, and continuation behavior.
+## Production-wide Dialogue Timeline path
+
+Large productions do not need one review gate and one Scene Timed Audio node per
+line. The batch path is:
+
+```text
+Context Loop Plan + all dialogue AUDIO
+        -> MiniMax H3 Dialogue Timeline
+        -> Dialogue Review / Approval Board
+        -> MiniMax H3 Current Scene Dialogue
+             ^ current_scene = Chain Current.clip_index
+        -> Scene Dialogue Audio Lock.dialogue_event_set
+```
+
+`MiniMax H3 Dialogue Timeline` reads each scene's `<d>...</d>` tags and maps
+connected AUDIO in plan order. It uses Context Loop's `raw_frames` and
+`delivered_frames` to account for repeated continuation head frames before
+creating an initial scene-local layout.
+
+The Approval Board lets the user listen to every required line and edit exact
+raw scene-local `start_frame` values before expensive H3 generation begins.
+
+`MiniMax H3 Current Scene Dialogue` then filters the production-wide approved set
+by the one-based `clip_index`. A scene with no events produces an empty event set;
+`MiniMax H3 Scene Dialogue Audio Lock` with `empty_scene_policy=generate` leaves
+that scene's audio fully generative.
+
+The existing `scene_timed_audios` Autogrow remains supported for older workflows.
+Do not intentionally feed the same event through both the event-set and legacy
+Scene Timed Audio paths.
+
+See `docs/DIALOGUE_REVIEW_BOARD.md`.

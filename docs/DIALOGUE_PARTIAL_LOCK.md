@@ -152,3 +152,24 @@ This implementation is accepted only when all of the following remain true:
 - scenes without dialogue can pass through without invoking the Audio VAE;
 - normalized and flattened ComfyUI Autogrow forms remain supported;
 - malformed H3 latents, masks, manifests, scene indices, margins, and non-finite values fail loudly before producing misleading output.
+## Batch-approved dialogue event sets
+
+`MiniMax H3 Scene Dialogue Audio Lock` also accepts an optional
+`dialogue_event_set` from the production-wide dialogue workflow:
+
+```text
+Dialogue Timeline
+  -> Dialogue Review / Approval Board
+  -> Current Scene Dialogue
+  -> Scene Dialogue Audio Lock.dialogue_event_set
+```
+
+Every event in that set has already been approved and carries its one-based
+`scene_index`, exact raw scene-local `start_frame`, gain, label, and AUDIO.
+The lock consumes only the events selected for the current Context Loop scene.
+
+This does not change finalization semantics: `MiniMax H3 Dialogue Audio Finalize`
+still restores the deterministic reference samples inside the manifest's exact
+dialogue intervals after sampling.
+
+See `docs/DIALOGUE_REVIEW_BOARD.md`.

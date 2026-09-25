@@ -172,3 +172,25 @@ The examples use the current official MiniMax H3 local model filenames already u
 - `minimax_h3_audio_vae_fp32.safetensors`
 
 If your installation uses another supported quantization or filename, choose that model in the corresponding loader after opening the workflow.
+## Batch dialogue / Context Loop examples
+
+Two additional component workflows demonstrate the production-wide dialogue path:
+
+- `context_loop/04_dialogue_timeline_review_board.json`
+  - Context Loop Plan (Modern) with `<d>...</d>` dialogue;
+  - three example `LoadAudio` inputs;
+  - `MiniMax H3 Dialogue Timeline`;
+  - one `Dialogue Review / Approval Board` that reviews all required lines.
+
+- `context_loop/05_context_loop_current_scene_dialogue.json`
+  - the same production-wide preflight;
+  - `MiniMax H3 Chain Loop Start` and `MiniMax H3 Chain Current`;
+  - `Chain Current.clip_index -> MiniMax H3 Current Scene Dialogue.current_scene`;
+  - the approved production set filtered to one current-scene event set.
+
+The second example is intentionally the routing component that is inserted ahead
+of a normal Context Loop scene lock. Connect
+`current_scene_dialogue_set -> MiniMax H3 Scene Dialogue Audio Lock.dialogue_event_set`
+or the equivalent Scene Exact Audio Lock input in the sampling workflow.
+
+See `DIALOGUE_REVIEW_BOARD.md` for the complete production path.
