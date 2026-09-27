@@ -123,9 +123,12 @@ Repository test/compile runs create Python bytecode caches. `.gitignore` exclude
 those generated artifacts so the working tree remains clean after the required
 verification commands.
 
-Example workflows are part of the tested public documentation. No two node bounding
-boxes may overlap or hide one another, and the graph should read left-to-right without
-manual rearrangement. Full-lock examples must mux the lock node's `exact_audio`;
+Workflow templates under `workflows/` are part of the tested public documentation. No
+two saved/rendered node bounding boxes may overlap or hide one another, and the graph
+should read left-to-right without manual rearrangement. Preserve the existing spacing
+where possible: fix a collision by moving or resizing only the node or lane that
+actually intersects another node. Do not globally scale all workflow coordinates just
+to create larger gaps. Full-lock examples must mux the lock node's `exact_audio`;
 dialogue-partial examples must mux `MiniMax H3 Dialogue Audio Finalize.final_audio`.
 For standalone timed dialogue, use the Timed Audio node's `start_frame` output to
 drive native `Add Guide for MiniMax H3.frame_idx` so conditioning and lock placement

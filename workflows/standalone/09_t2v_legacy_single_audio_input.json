@@ -1,8 +1,8 @@
 {
-  "id": "b293dbc4-49d2-4f0d-b5cb-7ca8f6bb6817",
+  "id": "d6b48db5-1351-4bc1-ae68-a27de8fa6301",
   "revision": 0,
-  "last_node_id": 20,
-  "last_link_id": 30,
+  "last_node_id": 17,
+  "last_link_id": 26,
   "nodes": [
     {
       "id": 1,
@@ -91,7 +91,7 @@
           "type": "VAE",
           "links": [
             4,
-            18
+            15
           ]
         }
       ],
@@ -107,14 +107,14 @@
       "type": "VAELoader",
       "pos": [
         80,
-        1620.0
+        1180.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -122,8 +122,8 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            10,
-            25
+            7,
+            22
           ]
         }
       ],
@@ -154,7 +154,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            12
+            9
           ]
         }
       ],
@@ -186,7 +186,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            14
+            11
           ]
         }
       ],
@@ -209,7 +209,7 @@
         120
       ],
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -231,7 +231,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            15
+            12
           ]
         }
       ],
@@ -256,7 +256,7 @@
         120
       ],
       "flags": {},
-      "order": 14,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -267,7 +267,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 29
+          "link": 25
         }
       ],
       "outputs": [
@@ -275,7 +275,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            13
+            10
           ]
         }
       ],
@@ -286,80 +286,6 @@
     },
     {
       "id": 9,
-      "type": "LoadImage",
-      "pos": [
-        80,
-        1180.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            5
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "first_frame.png",
-        "image"
-      ]
-    },
-    {
-      "id": 10,
-      "type": "LoadImage",
-      "pos": [
-        80,
-        1400.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            6
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "last_frame.png",
-        "image"
-      ]
-    },
-    {
-      "id": 11,
       "type": "MiniMaxH3ImageToVideo",
       "pos": [
         620.0,
@@ -370,7 +296,7 @@
         380
       ],
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -418,12 +344,12 @@
         {
           "name": "first_frame",
           "type": "IMAGE",
-          "link": 5
+          "link": null
         },
         {
           "name": "last_frame",
           "type": "IMAGE",
-          "link": 6
+          "link": null
         }
       ],
       "outputs": [
@@ -431,15 +357,15 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            24
+            21
           ]
         },
         {
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            9,
-            26
+            6,
+            23
           ]
         }
       ],
@@ -447,25 +373,25 @@
         "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "integrated_multimodal_description:\n[Shot 1] Cricket is in a warm, practical workshop with Pippa, Magnus, and Cricket. Cricket speaks naturally: <d>Keep telling yourself that, Magnus.</d> The other two react naturally without interrupting. Preserve the established appearance, clothing, scale, and identity of Pippa, Magnus, and Cricket. Keep restrained cinematic camera movement and accurate mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet workshop room tone with subtle tools and room ambience around the dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         896,
         512,
         124
       ]
     },
     {
-      "id": 12,
+      "id": 10,
       "type": "LoadAudio",
       "pos": [
         80,
-        1840.0
+        1400.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -474,7 +400,7 @@
           "type": "AUDIO",
           "links": [
             8,
-            27
+            24
           ]
         }
       ],
@@ -482,83 +408,13 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "dialogue_1.wav",
+        "cricket_dialogue.wav",
         null,
         null
       ]
     },
     {
-      "id": 13,
-      "type": "MiniMaxH3TimedAudio",
-      "pos": [
-        620.0,
-        780.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": 8
-        },
-        {
-          "name": "start_frame",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "start_frame"
-          }
-        },
-        {
-          "name": "gain_db",
-          "type": "FLOAT",
-          "link": null,
-          "widget": {
-            "name": "gain_db"
-          }
-        },
-        {
-          "name": "label",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "label"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "timed_audio",
-          "type": "H3_TIMED_AUDIO",
-          "links": [
-            11
-          ]
-        },
-        {
-          "name": "start_frame",
-          "type": "INT",
-          "links": [
-            28
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "MiniMaxH3TimedAudio"
-      },
-      "widgets_values": [
-        24,
-        0.0,
-        "speaker 1"
-      ]
-    },
-    {
-      "id": 14,
+      "id": 11,
       "type": "MiniMaxH3ExactAudioLock",
       "pos": [
         1300.0,
@@ -569,30 +425,23 @@
         300
       ],
       "flags": {},
-      "order": 13,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
           "name": "av_latent",
           "type": "LATENT",
-          "link": 9
+          "link": 6
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 10
-        },
-        {
-          "name": "timed_audios.timed_audio_0",
-          "type": "H3_TIMED_AUDIO",
-          "link": 11,
-          "label": "timed_audio_0",
-          "shape": 7
+          "link": 7
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": null
+          "link": 8
         }
       ],
       "outputs": [
@@ -600,14 +449,14 @@
           "name": "locked_av_latent",
           "type": "LATENT",
           "links": [
-            16
+            13
           ]
         },
         {
           "name": "exact_audio",
           "type": "AUDIO",
           "links": [
-            30
+            26
           ]
         },
         {
@@ -622,11 +471,11 @@
       "widgets_values": [
         "sum",
         "error",
-        0
+        24
       ]
     },
     {
-      "id": 15,
+      "id": 12,
       "type": "SamplerCustomAdvanced",
       "pos": [
         2510.0,
@@ -637,33 +486,33 @@
         120
       ],
       "flags": {},
-      "order": 15,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 12
+          "link": 9
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 13
+          "link": 10
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 14
+          "link": 11
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 15
+          "link": 12
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 16
+          "link": 13
         }
       ],
       "outputs": [
@@ -671,7 +520,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            17
+            14
           ]
         },
         {
@@ -686,7 +535,7 @@
       "widgets_values": []
     },
     {
-      "id": 16,
+      "id": 13,
       "type": "VAEDecode",
       "pos": [
         3050.0,
@@ -697,18 +546,18 @@
         120
       ],
       "flags": {},
-      "order": 16,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 17
+          "link": 14
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 18
+          "link": 15
         }
       ],
       "outputs": [
@@ -716,7 +565,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            21
+            18
           ]
         }
       ],
@@ -726,7 +575,7 @@
       "widgets_values": []
     },
     {
-      "id": 18,
+      "id": 15,
       "type": "CreateVideo",
       "pos": [
         3590.0,
@@ -737,18 +586,18 @@
         120
       ],
       "flags": {},
-      "order": 17,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 21
+          "link": 18
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 30,
+          "link": 26,
           "shape": 7
         }
       ],
@@ -757,7 +606,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            23
+            20
           ]
         }
       ],
@@ -770,7 +619,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 16,
       "type": "SaveVideo",
       "pos": [
         4130.0,
@@ -781,13 +630,13 @@
         120
       ],
       "flags": {},
-      "order": 18,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 23
+          "link": 20
         }
       ],
       "outputs": [
@@ -801,13 +650,13 @@
         "Node name for S&R": "SaveVideo"
       },
       "widgets_values": [
-        "video/03_flf2v_exact_lock_load_audio",
+        "video/09_t2v_legacy_single_audio_input",
         "auto",
         "auto"
       ]
     },
     {
-      "id": 20,
+      "id": 17,
       "type": "MiniMaxH3AddGuide",
       "pos": [
         1300.0,
@@ -818,13 +667,13 @@
         250
       ],
       "flags": {},
-      "order": 12,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 24
+          "link": 21
         },
         {
           "name": "vae",
@@ -834,12 +683,12 @@
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 25
+          "link": 22
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 26
+          "link": 23
         },
         {
           "name": "image",
@@ -849,12 +698,12 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 27
+          "link": 24
         },
         {
           "name": "frame_idx",
           "type": "INT",
-          "link": 28,
+          "link": null,
           "widget": {
             "name": "frame_idx"
           }
@@ -865,7 +714,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            29
+            25
           ]
         }
       ],
@@ -873,7 +722,7 @@
         "Node name for S&R": "MiniMaxH3AddGuide"
       },
       "widgets_values": [
-        0
+        24
       ]
     }
   ],
@@ -898,7 +747,7 @@
       3,
       2,
       0,
-      11,
+      9,
       0,
       "CLIP"
     ],
@@ -906,183 +755,151 @@
       4,
       3,
       0,
+      9,
+      1,
+      "VAE"
+    ],
+    [
+      6,
+      9,
+      1,
+      11,
+      0,
+      "LATENT"
+    ],
+    [
+      7,
+      4,
+      0,
       11,
       1,
       "VAE"
     ],
     [
-      5,
-      9,
-      0,
-      11,
-      6,
-      "IMAGE"
-    ],
-    [
-      6,
+      8,
       10,
       0,
       11,
-      7,
-      "IMAGE"
-    ],
-    [
-      8,
-      12,
-      0,
-      13,
-      0,
+      2,
       "AUDIO"
     ],
     [
       9,
-      11,
-      1,
-      14,
-      0,
-      "LATENT"
-    ],
-    [
-      10,
-      4,
-      0,
-      14,
-      1,
-      "VAE"
-    ],
-    [
-      11,
-      13,
-      0,
-      14,
-      2,
-      "H3_TIMED_AUDIO"
-    ],
-    [
-      12,
       5,
       0,
-      15,
+      12,
       0,
       "NOISE"
     ],
     [
-      13,
+      10,
       8,
       0,
-      15,
+      12,
       1,
       "GUIDER"
     ],
     [
-      14,
+      11,
       6,
       0,
-      15,
+      12,
       2,
       "SAMPLER"
     ],
     [
-      15,
+      12,
       7,
       0,
-      15,
+      12,
       3,
       "SIGMAS"
     ],
     [
-      16,
-      14,
+      13,
+      11,
       0,
-      15,
+      12,
       4,
       "LATENT"
     ],
     [
-      17,
-      15,
+      14,
+      12,
       0,
-      16,
+      13,
       0,
       "LATENT"
     ],
     [
-      18,
+      15,
       3,
       0,
-      16,
+      13,
       1,
       "VAE"
     ],
     [
-      21,
-      16,
-      0,
       18,
+      13,
+      0,
+      15,
       0,
       "IMAGE"
     ],
     [
-      23,
-      18,
+      20,
+      15,
       0,
-      19,
+      16,
       0,
       "VIDEO"
     ],
     [
-      24,
-      11,
+      21,
+      9,
       0,
-      20,
+      17,
       0,
       "CONDITIONING"
     ],
     [
-      25,
+      22,
       4,
       0,
-      20,
+      17,
       2,
       "VAE"
+    ],
+    [
+      23,
+      9,
+      1,
+      17,
+      3,
+      "LATENT"
+    ],
+    [
+      24,
+      10,
+      0,
+      17,
+      5,
+      "AUDIO"
+    ],
+    [
+      25,
+      17,
+      0,
+      8,
+      1,
+      "CONDITIONING"
     ],
     [
       26,
       11,
       1,
-      20,
-      3,
-      "LATENT"
-    ],
-    [
-      27,
-      12,
-      0,
-      20,
-      5,
-      "AUDIO"
-    ],
-    [
-      28,
-      13,
-      1,
-      20,
-      6,
-      "INT"
-    ],
-    [
-      29,
-      20,
-      0,
-      8,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      30,
-      14,
-      1,
-      18,
+      15,
       1,
       "AUDIO"
     ]

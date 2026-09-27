@@ -13,7 +13,7 @@
       ],
       "size": [
         360,
-        150
+        260
       ],
       "flags": {},
       "order": 0,
@@ -56,7 +56,7 @@
       ],
       "size": [
         760,
-        520
+        760
       ],
       "flags": {},
       "order": 1,
@@ -116,7 +116,7 @@
         "Node name for S&R": "MiniMaxH3ChainPlanModern"
       },
       "widgets_values": [
-        "{\n  \"defaults\": {\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"scene_1\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] A single continuous cinematic workshop shot. Kendra enters frame and addresses Jinx at the workbench. Kendra: <d>Finally. You took your sweet time.</d> Jinx looks up and answers without leaving the bench. Jinx: <d>I was making you wait.</d> Preserve facial identity, natural mouth motion, and restrained camera movement. The approved dialogue timeline is the authoritative speech timing source.\\n\\noverall_soundscape:\\nQuiet workshop room tone and subtle natural ambience around the supplied dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6101\"\n    },\n    {\n      \"id\": \"scene_2\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] Continue the workshop conversation. Kendra steps closer and answers Jinx. Kendra: <d>That isn't an answer.</d> Preserve facial identity, natural mouth motion, and restrained camera movement. The approved dialogue timeline is the authoritative speech timing source.\\n\\noverall_soundscape:\\nQuiet workshop room tone and subtle natural ambience around the supplied dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6102\"\n    }\n  ]\n}",
+        "{\n  \"defaults\": {\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"scene_1\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] Pippa, Magnus, and Cricket work together in the same warm workshop. Pippa turns to Magnus and says: <d>Magnus, hand me the wrench. Cricket was right about that bearing.</d> Magnus answers: <d>I was testing it. That's different from being wrong.</d> Cricket reacts naturally from beside the workbench. Preserve identity, wardrobe, workshop geography, and natural mouth motion. The approved dialogue timeline is authoritative.\\n\\noverall_soundscape:\\nQuiet workshop ambience around the approved dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6101\"\n    },\n    {\n      \"id\": \"scene_2\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] Continue seamlessly in the same workshop. Cricket looks between Pippa and Magnus and says: <d>Keep telling yourself that, Magnus.</d> Pippa and Magnus react naturally. Preserve identity, wardrobe, workshop geography, and natural mouth motion. The approved dialogue timeline is authoritative.\\n\\noverall_soundscape:\\nQuiet workshop ambience around Cricket's approved dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6102\"\n    }\n  ],\n  \"prompt_prefix\": \"Shared continuity for every shot: Pippa, Magnus, and Cricket are the recurring characters. Preserve their established appearance, clothing, scale, voices, and relationships exactly across scenes. Keep the same warm workshop geography, props, practical lighting, and cinematic storybook realism. Dialogue tags are literal spoken lines; do not paraphrase them.\"\n}",
         "dialogue_timeline_review_partial",
         "dialogue-timeline-review-partial",
         544,
@@ -139,7 +139,7 @@
       ],
       "size": [
         760,
-        520
+        760
       ],
       "flags": {},
       "order": 2,
@@ -241,7 +241,7 @@
       ],
       "size": [
         440,
-        400
+        560
       ],
       "flags": {},
       "order": 4,
@@ -368,7 +368,7 @@
       "type": "UNETLoader",
       "pos": [
         80,
-        330
+        400
       ],
       "size": [
         320,
@@ -400,7 +400,7 @@
       "type": "ModelAttentionBackend",
       "pos": [
         560,
-        700
+        900
       ],
       "size": [
         320,
@@ -437,7 +437,7 @@
       "type": "MiniMaxH3SigmaShift",
       "pos": [
         1500,
-        700
+        900
       ],
       "size": [
         320,
@@ -476,7 +476,7 @@
       "type": "CLIPLoader",
       "pos": [
         80,
-        550
+        560
       ],
       "size": [
         320,
@@ -610,7 +610,7 @@
       ],
       "size": [
         460,
-        380
+        560
       ],
       "flags": {},
       "order": 12,
@@ -689,7 +689,7 @@
         "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic workshop shot. Kendra enters frame and addresses Jinx at the workbench. Kendra: <d>Finally. You took your sweet time.</d> Jinx looks up and answers without leaving the bench. Jinx: <d>I was making you wait.</d> Preserve facial identity, natural mouth motion, and restrained camera movement. The approved dialogue timeline is the authoritative speech timing source.\n\noverall_soundscape:\nQuiet workshop room tone and subtle natural ambience around the supplied dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "Shared continuity for every shot: Pippa, Magnus, and Cricket are the recurring characters. Preserve their established appearance, clothing, scale, voices, and relationships exactly across scenes. Keep the same warm workshop geography, props, practical lighting, and cinematic storybook realism. Dialogue tags are literal spoken lines; do not paraphrase them.\n\nintegrated_multimodal_description:\n[Shot 1] Pippa, Magnus, and Cricket work together in the same warm workshop. Pippa turns to Magnus and says: <d>Magnus, hand me the wrench. Cricket was right about that bearing.</d> Magnus answers: <d>I was testing it. That's different from being wrong.</d> Cricket reacts naturally from beside the workbench. Preserve identity, wardrobe, workshop geography, and natural mouth motion. The approved dialogue timeline is authoritative.\n\noverall_soundscape:\nQuiet workshop ambience around the approved dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         544,
         960,
         124
@@ -704,7 +704,7 @@
       ],
       "size": [
         420,
-        260
+        400
       ],
       "flags": {},
       "order": 13,
@@ -817,7 +817,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "dialogue_scene1_line1.wav",
+        "pippa_scene1_line1.wav",
         null,
         null
       ]
@@ -850,7 +850,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "dialogue_scene1_line2.wav",
+        "magnus_scene1_line2.wav",
         null,
         null
       ]
@@ -883,7 +883,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "dialogue_scene2_line1.wav",
+        "cricket_scene2_line1.wav",
         null,
         null
       ]
@@ -897,7 +897,7 @@
       ],
       "size": [
         520,
-        360
+        480
       ],
       "flags": {},
       "order": 17,
@@ -991,7 +991,7 @@
       ],
       "size": [
         980,
-        650
+        820
       ],
       "flags": {},
       "order": 18,
@@ -1042,7 +1042,7 @@
         "Node name for S&R": "H3ExactAudioLockDialogueReviewBoard"
       },
       "widgets_values": [
-        "Production dialogue preflight — approve all lines before H3",
+        "Pippa / Magnus / Cricket production dialogue preflight",
         86400
       ]
     },
@@ -1110,7 +1110,7 @@
       ],
       "size": [
         500,
-        320
+        460
       ],
       "flags": {},
       "order": 20,
@@ -1181,7 +1181,7 @@
       "type": "RandomNoise",
       "pos": [
         3600,
-        560
+        700
       ],
       "size": [
         320,
@@ -1222,7 +1222,7 @@
       "type": "BasicScheduler",
       "pos": [
         3600,
-        780
+        940
       ],
       "size": [
         320,
@@ -1269,7 +1269,7 @@
       "type": "BasicGuider",
       "pos": [
         4900,
-        500
+        620
       ],
       "size": [
         320,
@@ -1456,7 +1456,7 @@
       ],
       "size": [
         430,
-        210
+        300
       ],
       "flags": {},
       "order": 27,
@@ -1501,7 +1501,7 @@
       ],
       "size": [
         420,
-        250
+        340
       ],
       "flags": {},
       "order": 28,
@@ -1645,7 +1645,7 @@
       ],
       "size": [
         620,
-        500
+        640
       ],
       "flags": {},
       "order": 30,
@@ -1709,7 +1709,7 @@
       ],
       "size": [
         420,
-        230
+        320
       ],
       "flags": {},
       "order": 31,
@@ -1781,7 +1781,7 @@
       ],
       "size": [
         440,
-        330
+        440
       ],
       "flags": {},
       "order": 32,

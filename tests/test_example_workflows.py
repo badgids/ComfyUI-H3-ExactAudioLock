@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-WF_ROOT = ROOT / "example_workflows"
+WF_ROOT = ROOT / "workflows"
 
 NO_TITLE_TYPES = {
     "H3ExactAudioLockAudioReviewGate",
@@ -119,6 +119,32 @@ class ExampleWorkflowTests(unittest.TestCase):
                         f"{path.name}: nodes {left['id']} ({left['type']}) and "
                         f"{right['id']} ({right['type']}) overlap or are closer than {margin}px",
                     )
+
+
+    def test_workflow_directory_and_example_content(self):
+        self.assertTrue(WF_ROOT.is_dir())
+        self.assertFalse((ROOT / "example_workflows").exists())
+        for path in self.workflows():
+            with self.subTest(path=path.relative_to(ROOT)):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("Kendra", text)
+                self.assertNotIn("Jinx", text)
+                self.assertTrue(
+                    any(name in text for name in ("Pippa", "Magnus", "Cricket")),
+                    f"{path.name}: workflow must use the shared example characters",
+                )
+                if "context_loop" in path.parts:
+                    wf = self.load(path)
+                    plan = next(
+                        node for node in wf["nodes"]
+                        if node["type"] == "MiniMaxH3ChainPlanModern"
+                    )
+                    plan_json = json.loads(plan["widgets_values"][0])
+                    prefix = plan_json.get("prompt_prefix", "").strip()
+                    self.assertTrue(prefix, f"{path.name}: missing top-level prompt_prefix")
+                    self.assertIn("Pippa", prefix)
+                    self.assertIn("Magnus", prefix)
+                    self.assertIn("Cricket", prefix)
 
     def test_real_node_labels_are_not_overridden(self):
         for path in self.workflows():

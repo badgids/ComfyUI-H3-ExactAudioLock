@@ -400,7 +400,7 @@ The gate does not control another TTS/music node pack's private reroll logic. To
 
 ## Example workflows
 
-Loadable, editable ComfyUI workflows are included under [`example_workflows/`](example_workflows/).
+Loadable, editable ComfyUI workflows are included under [`workflows/`](workflows/). The directory is intentionally named `workflows` so installed examples can be discovered by ComfyUI's workflow template library.
 
 **Every shipped workflow is a complete video-and-audio generation graph, not a component fragment.** Each example includes the required MiniMax H3 model loader, text encoder, video VAE, audio VAE, latent builder, sampler path, audio finalization/mux path, and final video output/assembly node for that topology.
 
@@ -408,15 +408,15 @@ They cover the standalone official-style MiniMax H3 T2V, I2V, first/last-frame, 
 
 The Context Loop examples `04_dialogue_timeline_review_board.json` and `05_context_loop_current_scene_dialogue.json` are complete H3 render workflows. They compile and review the production-wide dialogue set, route only the current scene's approved events, run the H3 sampler, produce final audio, save/review recursive segments, and assemble the final video.
 
-Every shipped workflow is laid out with non-overlapping node rectangles and a left-to-right dependency flow. The tests reject example workflows whose nodes overlap or omit the required end-to-end generation/output path.
+Every shipped workflow is laid out with non-overlapping saved/rendered node rectangles and a left-to-right dependency flow. Layout fixes preserve the existing graph spacing and move or resize only nodes that would actually intersect another node. The tests reject workflows whose node rectangles overlap or whose end-to-end generation/output path is incomplete.
 
-The Qwen3-TTS examples use the real upstream nodes from `flybirdxx/ComfyUI-Qwen-TTS`, `vantagewithai/Vantage-Nodes`, and `DarioFT/ComfyUI-Qwen3-TTS`.
+All shipped workflow prompts and TTS text use the example characters Pippa, Magnus, and Cricket. The Qwen3-TTS examples use the real upstream nodes from `flybirdxx/ComfyUI-Qwen-TTS`, `vantagewithai/Vantage-Nodes`, and `DarioFT/ComfyUI-Qwen3-TTS`.
 
 The workflow JSON uses each node's real registered type and does **not** add a custom title override to the ExactAudioLock or Qwen3-TTS nodes. ComfyUI therefore shows the node's actual upstream display label, including labels such as `🎨 Qwen3-TTS VoiceDesign`, `Qwen TTS Voice Design Node`, and `Qwen3-TTS Custom Voice`.
 
 No built-in ComfyUI Qwen3-TTS example is included because the current ComfyUI core checked for these templates does not expose a core Qwen3-TTS generation node.
 
-The Context Loop examples use Ethan Felty's current 0.6 T2V Normal and Ref2V Basic topology and place the scene lock between `MiniMax H3 Chain Context.latent` and `SamplerCustomAdvanced.latent_image`, with `MiniMax H3 Chain Current.clip_index` driving `current_scene`.
+The Context Loop examples include a top-level `prompt_prefix` shared across all shots and use Ethan Felty's current 0.6 T2V Normal and Ref2V Basic topology and place the scene lock between `MiniMax H3 Chain Context.latent` and `SamplerCustomAdvanced.latent_image`, with `MiniMax H3 Chain Current.clip_index` driving `current_scene`.
 
 See [docs/EXAMPLE_WORKFLOWS.md](docs/EXAMPLE_WORKFLOWS.md) for the complete workflow matrix, required node packs, upstream revisions, model filenames, placeholder input files, and Context Loop wiring notes.
 
@@ -677,13 +677,13 @@ ComfyUI-H3-ExactAudioLock/
 │   ├── EXAMPLE_WORKFLOWS.md
 │   ├── INSTALLATION.md
 │   └── SCENE_DIALOGUE.md
-├── example_workflows/
+├── workflows/
 │   ├── context_loop/
 │   ├── qwen3_tts/
 │   └── standalone/
 ├── tests/
 │   ├── test_audio_review_gate.py
-│   ├── test_example_workflows.py
+│   ├── test_workflows.py
 │   └── test_exact_audio_lock.py
 ├── web/
 │   └── audio_review_gate.js

@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-WF_ROOT = ROOT / "example_workflows"
+WF_ROOT = ROOT / "workflows"
 
 
 class CompleteExampleWorkflowTests(unittest.TestCase):

@@ -1,7 +1,7 @@
 {
-  "id": "8e2c3be4-02ba-49f8-b9ad-d606637470da",
+  "id": "b293dbc4-49d2-4f0d-b5cb-7ca8f6bb6817",
   "revision": 0,
-  "last_node_id": 19,
+  "last_node_id": 20,
   "last_link_id": 30,
   "nodes": [
     {
@@ -107,14 +107,14 @@
       "type": "VAELoader",
       "pos": [
         80,
-        1180.0
+        1620.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 5,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -201,7 +201,7 @@
       "id": 7,
       "type": "BasicScheduler",
       "pos": [
-        720.0,
+        620.0,
         560.0
       ],
       "size": [
@@ -209,7 +209,7 @@
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -248,7 +248,7 @@
       "id": 8,
       "type": "BasicGuider",
       "pos": [
-        2650.0,
+        1970.0,
         80
       ],
       "size": [
@@ -256,7 +256,7 @@
         120
       ],
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -286,9 +286,83 @@
     },
     {
       "id": 9,
+      "type": "LoadImage",
+      "pos": [
+        80,
+        1180.0
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "pippa_first_frame.png",
+        "image"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadImage",
+      "pos": [
+        80,
+        1400.0
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "pippa_last_frame.png",
+        "image"
+      ]
+    },
+    {
+      "id": 11,
       "type": "MiniMaxH3ImageToVideo",
       "pos": [
-        720.0,
+        620.0,
         80
       ],
       "size": [
@@ -296,7 +370,7 @@
         380
       ],
       "flags": {},
-      "order": 7,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -344,12 +418,12 @@
         {
           "name": "first_frame",
           "type": "IMAGE",
-          "link": null
+          "link": 5
         },
         {
           "name": "last_frame",
           "type": "IMAGE",
-          "link": null
+          "link": 6
         }
       ],
       "outputs": [
@@ -373,88 +447,27 @@
         "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "integrated_multimodal_description:\n[Shot 1] Pippa is in a warm, practical workshop with Pippa, Magnus, and Cricket. Pippa speaks naturally: <d>Magnus, hand me the wrench. Cricket was right about that bearing.</d> The other two react naturally without interrupting. Preserve the established appearance, clothing, scale, and identity of Pippa, Magnus, and Cricket. Keep restrained cinematic camera movement and accurate mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet workshop room tone with subtle tools and room ambience around the dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         896,
         512,
         124
       ]
     },
     {
-      "id": 10,
-      "type": "QwenTTSModelDownloader",
+      "id": 12,
+      "type": "LoadAudio",
       "pos": [
         80,
-        1400.0
+        1840.0
       ],
       "size": [
-        420,
-        180
+        320,
+        120
       ],
       "flags": {},
-      "order": 6,
+      "order": 8,
       "mode": 0,
       "inputs": [],
-      "outputs": [
-        {
-          "name": "tokenizer",
-          "type": "QWEN_TTS_TOKENIZER",
-          "links": [
-            7
-          ]
-        },
-        {
-          "name": "base_model",
-          "type": "QWEN_TTS_MODEL",
-          "links": []
-        },
-        {
-          "name": "voice_design_model",
-          "type": "QWEN_TTS_MODEL",
-          "links": [
-            6
-          ]
-        },
-        {
-          "name": "custom_voice_model",
-          "type": "QWEN_TTS_MODEL",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "QwenTTSModelDownloader"
-      },
-      "widgets_values": [
-        "auto",
-        "auto",
-        "bf16"
-      ]
-    },
-    {
-      "id": 11,
-      "type": "QwenTTSVoiceDesignNode",
-      "pos": [
-        720.0,
-        780.0
-      ],
-      "size": [
-        500,
-        300
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "QWEN_TTS_MODEL",
-          "link": 6
-        },
-        {
-          "name": "tokenizer",
-          "type": "QWEN_TTS_TOKENIZER",
-          "link": 7
-        }
-      ],
       "outputs": [
         {
           "name": "AUDIO",
@@ -466,36 +479,27 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "QwenTTSVoiceDesignNode"
+        "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "The exact line of dialogue used to drive MiniMax H3.",
-        "Natural adult voice, calm, clear and conversational.",
-        "English",
-        "inherit",
-        "inherit",
-        0,
-        2048,
-        0.8,
-        20,
-        1.0,
-        1.05,
-        false
+        "pippa_dialogue.wav",
+        null,
+        null
       ]
     },
     {
-      "id": 12,
+      "id": 13,
       "type": "MiniMaxH3TimedAudio",
       "pos": [
-        1440.0,
-        80
+        620.0,
+        780.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -550,14 +554,14 @@
       "widgets_values": [
         24,
         0.0,
-        "Vantage Qwen TTS"
+        "Pippa dialogue"
       ]
     },
     {
-      "id": 13,
+      "id": 14,
       "type": "MiniMaxH3ExactAudioLock",
       "pos": [
-        1980.0,
+        1300.0,
         430.0
       ],
       "size": [
@@ -565,7 +569,7 @@
         300
       ],
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -622,10 +626,10 @@
       ]
     },
     {
-      "id": 14,
+      "id": 15,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        3190.0,
+        2510.0,
         80
       ],
       "size": [
@@ -633,7 +637,7 @@
         120
       ],
       "flags": {},
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -682,10 +686,10 @@
       "widgets_values": []
     },
     {
-      "id": 15,
+      "id": 16,
       "type": "VAEDecode",
       "pos": [
-        3730.0,
+        3050.0,
         80
       ],
       "size": [
@@ -693,7 +697,7 @@
         120
       ],
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -722,10 +726,10 @@
       "widgets_values": []
     },
     {
-      "id": 17,
+      "id": 18,
       "type": "CreateVideo",
       "pos": [
-        4270.0,
+        3590.0,
         80
       ],
       "size": [
@@ -733,7 +737,7 @@
         120
       ],
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -766,10 +770,10 @@
       ]
     },
     {
-      "id": 18,
+      "id": 19,
       "type": "SaveVideo",
       "pos": [
-        4810.0,
+        4130.0,
         80
       ],
       "size": [
@@ -777,7 +781,7 @@
         120
       ],
       "flags": {},
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -797,16 +801,16 @@
         "Node name for S&R": "SaveVideo"
       },
       "widgets_values": [
-        "video/qwen_vantage_exact_lock",
+        "video/03_flf2v_exact_lock_load_audio",
         "auto",
         "auto"
       ]
     },
     {
-      "id": 19,
+      "id": 20,
       "type": "MiniMaxH3AddGuide",
       "pos": [
-        1980.0,
+        1300.0,
         80
       ],
       "size": [
@@ -814,7 +818,7 @@
         250
       ],
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -894,7 +898,7 @@
       3,
       2,
       0,
-      9,
+      11,
       0,
       "CLIP"
     ],
@@ -902,39 +906,39 @@
       4,
       3,
       0,
-      9,
+      11,
       1,
       "VAE"
     ],
     [
-      6,
-      10,
-      2,
-      11,
+      5,
+      9,
       0,
-      "QWEN_TTS_MODEL"
+      11,
+      6,
+      "IMAGE"
     ],
     [
-      7,
+      6,
       10,
       0,
       11,
-      1,
-      "QWEN_TTS_TOKENIZER"
+      7,
+      "IMAGE"
     ],
     [
       8,
-      11,
-      0,
       12,
+      0,
+      13,
       0,
       "AUDIO"
     ],
     [
       9,
-      9,
+      11,
       1,
-      13,
+      14,
       0,
       "LATENT"
     ],
@@ -942,15 +946,15 @@
       10,
       4,
       0,
-      13,
+      14,
       1,
       "VAE"
     ],
     [
       11,
-      12,
-      0,
       13,
+      0,
+      14,
       2,
       "H3_TIMED_AUDIO"
     ],
@@ -958,7 +962,7 @@
       12,
       5,
       0,
-      14,
+      15,
       0,
       "NOISE"
     ],
@@ -966,7 +970,7 @@
       13,
       8,
       0,
-      14,
+      15,
       1,
       "GUIDER"
     ],
@@ -974,7 +978,7 @@
       14,
       6,
       0,
-      14,
+      15,
       2,
       "SAMPLER"
     ],
@@ -982,23 +986,23 @@
       15,
       7,
       0,
-      14,
+      15,
       3,
       "SIGMAS"
     ],
     [
       16,
-      13,
-      0,
       14,
+      0,
+      15,
       4,
       "LATENT"
     ],
     [
       17,
-      14,
-      0,
       15,
+      0,
+      16,
       0,
       "LATENT"
     ],
@@ -1006,31 +1010,31 @@
       18,
       3,
       0,
-      15,
+      16,
       1,
       "VAE"
     ],
     [
       21,
-      15,
+      16,
       0,
-      17,
+      18,
       0,
       "IMAGE"
     ],
     [
       23,
-      17,
-      0,
       18,
+      0,
+      19,
       0,
       "VIDEO"
     ],
     [
       24,
-      9,
+      11,
       0,
-      19,
+      20,
       0,
       "CONDITIONING"
     ],
@@ -1038,37 +1042,37 @@
       25,
       4,
       0,
-      19,
+      20,
       2,
       "VAE"
     ],
     [
       26,
-      9,
+      11,
       1,
-      19,
+      20,
       3,
       "LATENT"
     ],
     [
       27,
-      11,
+      12,
       0,
-      19,
+      20,
       5,
       "AUDIO"
     ],
     [
       28,
-      12,
+      13,
       1,
-      19,
+      20,
       6,
       "INT"
     ],
     [
       29,
-      19,
+      20,
       0,
       8,
       1,
@@ -1076,9 +1080,9 @@
     ],
     [
       30,
-      13,
+      14,
       1,
-      17,
+      18,
       1,
       "AUDIO"
     ]

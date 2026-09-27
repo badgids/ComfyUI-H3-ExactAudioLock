@@ -1,8 +1,8 @@
 {
-  "id": "cb280ed9-b88f-4117-85b8-e51e7b4a25b8",
+  "id": "8e9ec95f-bdf6-4b83-ae83-2ddba9b9ca59",
   "revision": 0,
-  "last_node_id": 32,
-  "last_link_id": 60,
+  "last_node_id": 30,
+  "last_link_id": 57,
   "nodes": [
     {
       "id": 1,
@@ -59,7 +59,7 @@
         520
       ],
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -116,7 +116,7 @@
         "Node name for S&R": "MiniMaxH3ChainPlanModern"
       },
       "widgets_values": [
-        "{\n  \"defaults\": {\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"scene_1\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\\n\\noverall_soundscape:\\nQuiet room tone and subtle workshop ambience.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6101\"\n    },\n    {\n      \"id\": \"scene_2\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a small recording room. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\\n\\noverall_soundscape:\\nQuiet room tone and subtle workshop ambience.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6102\"\n    }\n  ]\n}",
+        "{\n  \"defaults\": {\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"scene_1\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] Pippa works beside Magnus at the main bench while Cricket watches from the parts shelf. Pippa looks to Magnus and says: <d>Magnus, hand me the wrench. Cricket was right about that bearing.</d> Magnus reacts naturally. Keep restrained camera movement and accurate mouth motion. The supplied scene audio is authoritative.\\n\\noverall_soundscape:\\nQuiet workshop ambience around Pippa's supplied dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6101\"\n    },\n    {\n      \"id\": \"scene_2\",\n      \"prompt\": \"integrated_multimodal_description:\\n[Shot 1] Continue in the same workshop without changing character appearance, wardrobe, or geography. Magnus checks the machine while Pippa waits and Cricket listens. Magnus replies: <d>I was testing it. That's different from being wrong.</d> Pippa and Cricket react naturally. The supplied scene audio is authoritative.\\n\\noverall_soundscape:\\nQuiet workshop ambience around Magnus's supplied dialogue.\\n\\nnon_diegetic_music:\\nNo non-diegetic music.\",\n      \"length\": 124,\n      \"steps\": 20,\n      \"seed\": \"6102\"\n    }\n  ],\n  \"prompt_prefix\": \"Shared continuity for every shot: Pippa, Magnus, and Cricket are the recurring characters. Preserve their established appearance, clothing, scale, voices, and relationships exactly across scenes. Keep the same warm workshop geography, props, practical lighting, and cinematic storybook realism. Dialogue tags are literal spoken lines; do not paraphrase them.\"\n}",
         "exact_audio_lock_context_loop",
         "exact-audio-lock-example",
         544,
@@ -142,7 +142,7 @@
         520
       ],
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -177,7 +177,7 @@
         220
       ],
       "flags": {},
-      "order": 16,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -243,7 +243,7 @@
         400
       ],
       "flags": {},
-      "order": 17,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -389,7 +389,7 @@
         "Node name for S&R": "UNETLoader"
       },
       "widgets_values": [
-        "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
         "default"
       ]
     },
@@ -405,7 +405,7 @@
         120
       ],
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -442,7 +442,7 @@
         120
       ],
       "flags": {},
-      "order": 15,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -507,14 +507,14 @@
       "type": "VAELoader",
       "pos": [
         80,
-        1210.0
+        990.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -540,14 +540,14 @@
       "type": "VAELoader",
       "pos": [
         80,
-        1870.0
+        1650.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -556,8 +556,7 @@
           "type": "VAE",
           "links": [
             17,
-            21,
-            57
+            21
           ]
         }
       ],
@@ -570,17 +569,17 @@
     },
     {
       "id": 12,
-      "type": "MiniMaxH3ReferenceToVideo",
+      "type": "MiniMaxH3ImageToVideo",
       "pos": [
         3860.0,
         80
       ],
       "size": [
-        520,
-        500
+        460,
+        380
       ],
       "flags": {},
-      "order": 18,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -592,11 +591,6 @@
           "name": "vae",
           "type": "VAE",
           "link": 8
-        },
-        {
-          "name": "audio_vae",
-          "type": "VAE",
-          "link": 57
         },
         {
           "name": "prompt",
@@ -631,46 +625,14 @@
           }
         },
         {
-          "name": "ref_images.ref_image_0",
+          "name": "first_frame",
           "type": "IMAGE",
-          "link": 58,
-          "label": "ref_image_0",
-          "shape": 7
+          "link": null
         },
         {
-          "name": "ref_images.ref_image_1",
+          "name": "last_frame",
           "type": "IMAGE",
-          "link": 59,
-          "label": "ref_image_1",
-          "shape": 7
-        },
-        {
-          "name": "ref_images.ref_image_2",
-          "type": "IMAGE",
-          "link": null,
-          "label": "ref_image_2",
-          "shape": 7
-        },
-        {
-          "name": "ref_videos.ref_video_0",
-          "type": "IMAGE",
-          "link": null,
-          "label": "ref_video_0",
-          "shape": 7
-        },
-        {
-          "name": "ref_video_audios.ref_video_audio_0",
-          "type": "AUDIO",
-          "link": null,
-          "label": "ref_video_audio_0",
-          "shape": 7
-        },
-        {
-          "name": "ref_audios.ref_audio_0",
-          "type": "AUDIO",
-          "link": null,
-          "label": "ref_audio_0",
-          "shape": 7
+          "link": null
         }
       ],
       "outputs": [
@@ -690,21 +652,20 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "MiniMaxH3ReferenceToVideo"
+        "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "Shared continuity for every shot: Pippa, Magnus, and Cricket are the recurring characters. Preserve their established appearance, clothing, scale, voices, and relationships exactly across scenes. Keep the same warm workshop geography, props, practical lighting, and cinematic storybook realism. Dialogue tags are literal spoken lines; do not paraphrase them.\n\nintegrated_multimodal_description:\n[Shot 1] Pippa works beside Magnus at the main bench while Cricket watches from the parts shelf. Pippa looks to Magnus and says: <d>Magnus, hand me the wrench. Cricket was right about that bearing.</d> Magnus reacts naturally. Keep restrained camera movement and accurate mouth motion. The supplied scene audio is authoritative.\n\noverall_soundscape:\nQuiet workshop ambience around Pippa's supplied dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         544,
         960,
-        124,
-        "match"
+        124
       ]
     },
     {
       "id": 13,
       "type": "MiniMaxH3ChainContext",
       "pos": [
-        4600.0,
+        4540.0,
         80
       ],
       "size": [
@@ -712,7 +673,7 @@
         260
       ],
       "flags": {},
-      "order": 21,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -822,7 +783,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "context_scene_1.wav",
+        "pippa_context_scene_1.wav",
         null,
         null
       ]
@@ -839,7 +800,7 @@
         180
       ],
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -901,7 +862,7 @@
         1,
         0,
         0.0,
-        "scene 1 dialogue"
+        "Pippa scene 1 dialogue"
       ]
     },
     {
@@ -909,14 +870,14 @@
       "type": "LoadAudio",
       "pos": [
         80,
-        1650.0
+        1430.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -932,7 +893,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "context_scene_2.wav",
+        "magnus_context_scene_2.wav",
         null,
         null
       ]
@@ -949,7 +910,7 @@
         180
       ],
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -1011,14 +972,14 @@
         2,
         0,
         0.0,
-        "scene 2 dialogue"
+        "Magnus scene 2 dialogue"
       ]
     },
     {
       "id": 18,
       "type": "MiniMaxH3SceneExactAudioLock",
       "pos": [
-        5240.0,
+        5180.0,
         80
       ],
       "size": [
@@ -1026,7 +987,7 @@
         280
       ],
       "flags": {},
-      "order": 22,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -1074,7 +1035,7 @@
           "name": "exact_audio",
           "type": "AUDIO",
           "links": [
-            60
+            57
           ]
         },
         {
@@ -1098,14 +1059,14 @@
       "type": "RandomNoise",
       "pos": [
         3860.0,
-        680.0
+        560.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 19,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -1139,14 +1100,14 @@
       "type": "KSamplerSelect",
       "pos": [
         80,
-        1430.0
+        1210.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1170,14 +1131,14 @@
       "type": "BasicScheduler",
       "pos": [
         3860.0,
-        900.0
+        780.0
       ],
       "size": [
         320,
         120
       ],
       "flags": {},
-      "order": 20,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -1216,7 +1177,7 @@
       "id": 22,
       "type": "BasicGuider",
       "pos": [
-        5240.0,
+        5180.0,
         460.0
       ],
       "size": [
@@ -1224,7 +1185,7 @@
         120
       ],
       "flags": {},
-      "order": 23,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -1256,7 +1217,7 @@
       "id": 23,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        5950.0,
+        5890.0,
         80
       ],
       "size": [
@@ -1264,7 +1225,7 @@
         120
       ],
       "flags": {},
-      "order": 24,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -1318,7 +1279,7 @@
       "id": 24,
       "type": "VAEDecode",
       "pos": [
-        6490.0,
+        6430.0,
         80
       ],
       "size": [
@@ -1326,7 +1287,7 @@
         120
       ],
       "flags": {},
-      "order": 25,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -1358,7 +1319,7 @@
       "id": 26,
       "type": "MiniMaxH3LoopTrim",
       "pos": [
-        7030.0,
+        6970.0,
         80
       ],
       "size": [
@@ -1366,7 +1327,7 @@
         250
       ],
       "flags": {},
-      "order": 26,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -1385,7 +1346,7 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 60
+          "link": 57
         },
         {
           "name": "state",
@@ -1437,7 +1398,7 @@
       "id": 27,
       "type": "MiniMaxH3ChainSegmentSave",
       "pos": [
-        7670.0,
+        7610.0,
         80
       ],
       "size": [
@@ -1445,7 +1406,7 @@
         120
       ],
       "flags": {},
-      "order": 27,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1502,7 +1463,7 @@
       "id": 28,
       "type": "MiniMaxH3ChainReview",
       "pos": [
-        8210.0,
+        8150.0,
         80
       ],
       "size": [
@@ -1510,7 +1471,7 @@
         500
       ],
       "flags": {},
-      "order": 28,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -1566,7 +1527,7 @@
       "id": 29,
       "type": "MiniMaxH3ChainLoopEnd",
       "pos": [
-        9050.0,
+        8990.0,
         80
       ],
       "size": [
@@ -1574,7 +1535,7 @@
         230
       ],
       "flags": {},
-      "order": 29,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1638,7 +1599,7 @@
       "id": 30,
       "type": "MiniMaxH3ChainAssemble",
       "pos": [
-        9690.0,
+        9630.0,
         80
       ],
       "size": [
@@ -1646,7 +1607,7 @@
         330
       ],
       "flags": {},
-      "order": 30,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1690,80 +1651,6 @@
         "off",
         "off",
         false
-      ]
-    },
-    {
-      "id": 31,
-      "type": "LoadImage",
-      "pos": [
-        80,
-        990.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            58
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "context_reference_1.png",
-        "image"
-      ]
-    },
-    {
-      "id": 32,
-      "type": "LoadImage",
-      "pos": [
-        80,
-        2090.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            59
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": []
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "context_reference_2.png",
-        "image"
       ]
     }
   ],
@@ -1837,7 +1724,7 @@
       5,
       4,
       12,
-      3,
+      2,
       "STRING"
     ],
     [
@@ -1845,7 +1732,7 @@
       5,
       8,
       12,
-      4,
+      3,
       "INT"
     ],
     [
@@ -1853,7 +1740,7 @@
       5,
       9,
       12,
-      5,
+      4,
       "INT"
     ],
     [
@@ -1861,7 +1748,7 @@
       5,
       6,
       12,
-      6,
+      5,
       "INT"
     ],
     [
@@ -2194,30 +2081,6 @@
     ],
     [
       57,
-      11,
-      0,
-      12,
-      2,
-      "VAE"
-    ],
-    [
-      58,
-      31,
-      0,
-      12,
-      7,
-      "IMAGE"
-    ],
-    [
-      59,
-      32,
-      0,
-      12,
-      8,
-      "IMAGE"
-    ],
-    [
-      60,
       18,
       1,
       26,

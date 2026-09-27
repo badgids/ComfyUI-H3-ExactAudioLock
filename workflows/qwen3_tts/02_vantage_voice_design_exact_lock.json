@@ -1,7 +1,7 @@
 {
-  "id": "ce7fe131-bdf3-496b-89fa-089ace0b7de0",
+  "id": "8e2c3be4-02ba-49f8-b9ad-d606637470da",
   "revision": 0,
-  "last_node_id": 20,
+  "last_node_id": 19,
   "last_link_id": 30,
   "nodes": [
     {
@@ -201,7 +201,7 @@
       "id": 7,
       "type": "BasicScheduler",
       "pos": [
-        620.0,
+        720.0,
         560.0
       ],
       "size": [
@@ -209,7 +209,7 @@
         120
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -248,7 +248,7 @@
       "id": 8,
       "type": "BasicGuider",
       "pos": [
-        2510.0,
+        2650.0,
         80
       ],
       "size": [
@@ -256,7 +256,7 @@
         120
       ],
       "flags": {},
-      "order": 14,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -288,7 +288,7 @@
       "id": 9,
       "type": "MiniMaxH3ImageToVideo",
       "pos": [
-        620.0,
+        720.0,
         80
       ],
       "size": [
@@ -296,7 +296,7 @@
         380
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -373,7 +373,7 @@
         "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "integrated_multimodal_description:\n[Shot 1] Magnus is in a warm, practical workshop with Pippa, Magnus, and Cricket. Magnus speaks naturally: <d>I was testing it. That's different from being wrong.</d> The other two react naturally without interrupting. Preserve the established appearance, clothing, scale, and identity of Pippa, Magnus, and Cricket. Keep restrained cinematic camera movement and accurate mouth motion. The generated TTS audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet workshop room tone with subtle tools and room ambience around the dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         896,
         512,
         124
@@ -381,14 +381,14 @@
     },
     {
       "id": 10,
-      "type": "LoadAudio",
+      "type": "QwenTTSModelDownloader",
       "pos": [
         80,
         1400.0
       ],
       "size": [
-        320,
-        120
+        420,
+        180
       ],
       "flags": {},
       "order": 6,
@@ -396,126 +396,68 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "AUDIO",
-          "type": "AUDIO",
+          "name": "tokenizer",
+          "type": "QWEN_TTS_TOKENIZER",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "base_model",
+          "type": "QWEN_TTS_MODEL",
+          "links": []
+        },
+        {
+          "name": "voice_design_model",
+          "type": "QWEN_TTS_MODEL",
           "links": [
             6
           ]
+        },
+        {
+          "name": "custom_voice_model",
+          "type": "QWEN_TTS_MODEL",
+          "links": []
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadAudio"
+        "Node name for S&R": "QwenTTSModelDownloader"
       },
       "widgets_values": [
-        "dialogue_take_a.wav",
-        null,
-        null
+        "auto",
+        "auto",
+        "bf16"
       ]
     },
     {
       "id": 11,
-      "type": "LoadAudio",
+      "type": "QwenTTSVoiceDesignNode",
       "pos": [
-        80,
-        1620.0
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "AUDIO",
-          "type": "AUDIO",
-          "links": [
-            7
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadAudio"
-      },
-      "widgets_values": [
-        "dialogue_take_b.wav",
-        null,
-        null
-      ]
-    },
-    {
-      "id": 12,
-      "type": "H3ExactAudioLockAudioReviewGate",
-      "pos": [
-        620.0,
+        720.0,
         780.0
       ],
       "size": [
-        460,
+        500,
         300
       ],
       "flags": {},
-      "order": 10,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
-          "name": "source_mode",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "source_mode"
-          }
-        },
-        {
-          "name": "audio",
-          "type": "AUDIO",
+          "name": "model",
+          "type": "QWEN_TTS_MODEL",
           "link": 6
         },
         {
-          "name": "audio_candidates.audio_candidate_0",
-          "type": "AUDIO",
-          "link": 7,
-          "label": "audio_candidate_0",
-          "shape": 7
-        },
-        {
-          "name": "audio_file",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "audio_file"
-          }
-        },
-        {
-          "name": "review_label",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "review_label"
-          }
-        },
-        {
-          "name": "delete_rejected_audio_files",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "delete_rejected_audio_files"
-          }
-        },
-        {
-          "name": "review_timeout_seconds",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "review_timeout_seconds"
-          }
+          "name": "tokenizer",
+          "type": "QWEN_TTS_TOKENIZER",
+          "link": 7
         }
       ],
       "outputs": [
         {
-          "name": "accepted_audio",
+          "name": "AUDIO",
           "type": "AUDIO",
           "links": [
             8,
@@ -524,21 +466,28 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "H3ExactAudioLockAudioReviewGate"
+        "Node name for S&R": "QwenTTSVoiceDesignNode"
       },
       "widgets_values": [
-        "connected_audio",
-        "",
-        "Choose the dialogue take",
-        true,
-        3600
+        "I was testing it. That's different from being wrong.",
+        "Magnus: grounded adult male voice; dry humor, steady pace, natural workshop conversation.",
+        "English",
+        "inherit",
+        "inherit",
+        0,
+        2048,
+        0.8,
+        20,
+        1.0,
+        1.05,
+        false
       ]
     },
     {
-      "id": 13,
+      "id": 12,
       "type": "MiniMaxH3TimedAudio",
       "pos": [
-        1300.0,
+        1440.0,
         80
       ],
       "size": [
@@ -546,7 +495,7 @@
         120
       ],
       "flags": {},
-      "order": 11,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -601,14 +550,14 @@
       "widgets_values": [
         24,
         0.0,
-        "approved dialogue"
+        "Magnus Qwen3-TTS"
       ]
     },
     {
-      "id": 14,
+      "id": 13,
       "type": "MiniMaxH3ExactAudioLock",
       "pos": [
-        1840.0,
+        1980.0,
         430.0
       ],
       "size": [
@@ -616,7 +565,7 @@
         300
       ],
       "flags": {},
-      "order": 13,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -673,10 +622,10 @@
       ]
     },
     {
-      "id": 15,
+      "id": 14,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        3050.0,
+        3190.0,
         80
       ],
       "size": [
@@ -684,7 +633,7 @@
         120
       ],
       "flags": {},
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -733,10 +682,10 @@
       "widgets_values": []
     },
     {
-      "id": 16,
+      "id": 15,
       "type": "VAEDecode",
       "pos": [
-        3590.0,
+        3730.0,
         80
       ],
       "size": [
@@ -744,7 +693,7 @@
         120
       ],
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -773,10 +722,10 @@
       "widgets_values": []
     },
     {
-      "id": 18,
+      "id": 17,
       "type": "CreateVideo",
       "pos": [
-        4130.0,
+        4270.0,
         80
       ],
       "size": [
@@ -784,7 +733,7 @@
         120
       ],
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -817,10 +766,10 @@
       ]
     },
     {
-      "id": 19,
+      "id": 18,
       "type": "SaveVideo",
       "pos": [
-        4670.0,
+        4810.0,
         80
       ],
       "size": [
@@ -828,7 +777,7 @@
         120
       ],
       "flags": {},
-      "order": 18,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -848,16 +797,16 @@
         "Node name for S&R": "SaveVideo"
       },
       "widgets_values": [
-        "video/07_t2v_audio_review_gate_connected",
+        "video/qwen_vantage_exact_lock",
         "auto",
         "auto"
       ]
     },
     {
-      "id": 20,
+      "id": 19,
       "type": "MiniMaxH3AddGuide",
       "pos": [
-        1840.0,
+        1980.0,
         80
       ],
       "size": [
@@ -865,7 +814,7 @@
         250
       ],
       "flags": {},
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -960,24 +909,24 @@
     [
       6,
       10,
+      2,
+      11,
       0,
-      12,
-      1,
-      "AUDIO"
+      "QWEN_TTS_MODEL"
     ],
     [
       7,
-      11,
+      10,
       0,
-      12,
-      2,
-      "AUDIO"
+      11,
+      1,
+      "QWEN_TTS_TOKENIZER"
     ],
     [
       8,
-      12,
+      11,
       0,
-      13,
+      12,
       0,
       "AUDIO"
     ],
@@ -985,7 +934,7 @@
       9,
       9,
       1,
-      14,
+      13,
       0,
       "LATENT"
     ],
@@ -993,15 +942,15 @@
       10,
       4,
       0,
-      14,
+      13,
       1,
       "VAE"
     ],
     [
       11,
-      13,
+      12,
       0,
-      14,
+      13,
       2,
       "H3_TIMED_AUDIO"
     ],
@@ -1009,7 +958,7 @@
       12,
       5,
       0,
-      15,
+      14,
       0,
       "NOISE"
     ],
@@ -1017,7 +966,7 @@
       13,
       8,
       0,
-      15,
+      14,
       1,
       "GUIDER"
     ],
@@ -1025,7 +974,7 @@
       14,
       6,
       0,
-      15,
+      14,
       2,
       "SAMPLER"
     ],
@@ -1033,23 +982,23 @@
       15,
       7,
       0,
-      15,
+      14,
       3,
       "SIGMAS"
     ],
     [
       16,
-      14,
+      13,
       0,
-      15,
+      14,
       4,
       "LATENT"
     ],
     [
       17,
-      15,
+      14,
       0,
-      16,
+      15,
       0,
       "LATENT"
     ],
@@ -1057,23 +1006,23 @@
       18,
       3,
       0,
-      16,
+      15,
       1,
       "VAE"
     ],
     [
       21,
-      16,
+      15,
       0,
-      18,
+      17,
       0,
       "IMAGE"
     ],
     [
       23,
-      18,
+      17,
       0,
-      19,
+      18,
       0,
       "VIDEO"
     ],
@@ -1081,7 +1030,7 @@
       24,
       9,
       0,
-      20,
+      19,
       0,
       "CONDITIONING"
     ],
@@ -1089,7 +1038,7 @@
       25,
       4,
       0,
-      20,
+      19,
       2,
       "VAE"
     ],
@@ -1097,29 +1046,29 @@
       26,
       9,
       1,
-      20,
+      19,
       3,
       "LATENT"
     ],
     [
       27,
-      12,
+      11,
       0,
-      20,
+      19,
       5,
       "AUDIO"
     ],
     [
       28,
-      13,
+      12,
       1,
-      20,
+      19,
       6,
       "INT"
     ],
     [
       29,
-      20,
+      19,
       0,
       8,
       1,
@@ -1127,9 +1076,9 @@
     ],
     [
       30,
-      14,
+      13,
       1,
-      18,
+      17,
       1,
       "AUDIO"
     ]

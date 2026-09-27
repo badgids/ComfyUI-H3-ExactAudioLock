@@ -1,11 +1,13 @@
-# Example workflows
+# Workflows
 
-The `example_workflows/` directory contains loadable, editable ComfyUI workflow JSON files for the supported ExactAudioLock integration patterns.
+The `workflows/` directory contains loadable, editable ComfyUI workflow JSON files for the supported ExactAudioLock integration patterns. The directory name intentionally matches ComfyUI's custom-node workflow-template convention so the installed examples can appear in the workflow template library.
 
 Every shipped example is required to be a **complete executable video-and-audio generation workflow** and satisfy two layout rules:
 
-1. no node rectangle may overlap another node rectangle; and
+1. no saved/rendered node rectangle may overlap another node rectangle; and
 2. the graph must remain readable left-to-right without moving nodes to reveal hidden nodes.
+
+Preserve the existing layout spacing where possible. A layout repair should move or resize only nodes whose rectangles actually intersect; do not globally scale every coordinate merely to make the graph more spread out.
 
 A complete example must include its MiniMax H3 model loader, text encoder, video VAE, audio VAE, H3 latent builder, sampler path, final audio path, and a final video output (`SaveVideo` for standalone workflows or `MiniMax H3 Chain Assemble` for Context Loop).
 
@@ -36,7 +38,7 @@ Verified display labels include:
 
 The repaired examples are based on:
 
-- ComfyUI-H3-ExactAudioLock baseline: `335fcbd67288156ce8527fbcf86134cf4191c2a1`
+- ComfyUI-H3-ExactAudioLock baseline for this workflow refresh: `f44564fff682cd19a742d8c0821d8653dcc9686b`
 - Ethan Felty's Context Loop latest `main` at review time: `a8bb6c7b886312cc2821cd9959897d0088efdfe2`
 - Flybird Qwen TTS: `c96e21027ae79bc9903863c55637456786313fd7`
 - Vantage Nodes: `c048a74daab866002908e4dd2e01cc79d8f20857`
@@ -108,7 +110,7 @@ The same AUDIO feeds both nodes. The frame is not duplicated manually in two wid
 
 The single-event Timed Audio examples intentionally use a nonzero start frame so a frame-0 regression is visible immediately.
 
-The image/audio loader templates use placeholder filenames such as `first_frame.png` and `dialogue.wav`. Put matching files in `ComfyUI/input`, or choose your own input files after loading the workflow.
+The loader-based templates use character-specific placeholder filenames such as `pippa_dialogue.wav`, `magnus_dialogue.wav`, `cricket_dialogue.wav`, `pippa_first_frame.png`, `pippa_last_frame.png`, and `pippa_reference.png`. Media assets are not bundled. Put matching files in `ComfyUI/input`, or choose your own files after loading a loader-based workflow.
 
 ## Qwen3-TTS workflows
 
@@ -118,7 +120,7 @@ The image/audio loader templates use placeholder filenames such as `first_frame.
 | `qwen3_tts/02_vantage_voice_design_exact_lock.json` | `vantagewithai/Vantage-Nodes` |
 | `qwen3_tts/03_dario_custom_voice_exact_lock.json` | `DarioFT/ComfyUI-Qwen3-TTS` |
 
-Each Qwen workflow sends the generated/approved AUDIO to `MiniMax H3 Timed Audio`, uses Timed Audio's `start_frame` output to drive native `Add Guide for MiniMax H3.frame_idx`, sends `timed_audio` into `MiniMax H3 Exact Audio Lock`, and muxes `exact_audio` as the final soundtrack.
+The Qwen examples are pre-filled with dialogue and voice-direction text for Pippa, Magnus, and Cricket. Each Qwen workflow sends the generated/approved AUDIO to `MiniMax H3 Timed Audio`, uses Timed Audio's `start_frame` output to drive native `Add Guide for MiniMax H3.frame_idx`, sends `timed_audio` into `MiniMax H3 Exact Audio Lock`, and muxes `exact_audio` as the final soundtrack.
 
 The Flybird example still reviews two real `🎨 Qwen3-TTS VoiceDesign` candidates and passes only the approved take downstream.
 
@@ -127,6 +129,9 @@ The Flybird example still reviews two real `🎨 Qwen3-TTS VoiceDesign` candidat
 No built-in Qwen3-TTS generation workflow is included because current ComfyUI core does not expose a core Qwen3-TTS generation node. Qwen-related core nodes for other model families are not renamed or treated as TTS nodes.
 
 ## Context Loop workflows
+
+Every Context Loop plan includes a top-level `prompt_prefix` shared across all shots. The shipped prefix establishes Pippa, Magnus, and Cricket, preserves their appearance/wardrobe/scale and workshop continuity, and states that dialogue tags are literal spoken lines. Shot prompts then carry only the scene-specific action and dialogue on top of that shared context.
+
 
 | Workflow | Demonstrates |
 | --- | --- |

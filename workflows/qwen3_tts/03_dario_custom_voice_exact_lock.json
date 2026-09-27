@@ -1,8 +1,8 @@
 {
-  "id": "6475e543-c900-4bf3-bb72-e61d72c1c79d",
+  "id": "f8422fa5-3e94-4a97-b0b6-a8f03eb6aa39",
   "revision": 0,
-  "last_node_id": 18,
-  "last_link_id": 28,
+  "last_node_id": 19,
+  "last_link_id": 29,
   "nodes": [
     {
       "id": 1,
@@ -91,7 +91,7 @@
           "type": "VAE",
           "links": [
             4,
-            16
+            17
           ]
         }
       ],
@@ -122,8 +122,8 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            8,
-            23
+            9,
+            24
           ]
         }
       ],
@@ -154,7 +154,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            10
+            11
           ]
         }
       ],
@@ -186,7 +186,7 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            12
+            13
           ]
         }
       ],
@@ -201,7 +201,7 @@
       "id": 7,
       "type": "BasicScheduler",
       "pos": [
-        760.0,
+        620.0,
         560.0
       ],
       "size": [
@@ -231,7 +231,7 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            13
+            14
           ]
         }
       ],
@@ -248,7 +248,7 @@
       "id": 8,
       "type": "BasicGuider",
       "pos": [
-        2110.0,
+        2510.0,
         80
       ],
       "size": [
@@ -256,7 +256,7 @@
         120
       ],
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -267,7 +267,7 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "link": 27
+          "link": 28
         }
       ],
       "outputs": [
@@ -275,7 +275,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            11
+            12
           ]
         }
       ],
@@ -288,7 +288,7 @@
       "id": 9,
       "type": "MiniMaxH3ImageToVideo",
       "pos": [
-        760.0,
+        620.0,
         80
       ],
       "size": [
@@ -357,15 +357,15 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            22
+            23
           ]
         },
         {
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            7,
-            24
+            8,
+            25
           ]
         }
       ],
@@ -373,7 +373,7 @@
         "Node name for S&R": "MiniMaxH3ImageToVideo"
       },
       "widgets_values": [
-        "integrated_multimodal_description:\n[Shot 1] A single continuous cinematic shot of a person speaking naturally in a quiet workshop. Keep the camera movement restrained and preserve facial identity and mouth motion. The supplied dialogue audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet room tone and subtle workshop ambience.\n\nnon_diegetic_music:\nNo non-diegetic music.",
+        "integrated_multimodal_description:\n[Shot 1] Cricket is in a warm, practical workshop with Pippa, Magnus, and Cricket. Cricket speaks naturally: <d>Keep telling yourself that, Magnus.</d> The other two react naturally without interrupting. Preserve the established appearance, clothing, scale, and identity of Pippa, Magnus, and Cricket. Keep restrained cinematic camera movement and accurate mouth motion. The generated TTS audio is the authoritative timing source.\n\noverall_soundscape:\nQuiet workshop room tone with subtle tools and room ambience around the dialogue.\n\nnon_diegetic_music:\nNo non-diegetic music.",
         896,
         512,
         124
@@ -381,113 +381,102 @@
     },
     {
       "id": 10,
-      "type": "H3ExactAudioLockAudioReviewGate",
+      "type": "Qwen3Loader",
       "pos": [
         80,
         1400.0
       ],
       "size": [
-        460,
-        320
+        320,
+        180
       ],
       "flags": {},
       "order": 6,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "source_mode",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "source_mode"
-          }
-        },
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": null
-        },
-        {
-          "name": "audio_file",
-          "type": "COMBO",
-          "link": null,
-          "widget": {
-            "name": "audio_file"
-          }
-        },
-        {
-          "name": "audio_files.audio_file_candidate_0",
-          "type": "COMBO",
-          "link": null,
-          "label": "audio_file_candidate_0",
-          "shape": 7
-        },
-        {
-          "name": "review_label",
-          "type": "STRING",
-          "link": null,
-          "widget": {
-            "name": "review_label"
-          }
-        },
-        {
-          "name": "delete_rejected_audio_files",
-          "type": "BOOLEAN",
-          "link": null,
-          "widget": {
-            "name": "delete_rejected_audio_files"
-          }
-        },
-        {
-          "name": "review_timeout_seconds",
-          "type": "INT",
-          "link": null,
-          "widget": {
-            "name": "review_timeout_seconds"
-          }
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "name": "accepted_audio",
-          "type": "AUDIO",
+          "name": "model",
+          "type": "QWEN3_MODEL",
           "links": [
-            6,
-            25
+            6
           ]
         }
       ],
       "properties": {
-        "Node name for S&R": "H3ExactAudioLockAudioReviewGate"
+        "Node name for S&R": "Qwen3Loader"
       },
       "widgets_values": [
-        "audio_file",
-        "dialogue_take_a.wav",
-        "dialogue_take_b.wav",
-        "Choose the dialogue take",
-        false,
-        3600
+        "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+        "HuggingFace",
+        "bf16",
+        "auto",
+        ""
       ]
     },
     {
       "id": 11,
-      "type": "MiniMaxH3TimedAudio",
+      "type": "Qwen3CustomVoice",
       "pos": [
-        760.0,
+        620.0,
         780.0
       ],
       "size": [
-        320,
-        120
+        460,
+        260
       ],
       "flags": {},
       "order": 9,
       "mode": 0,
       "inputs": [
         {
+          "name": "model",
+          "type": "QWEN3_MODEL",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            7,
+            26
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Qwen3CustomVoice"
+      },
+      "widgets_values": [
+        "Keep telling yourself that, Magnus.",
+        "Auto",
+        "Ryan",
+        42,
+        "fixed",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 12,
+      "type": "MiniMaxH3TimedAudio",
+      "pos": [
+        1300.0,
+        80
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
           "name": "audio",
           "type": "AUDIO",
-          "link": 6
+          "link": 7
         },
         {
           "name": "start_frame",
@@ -519,14 +508,14 @@
           "name": "timed_audio",
           "type": "H3_TIMED_AUDIO",
           "links": [
-            9
+            10
           ]
         },
         {
           "name": "start_frame",
           "type": "INT",
           "links": [
-            26
+            27
           ]
         }
       ],
@@ -536,14 +525,14 @@
       "widgets_values": [
         24,
         0.0,
-        "approved dialogue"
+        "Cricket Qwen3-TTS"
       ]
     },
     {
-      "id": 12,
+      "id": 13,
       "type": "MiniMaxH3ExactAudioLock",
       "pos": [
-        1440.0,
+        1840.0,
         430.0
       ],
       "size": [
@@ -551,23 +540,23 @@
         300
       ],
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
           "name": "av_latent",
           "type": "LATENT",
-          "link": 7
+          "link": 8
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 8
+          "link": 9
         },
         {
           "name": "timed_audios.timed_audio_0",
           "type": "H3_TIMED_AUDIO",
-          "link": 9,
+          "link": 10,
           "label": "timed_audio_0",
           "shape": 7
         },
@@ -582,14 +571,14 @@
           "name": "locked_av_latent",
           "type": "LATENT",
           "links": [
-            14
+            15
           ]
         },
         {
           "name": "exact_audio",
           "type": "AUDIO",
           "links": [
-            28
+            29
           ]
         },
         {
@@ -608,10 +597,10 @@
       ]
     },
     {
-      "id": 13,
+      "id": 14,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        2650.0,
+        3050.0,
         80
       ],
       "size": [
@@ -619,33 +608,33 @@
         120
       ],
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 10
+          "link": 11
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 11
+          "link": 12
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 12
+          "link": 13
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 13
+          "link": 14
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 14
+          "link": 15
         }
       ],
       "outputs": [
@@ -653,7 +642,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            15
+            16
           ]
         },
         {
@@ -668,50 +657,10 @@
       "widgets_values": []
     },
     {
-      "id": 14,
+      "id": 15,
       "type": "VAEDecode",
       "pos": [
-        3190.0,
-        80
-      ],
-      "size": [
-        320,
-        120
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 15
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 16
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            19
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 16,
-      "type": "CreateVideo",
-      "pos": [
-        3730.0,
+        3590.0,
         80
       ],
       "size": [
@@ -723,14 +672,54 @@
       "mode": 0,
       "inputs": [
         {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 16
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CreateVideo",
+      "pos": [
+        4130.0,
+        80
+      ],
+      "size": [
+        320,
+        120
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
           "name": "images",
           "type": "IMAGE",
-          "link": 19
+          "link": 20
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 28,
+          "link": 29,
           "shape": 7
         }
       ],
@@ -739,7 +728,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            21
+            22
           ]
         }
       ],
@@ -752,10 +741,10 @@
       ]
     },
     {
-      "id": 17,
+      "id": 18,
       "type": "SaveVideo",
       "pos": [
-        4270.0,
+        4670.0,
         80
       ],
       "size": [
@@ -763,13 +752,13 @@
         120
       ],
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 21
+          "link": 22
         }
       ],
       "outputs": [
@@ -783,16 +772,16 @@
         "Node name for S&R": "SaveVideo"
       },
       "widgets_values": [
-        "video/08_t2v_audio_review_gate_managed_files",
+        "video/qwen_dario_exact_lock",
         "auto",
         "auto"
       ]
     },
     {
-      "id": 18,
+      "id": 19,
       "type": "MiniMaxH3AddGuide",
       "pos": [
-        1440.0,
+        1840.0,
         80
       ],
       "size": [
@@ -800,13 +789,13 @@
         250
       ],
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 22
+          "link": 23
         },
         {
           "name": "vae",
@@ -816,12 +805,12 @@
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 23
+          "link": 24
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 24
+          "link": 25
         },
         {
           "name": "image",
@@ -831,12 +820,12 @@
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 25
+          "link": 26
         },
         {
           "name": "frame_idx",
           "type": "INT",
-          "link": 26,
+          "link": 27,
           "widget": {
             "name": "frame_idx"
           }
@@ -847,7 +836,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            27
+            28
           ]
         }
       ],
@@ -898,157 +887,165 @@
       0,
       11,
       0,
-      "AUDIO"
+      "QWEN3_MODEL"
     ],
     [
       7,
+      11,
+      0,
+      12,
+      0,
+      "AUDIO"
+    ],
+    [
+      8,
       9,
       1,
-      12,
+      13,
       0,
       "LATENT"
     ],
     [
-      8,
+      9,
       4,
       0,
-      12,
+      13,
       1,
       "VAE"
     ],
     [
-      9,
-      11,
-      0,
+      10,
       12,
+      0,
+      13,
       2,
       "H3_TIMED_AUDIO"
     ],
     [
-      10,
+      11,
       5,
       0,
-      13,
+      14,
       0,
       "NOISE"
     ],
     [
-      11,
+      12,
       8,
       0,
-      13,
+      14,
       1,
       "GUIDER"
     ],
     [
-      12,
+      13,
       6,
       0,
-      13,
+      14,
       2,
       "SAMPLER"
     ],
     [
-      13,
+      14,
       7,
       0,
-      13,
+      14,
       3,
       "SIGMAS"
-    ],
-    [
-      14,
-      12,
-      0,
-      13,
-      4,
-      "LATENT"
     ],
     [
       15,
       13,
       0,
       14,
-      0,
+      4,
       "LATENT"
     ],
     [
       16,
+      14,
+      0,
+      15,
+      0,
+      "LATENT"
+    ],
+    [
+      17,
       3,
       0,
-      14,
+      15,
       1,
       "VAE"
     ],
     [
-      19,
-      14,
+      20,
+      15,
       0,
-      16,
+      17,
       0,
       "IMAGE"
     ],
     [
-      21,
-      16,
-      0,
+      22,
       17,
+      0,
+      18,
       0,
       "VIDEO"
     ],
     [
-      22,
+      23,
       9,
       0,
-      18,
+      19,
       0,
       "CONDITIONING"
     ],
     [
-      23,
+      24,
       4,
       0,
-      18,
+      19,
       2,
       "VAE"
     ],
     [
-      24,
+      25,
       9,
       1,
-      18,
+      19,
       3,
       "LATENT"
     ],
     [
-      25,
-      10,
+      26,
+      11,
       0,
-      18,
+      19,
       5,
       "AUDIO"
     ],
     [
-      26,
-      11,
+      27,
+      12,
       1,
-      18,
+      19,
       6,
       "INT"
     ],
     [
-      27,
-      18,
+      28,
+      19,
       0,
       8,
       1,
       "CONDITIONING"
     ],
     [
-      28,
-      12,
+      29,
+      13,
       1,
-      16,
+      17,
       1,
       "AUDIO"
     ]
