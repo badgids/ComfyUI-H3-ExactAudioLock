@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="800" viewBox="0 0 1240 800">
+<defs>
+<linearGradient id="bg-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1240" y2="800"><stop offset="0%" stop-color="#0f0f1a"/><stop offset="100%" stop-color="#1a1a2e"/></linearGradient>
+<marker id="arr_data" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a855f7"/></marker>
+<marker id="arr_control" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"/></marker>
+<marker id="arr_guide" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f97316"/></marker>
+<marker id="arr_write" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"/></marker>
+<marker id="arr_loop" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#eab308"/></marker>
+<marker id="arr_dim" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+</defs>
+<rect width="1240" height="800" fill="url(#bg-grad)"/>
+<text x="28" y="40" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="16" font-weight="700" fill="#e2e8f0">Audio Review / Accept Gate — before Timed Audio / ExactAudioLock</text>
+<text x="28" y="58" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">Managed-file candidates: source_mode = audio_file (workflow standalone/08_t2v_audio_review_gate_managed_files)</text>
+<polyline points="230.0,106.5 252,106.5 252,189.9 336.0,189.9" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="230.0,196.5 265,196.5 265,205 300.0,205.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="230.0,286.5 258,286.5 258,220.1 336.0,220.1" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="230.0,376.5 272,376.5 272,236.8 376.0,236.8" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="536.7,194.0 596,194 596,146 620.0,146.0" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="563.0,205.0 592,205 592,266 620.0,266.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="431.5,260.0 431.5,340 415,340 415.0,440.0" fill="none" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arr_write)" stroke-linejoin="round"/>
+<polyline points="826.0,146.0 856,146 856,200 700,200 700.0,230.0" fill="none" stroke="#3b82f6" stroke-width="2.6" marker-end="url(#arr_control)" stroke-linejoin="round"/>
+<polyline points="784.0,182.0 784,186 840,186 840,345 700,345 700.0,360.0" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="195.0,560.0 260,560 260,140 600,140 600,208 646,208 646.0,230.0" fill="none" stroke="#f97316" stroke-width="1.6" marker-end="url(#arr_guide)" stroke-linejoin="round"/>
+<polyline points="175.0,622.0 175,648 240,648 240,132 580,132 580,215 670,215 670.0,230.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="225.0,591.0 608,591 608,399 620.0,399.0" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="1070.0,327.5 1106,327.5 1106,222 660,222 660.0,230.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="940.0,350.0 940,354 608,354 608,381 620.0,381.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="1070.0,335.0 1118,335 1118,215 1030,215 1030.0,240.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="710.0,302.0 710,330 530,330 530.0,360.0" fill="none" stroke="#f97316" stroke-width="1.6" marker-end="url(#arr_guide)" stroke-linejoin="round"/>
+<polyline points="600.0,382.5 612,382.5 612,70 940,70 940.0,84.0" fill="none" stroke="#f97316" stroke-width="1.6" marker-end="url(#arr_guide)" stroke-linejoin="round"/>
+<polyline points="810.0,381.0 838,381 838,106.5 880.0,106.5" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="810.0,399.0 830,399 830,262.5 880.0,262.5" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="690.0,422.0 690,642.5 880.0,642.5" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="966.0,129.0 966.0,240.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="1052.0,270.0 1084,270 1084,600 1000,600 1000.0,620.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="966.0,665.0 966.0,700.0" fill="none" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arr_write)" stroke-linejoin="round"/>
+<g>
+<path d="M 40 84 h 176 l 14 14 v 31 h -190 z" fill="rgb(43,43,38)" stroke="#eab308" stroke-width="1.5"/>
+<path d="M 216 84 v 14 h 14" fill="none" stroke="#eab308" stroke-width="1.2" opacity="0.8"/>
+<text x="135.0" y="110.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">take_01.mp3</text>
+</g>
+<g>
+<path d="M 40 174 h 176 l 14 14 v 31 h -190 z" fill="rgb(43,43,38)" stroke="#eab308" stroke-width="1.5"/>
+<path d="M 216 174 v 14 h 14" fill="none" stroke="#eab308" stroke-width="1.2" opacity="0.8"/>
+<text x="135.0" y="200.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">take_02.flac</text>
+</g>
+<g>
+<path d="M 40 264 h 176 l 14 14 v 31 h -190 z" fill="rgb(43,43,38)" stroke="#eab308" stroke-width="1.5"/>
+<path d="M 216 264 v 14 h 14" fill="none" stroke="#eab308" stroke-width="1.2" opacity="0.8"/>
+<text x="135.0" y="290.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">take_03.ogg</text>
+</g>
+<g>
+<path d="M 40 354 h 176 l 14 14 v 31 h -190 z" fill="rgb(43,43,38)" stroke="#eab308" stroke-width="1.5"/>
+<path d="M 216 354 v 14 h 14" fill="none" stroke="#eab308" stroke-width="1.2" opacity="0.8"/>
+<text x="135.0" y="374.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">take_04.wav</text>
+<text x="135.0" y="387.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">optional</text>
+</g>
+<g>
+<polygon points="354,150 509,150 563,205.0 509,260 354,260 300,205.0" fill="rgb(44,29,45)" stroke="#ef4444" stroke-width="1.5"/>
+<text x="431.5" y="195.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Audio Review /</text>
+<text x="431.5" y="209.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Accept Gate</text>
+<text x="431.5" y="222.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">source_mode = audio_file</text>
+</g>
+<g>
+<path d="M 300 440 h 216 l 14 14 v 48 h -230 z" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<path d="M 516 440 v 14 h 14" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.8"/>
+<text x="415.0" y="462.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Saved alternates</text>
+<text x="415.0" y="475.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">output/.../alternates/</text>
+<text x="415.0" y="488.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">&lt;review-token&gt;/</text>
+</g>
+<g>
+<polygon points="646,110 800,110 826,146.0 800,182 646,182 620,146.0" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="723.0" y="136.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3</text>
+<text x="723.0" y="150.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Timed Audio</text>
+<text x="723.0" y="163.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">start_frame · gain · label</text>
+</g>
+<g>
+<polygon points="646,230 784,230 810,266.0 784,302 646,302 620,266.0" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="715.0" y="250.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Add Guide for</text>
+<text x="715.0" y="264.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3</text>
+<text x="715.0" y="277.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">audio · frame_idx</text>
+<text x="715.0" y="290.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">positive · latent</text>
+</g>
+<g>
+<rect x="620" y="360" width="190" height="62" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="715.0" y="388.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Exact</text>
+<text x="715.0" y="402.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Audio Lock</text>
+</g>
+<g>
+<rect x="460" y="360" width="140" height="45" rx="10" fill="rgb(20,28,48)" stroke="#334155" stroke-width="1.5"/>
+<text x="530.0" y="386.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Basic Guider</text>
+</g>
+<g>
+<rect x="880" y="305" width="190" height="45" rx="10" fill="rgb(35,31,69)" stroke="#a855f7" stroke-width="1.5"/>
+<text x="975.0" y="331.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 audio VAE</text>
+</g>
+<g>
+<polygon points="906,84 1026,84 1052,106.5 1026,129 906,129 880,106.5" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="966.0" y="110.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">H3 sampler</text>
+</g>
+<g>
+<rect x="880" y="240" width="172" height="45" rx="10" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="966.0" y="260.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">VAE Decode</text>
+<text x="966.0" y="273.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">video</text>
+</g>
+<g>
+<polygon points="66,560 199,560 225,591.0 199,622 66,622 40,591.0" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="132.5" y="581.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Image</text>
+<text x="132.5" y="595.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">to Video</text>
+<text x="132.5" y="608.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">native H3 target latent</text>
+</g>
+<g>
+<rect x="880" y="620" width="172" height="45" rx="10" fill="rgb(20,28,48)" stroke="#334155" stroke-width="1.5"/>
+<text x="966.0" y="640.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Create Video</text>
+<text x="966.0" y="653.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">images + exact audio</text>
+</g>
+<g>
+<path d="M 880 700 h 158 l 14 14 v 31 h -172 z" fill="rgb(20,28,48)" stroke="#334155" stroke-width="1.5"/>
+<path d="M 1038 700 v 14 h 14" fill="none" stroke="#334155" stroke-width="1.2" opacity="0.8"/>
+<text x="966.0" y="726.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Save Video</text>
+</g>
+<line x1="28" y1="772" x2="54" y2="772" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)"/>
+<text x="62" y="776" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">audio / latent</text>
+<line x1="183.2" y1="772" x2="209.2" y2="772" stroke="#3b82f6" stroke-width="1.6" marker-end="url(#arr_control)"/>
+<text x="217.2" y="776" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">frame / INT</text>
+<line x1="318.0" y1="772" x2="344.0" y2="772" stroke="#f97316" stroke-width="1.6" marker-end="url(#arr_guide)"/>
+<text x="352.0" y="776" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">conditioning</text>
+<line x1="459.6" y1="772" x2="485.6" y2="772" stroke="#10b981" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arr_write)"/>
+<text x="493.6" y="776" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">durable alternate</text>
+<text x="1212" y="776" text-anchor="end" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">i2v LATENT + audio VAE feed Add Guide and the lock</text>
+<text x="1212" y="761" text-anchor="end" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">gate is an execution barrier — only accepted_audio continues downstream · Add Guide.positive → Basic Guider → sampler.guider</text>
+</svg>

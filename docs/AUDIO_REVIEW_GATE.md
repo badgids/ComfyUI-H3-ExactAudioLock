@@ -123,24 +123,11 @@ This mirrors the important Context Loop Review Gate separation:
 
 Connected candidates:
 
-```text
-Qwen3 TTS take A ----\
-Qwen3 TTS take B -----+--> Audio Review / Accept Gate --> accepted_audio
-Qwen3 TTS take C ----/                                  |
-                                                         v
-                                               MiniMax H3 Timed Audio
-                                                         |
-                                                         v
-                                             MiniMax H3 Exact Audio Lock
-```
+![Audio Review / Accept Gate — connected candidates into Timed Audio and the exact lock](diagrams/audio-review-gate.svg)
 
 Direct file candidates:
 
-```text
-take_01.mp3 ----\
-take_02.flac -----+--> Audio Review / Accept Gate --> accepted_audio
-take_03.ogg ----/        source_mode=audio_file
-```
+![Audio Review / Accept Gate — managed-file candidates (source_mode = audio_file)](diagrams/audio-review-gate-files.svg)
 
 The output is ordinary ComfyUI `AUDIO`, so the winning candidate can feed
 ExactAudioLock, H3 Context Loop companion wiring, or any unrelated downstream audio

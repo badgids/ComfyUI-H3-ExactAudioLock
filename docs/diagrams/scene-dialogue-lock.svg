@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="700" viewBox="0 0 1240 700">
+<defs>
+<linearGradient id="bg-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1240" y2="700"><stop offset="0%" stop-color="#0f0f1a"/><stop offset="100%" stop-color="#1a1a2e"/></linearGradient>
+<marker id="arr_data" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a855f7"/></marker>
+<marker id="arr_control" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"/></marker>
+<marker id="arr_guide" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f97316"/></marker>
+<marker id="arr_write" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"/></marker>
+<marker id="arr_loop" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#eab308"/></marker>
+<marker id="arr_dim" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+</defs>
+<rect width="1240" height="700" fill="url(#bg-grad)"/>
+<text x="28" y="40" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="16" font-weight="700" fill="#e2e8f0">Scene Dialogue Audio Lock — Context Loop wiring</text>
+<text x="28" y="58" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">Recursive/Context Loop partial lock with post-sampling Finalize into Loop Trim (workflows context_loop/02, 04)</text>
+<polyline points="250.0,136.0 305,136 305,199 360.0,199.0" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="266.0,247.5 313,247.5 313,207 360.0,207.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="250.0,371.0 297,371 297,215 360.0,215.0" fill="none" stroke="#3b82f6" stroke-width="1.6" marker-end="url(#arr_control)" stroke-linejoin="round"/>
+<polyline points="250.0,491.0 321,491 321,223 360.0,223.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="250.0,602.5 329,602.5 329,231 360.0,231.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="593.0,211.0 656,211 656,106.5 720.0,106.5" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="806.0,129.0 806.0,200.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="806.0,245.0 925,245 925,575 332,575 332,359 360.0,359.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="826.0,129.0 942,129 942,560 688,560 688,362.5 720.0,362.5" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="460.0,242.0 460.0,340.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="493.0,242.0 493.0,340.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="476.5,402.0 476.5,511 720.0,511.0" fill="none" stroke="#a855f7" stroke-width="2.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="125.0,522.0 125,545 340,545 340,410 770,410 770.0,480.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="125.0,402.0 125,445 750,445 750.0,480.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="814.0,385.0 814.0,480.0" fill="none" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)" stroke-linejoin="round"/>
+<polyline points="910.0,511.0 965,511 965,507.5 1020.0,507.5" fill="none" stroke="#eab308" stroke-width="1.6" marker-end="url(#arr_loop)" stroke-linejoin="round"/>
+<g>
+<rect x="40" y="100" width="210" height="72" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="145.0" y="120.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Scene Timed Audio</text>
+<text x="145.0" y="134.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">events</text>
+<text x="145.0" y="147.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">scene_index + local</text>
+<text x="145.0" y="160.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">start_frame</text>
+</g>
+<g>
+<rect x="40" y="220" width="226" height="45" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="153.0" y="240.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Current Scene Dialogue</text>
+<text x="153.0" y="253.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">approved event set (optional)</text>
+</g>
+<g>
+<rect x="40" y="340" width="210" height="62" rx="10" fill="rgb(45,35,39)" stroke="#f97316" stroke-width="1.5"/>
+<text x="145.0" y="361.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Chain</text>
+<text x="145.0" y="375.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Current</text>
+<text x="145.0" y="388.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">clip_index (one-based)</text>
+</g>
+<g>
+<rect x="40" y="460" width="210" height="62" rx="10" fill="rgb(45,35,39)" stroke="#f97316" stroke-width="1.5"/>
+<text x="145.0" y="481.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Chain</text>
+<text x="145.0" y="495.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Context</text>
+<text x="145.0" y="508.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">continuation latent</text>
+</g>
+<g>
+<rect x="40" y="580" width="210" height="45" rx="10" fill="rgb(35,31,69)" stroke="#a855f7" stroke-width="1.5"/>
+<text x="145.0" y="606.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 audio VAE</text>
+</g>
+<g>
+<rect x="360" y="180" width="233" height="62" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="476.5" y="201.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Scene Dialogue</text>
+<text x="476.5" y="215.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Audio Lock</text>
+<text x="476.5" y="228.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">scene_timed_audios · event set</text>
+</g>
+<g>
+<polygon points="746,84 866,84 892,106.5 866,129 746,129 720,106.5" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="806.0" y="110.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">H3 sampler</text>
+</g>
+<g>
+<rect x="720" y="200" width="172" height="45" rx="10" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="806.0" y="220.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">VAE Decode Audio</text>
+<text x="806.0" y="233.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">generated_audio</text>
+</g>
+<g>
+<rect x="720" y="340" width="172" height="45" rx="10" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="806.0" y="360.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">VAE Decode</text>
+<text x="806.0" y="373.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">video</text>
+</g>
+<g>
+<rect x="360" y="340" width="233" height="62" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="476.5" y="361.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Dialogue</text>
+<text x="476.5" y="375.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Audio Finalize</text>
+<text x="476.5" y="388.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">restores dialogue cores</text>
+</g>
+<g>
+<polygon points="746,480 884,480 910,511.0 884,542 746,542 720,511.0" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="815.0" y="508.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">MiniMax H3 Loop Trim</text>
+<text x="815.0" y="521.5" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">images + audio + state</text>
+</g>
+<g>
+<rect x="1020" y="480" width="200" height="45" rx="10" fill="rgb(45,35,39)" stroke="#f97316" stroke-width="1.5"/>
+<text x="1120.0" y="500.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">Segment Save → Review</text>
+<text x="1120.0" y="513.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">→ next scene</text>
+</g>
+<line x1="28" y1="672" x2="54" y2="672" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)"/>
+<text x="62" y="676" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">audio / latent</text>
+<line x1="183.2" y1="672" x2="209.2" y2="672" stroke="#3b82f6" stroke-width="1.6" marker-end="url(#arr_control)"/>
+<text x="217.2" y="676" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">scene index</text>
+<line x1="318.0" y1="672" x2="344.0" y2="672" stroke="#eab308" stroke-width="1.6" marker-end="url(#arr_loop)"/>
+<text x="352.0" y="676" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">recursive loop</text>
+<text x="1212" y="676" text-anchor="end" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">scene lock sits between Chain Context.latent and the sampler · Finalize runs after H3 audio decode</text>
+<text x="1212" y="661" text-anchor="end" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">Chain Current.state + Chain Context.trim_frames feed Loop Trim</text>
+</svg>

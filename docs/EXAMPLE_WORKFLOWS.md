@@ -53,11 +53,7 @@ The lock and sampler serve different purposes.
 
 `locked_av_latent` drives H3 generation, but `exact_audio` is the deterministic final soundtrack authority.
 
-```text
-Timed Audio ─► Exact Audio Lock ─► locked_av_latent ─► H3 sampler ─► video decode
-                    │
-                    └────────────► exact_audio ─────────────────────► final video/mux audio
-```
+![Full Exact Audio Lock — locked latent drives the sampler, exact_audio is the final soundtrack](diagrams/exact-lock-basic.svg)
 
 Do not replace `exact_audio` with `VAEDecodeAudio` from the sampled H3 latent when the requirement is exact supplied waveform timing.
 
@@ -65,17 +61,7 @@ Do not replace `exact_audio` with `VAEDecodeAudio` from the sampled H3 latent wh
 
 H3 may generate unsupplied audio, so the sampled H3 soundtrack is kept outside supplied dialogue. The supplied dialogue cores are restored exactly after sampling:
 
-```text
-Dialogue Audio Lock ─► dialogue_locked_av_latent ─► H3 sampler ─► VAEDecodeAudio ─┐
-        │                                                                          │
-        ├── dialogue_reference_audio ──────────────────────────────────────────────┤
-        └── dialogue_lock_manifest ────────────────────────────────────────────────┤
-                                                                                   ▼
-                                                               Dialogue Audio Finalize
-                                                                                   │
-                                                                                   ▼
-                                                                              final_audio
-```
+![Dialogue Audio Finalize — post-sampling authority restores the supplied dialogue cores](diagrams/dialogue-finalize.svg)
 
 That final path is required for exact dialogue onset in the exported partial-lock soundtrack.
 
@@ -83,13 +69,7 @@ That final path is required for exact dialogue onset in the exported partial-loc
 
 Standalone timed-dialogue examples use the Timed Audio node's `start_frame` output as the single frame source for native `Add Guide for MiniMax H3.frame_idx`:
 
-```text
-Approved AUDIO ────────┬────────► MiniMax H3 Timed Audio ─► timed_audio ─► lock
-                       │                    │
-                       │                    └── start_frame ─────────────┐
-                       │                                                ▼
-                       └────────────────────────────► Add Guide for MiniMax H3
-```
+![Same-frame H3 conditioning — one approved AUDIO, one shared start_frame](diagrams/add-guide.svg)
 
 The same AUDIO feeds both nodes. The frame is not duplicated manually in two widgets.
 
@@ -158,15 +138,9 @@ MiniMax H3 Chain Current.clip_index
 
 The **audio output path** is different for the two lock modes:
 
-```text
-Full scene lock:
-Scene Exact Audio Lock.exact_audio -> MiniMax H3 Loop Trim.audio
+![Full scene lock — exact_audio feeds the Loop Trim audio input](diagrams/scene-exact-lock.svg)
 
-Dialogue-partial scene lock:
-Sampler -> VAEDecodeAudio --------------------\
-Scene Dialogue Lock.dialogue_reference_audio ---+-> Dialogue Audio Finalize.final_audio -> MiniMax H3 Loop Trim.audio
-Scene Dialogue Lock.dialogue_lock_manifest ----/
-```
+![Dialogue-partial scene lock — Finalize output feeds the Loop Trim audio input](diagrams/scene-dialogue-lock.svg)
 
 Do not enable a separate complete Context Loop source-audio target lock on the same sampler path as `MiniMax H3 Scene Exact Audio Lock`. There should be one owner of the complete target-audio latent.
 

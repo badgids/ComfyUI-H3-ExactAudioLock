@@ -28,60 +28,13 @@ The finalizer is what makes the final exported soundtrack authoritative at the e
 
 For visible dialogue, use the same frame for lock placement and native H3 guide conditioning. The safest wiring uses the Timed Audio node's `start_frame` output as the one source of truth:
 
-```text
-Approved AUDIO ───────────────┬────────────► MiniMax H3 Timed Audio
-                              │                       │
-                              │                       ├── timed_audio ─────────┐
-                              │                       │                        │
-                              │                       └── start_frame ──┐      │
-                              │                                         │      │
-                              └────────────► Add Guide for MiniMax H3  │      │
-H3 positive ────────────────────────────────► positive                  │      │
-H3 AV latent ───────────────────────────────► latent                    │      │
-H3 audio VAE ───────────────────────────────► audio_vae                 │      │
-Timed Audio.start_frame ────────────────────► frame_idx ◄───────────────┘      │
-                                                                            ▼
-H3 AV latent ─────────────────────────────────────────► MiniMax H3 Dialogue Audio Lock
-H3 audio VAE ─────────────────────────────────────────►           │
-                                                                  ├── dialogue_locked_av_latent ─► H3 sampler
-                                                                  ├── dialogue_reference_audio ───────────┐
-                                                                  └── dialogue_lock_manifest ─────────────┤
-                                                                                                          │
-H3 sampler ─► VAEDecodeAudio ─► generated_audio ─► MiniMax H3 Dialogue Audio Finalize                    │
-                                                      ▲                                                   │
-                                                      └───────────────────────────────────────────────────┘
-                                                                          │
-                                                                          ▼
-                                                                      final_audio
-                                                                          │
-                                                                          ▼
-                                                                 Create Video / mux
-```
+![Dialogue partial lock — standalone wiring with same-frame Add Guide conditioning](diagrams/dialogue-partial-lock.svg)
 
 `Add Guide for MiniMax H3` is ComfyUI's native display label for `MiniMaxH3AddGuide`. It improves event-level H3 conditioning; the lock/finalizer remain the soundtrack timing authority.
 
 ## Context Loop / Director wiring
 
-```text
-MiniMax H3 Chain Current.clip_index
-        └──────────────────────────────► Scene Dialogue Audio Lock.current_scene
-
-Scene Timed Audio events
-        └──────────────────────────────► Scene Dialogue Audio Lock.scene_timed_audios
-
-MiniMax H3 Chain Context.latent
-        └──────────────────────────────► Scene Dialogue Audio Lock.av_latent
-
-Scene Dialogue Audio Lock.dialogue_locked_av_latent
-        └──────────────────────────────► SamplerCustomAdvanced.latent_image
-
-Sampler output ─► VAEDecodeAudio ────────────────► Dialogue Audio Finalize.generated_audio
-Scene Dialogue Audio Lock.dialogue_reference_audio ─► Dialogue Audio Finalize.dialogue_reference_audio
-Scene Dialogue Audio Lock.dialogue_lock_manifest ───► Dialogue Audio Finalize.dialogue_lock_manifest
-
-Dialogue Audio Finalize.final_audio
-        └──────────────────────────────► MiniMax H3 Loop Trim.audio
-```
+![Scene Dialogue Audio Lock — Context Loop wiring with post-sampling Finalize into Loop Trim](diagrams/scene-dialogue-lock.svg)
 
 Apply the scene lock after Context Loop has established its continuation/context latent and before sampling. Run the finalizer after H3 audio decode and before the segment/trim audio path.
 

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="540" viewBox="0 0 1100 540">
+<defs>
+<linearGradient id="bg-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1100" y2="540"><stop offset="0%" stop-color="#0f0f1a"/><stop offset="100%" stop-color="#1a1a2e"/></linearGradient>
+<marker id="arr_data" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a855f7"/></marker>
+<marker id="arr_control" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"/></marker>
+<marker id="arr_guide" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f97316"/></marker>
+<marker id="arr_write" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#10b981"/></marker>
+<marker id="arr_loop" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#eab308"/></marker>
+<marker id="arr_dim" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+</defs>
+<rect width="1100" height="540" fill="url(#bg-grad)"/>
+<text x="28" y="40" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="16" font-weight="700" fill="#e2e8f0">Layering and overlapping audio — 24 fps target timeline</text>
+<text x="28" y="58" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">start_frame is exact on the 24 fps video timeline · overlaps allowed under mix_policy=sum</text>
+<polyline points="190,110 862,110" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arr_dim)" stroke-linejoin="round"/>
+<polyline points="190,104 190,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="302,104 302,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="414,104 414,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="526,104 526,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="638,104 638,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="750,104 750,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="862,104 862,116" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="6 4" stroke-linejoin="round"/>
+<polyline points="372.0,182.0 372.0,220.0" fill="none" stroke="#eab308" stroke-width="1.6" marker-end="url(#arr_loop)" stroke-linejoin="round"/>
+<polyline points="526.0,252.0 526.0,290.0" fill="none" stroke="#eab308" stroke-width="1.6" marker-end="url(#arr_loop)" stroke-linejoin="round"/>
+<g>
+<rect x="218" y="150" width="196" height="32" rx="10" fill="rgb(21,37,69)" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="316.0" y="170.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">dialogue A</text>
+</g>
+<g>
+<rect x="330" y="220" width="224" height="32" rx="10" fill="rgb(15,44,53)" stroke="#10b981" stroke-width="1.5"/>
+<text x="442.0" y="240.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">dialogue B</text>
+</g>
+<g>
+<rect x="498" y="290" width="168" height="32" rx="10" fill="rgb(45,35,39)" stroke="#f97316" stroke-width="1.5"/>
+<text x="582.0" y="310.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">dialogue C</text>
+</g>
+<g>
+<rect x="218" y="400" width="448" height="32" rx="10" fill="rgb(35,31,69)" stroke="#a855f7" stroke-width="1.5"/>
+<text x="442.0" y="420.0" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="13" font-weight="600" fill="#e2e8f0">mixed bus: A + overlap(A,B) + overlap(B,C) + C</text>
+</g>
+<text x="190" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f0</text>
+<text x="302" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f8</text>
+<text x="414" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f16</text>
+<text x="526" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f24</text>
+<text x="638" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f32</text>
+<text x="750" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f40</text>
+<text x="862" y="132" text-anchor="middle" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">f48</text>
+<text x="872" y="114" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#94a3b8">frames @ 24 fps</text>
+<text x="28" y="170" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#e2e8f0">Pippa</text>
+<text x="28" y="240" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#e2e8f0">Magnus</text>
+<text x="28" y="310" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#e2e8f0">Cricket</text>
+<text x="382" y="208" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#eab308">overlap A+B</text>
+<text x="536" y="278" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#eab308">overlap B+C</text>
+<text x="28" y="420" text-anchor="start" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" font-weight="400" fill="#e2e8f0">Mixed bus</text>
+<line x1="28" y1="512" x2="54" y2="512" stroke="#a855f7" stroke-width="1.6" marker-end="url(#arr_data)"/>
+<text x="62" y="516" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">audio</text>
+<line x1="122.0" y1="512" x2="148.0" y2="512" stroke="#eab308" stroke-width="1.6" marker-end="url(#arr_loop)"/>
+<text x="156.0" y="516" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">overlap region</text>
+<text x="1072" y="516" text-anchor="end" font-family="'JetBrains Mono','SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace" font-size="11" fill="#94a3b8">one exact waveform — silence is real waveform-domain zeros, not zero-valued latents</text>
+</svg>

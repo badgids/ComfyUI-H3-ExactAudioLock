@@ -92,6 +92,8 @@ workflow's original AUDIO objects remain the data path.
 
 ## Context Loop scene routing
 
+![Context Loop — production-wide dialogue review and scene routing](diagrams/context-loop-chain.svg)
+
 Connect:
 
 ```text
@@ -174,11 +176,7 @@ Do not use `reject_overlap` when overlapping speech is intentional.
 
 For `MiniMax H3 Scene Dialogue Audio Lock`, the final audio path remains:
 
-```text
-Sampler -> VAEDecodeAudio ---------------------\
-Scene Dialogue Lock.dialogue_reference_audio ---+-> MiniMax H3 Dialogue Audio Finalize
-Scene Dialogue Lock.dialogue_lock_manifest -----/
-```
+![Dialogue Audio Finalize — decoded H3 audio plus reference and manifest restore the supplied cores](diagrams/dialogue-finalize.svg)
 
 The finalizer restores the supplied dialogue samples at the approved scheduled
 intervals while keeping H3-generated audio outside those intervals.

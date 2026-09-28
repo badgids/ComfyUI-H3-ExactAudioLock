@@ -354,47 +354,13 @@ complete event contract, timing rules, review behavior, and Context Loop wiring.
 
 The review gate belongs **before** the Timed Audio / ExactAudioLock stage. Generate or load multiple candidate takes, approve exactly one, and then schedule that approved `AUDIO` on the H3 timeline.
 
-```text
-Qwen3-TTS take A --------\
-Qwen3-TTS take B ---------\
-YuE2 / ACE-Step take C ----+--> Audio Review / Accept Gate
-Loaded audio take D -------/              |
-                                            +---- "Save this take as an alternate"
-                                            |       writes marked non-winning takes
-                                            |       to ComfyUI/output/...
-                                            |
-                                            +---- accepted_audio = ONE selected take
-                                                         |
-                                                         v
-                                               MiniMax H3 Timed Audio
-                                               (start_frame / gain / label)
-                                                         |
-                                                         v
-                                             MiniMax H3 Exact Audio Lock
-                                                         |
-                                                         v
-                                                  locked_av_latent
-                                                         |
-                                                         v
-                                                     H3 sampler
-```
+![Audio Review / Accept Gate — one approved take continues, marked alternates are saved](docs/diagrams/audio-review-gate.svg)
 
 For dialogue-only H3 soundscape generation, replace `MiniMax H3 Exact Audio Lock` with `MiniMax H3 Dialogue Audio Lock`, then pass decoded H3 audio through `MiniMax H3 Dialogue Audio Finalize` before muxing. The supplied voice remains exact at its scheduled frame while H3 remains free to generate unsupplied audio outside the dialogue cores.
 
 For recursive/Director workflows:
 
-```text
-approved take
-    |
-    v
-MiniMax H3 Scene Timed Audio
-    |        scene_index + local start_frame
-    v
-MiniMax H3 Scene Exact Audio Lock
-    ^        or Scene Dialogue Audio Lock
-    |
-MiniMax H3 Chain Current.clip_index
-```
+![Recursive Director wiring — approved take through the scene lock (Exact or Dialogue)](docs/diagrams/scene-exact-lock.svg)
 
 The gate does not control another TTS/music node pack's private reroll logic. To review several generated takes at once, present those takes to the gate through its candidate sockets, a batched `AUDIO`, or managed file candidates.
 
@@ -428,22 +394,7 @@ ComfyUI already creates the joint H3 audio/video latent. This package does **not
 
 For Ref2VA, use ComfyUI's native `MiniMax H3 Reference to Video` node. Its `latent` output is the joint MiniMax H3 AV latent expected by the lock nodes.
 
-```text
-Approved AUDIO ───────────────┬────────────► MiniMax H3 Timed Audio
-                              │                     │ timed_audio
-                              │                     └───────────────┐
-                              │                                     │
-                              └────────────► Add Guide for MiniMax H3│
-Timed Audio.start_frame ───────────────────► frame_idx               │
-                                                                     ▼
-MiniMax H3 Reference to Video.latent ───────────────► MiniMax H3 Exact Audio Lock
-MiniMax H3 audio VAE ───────────────────────────────►          │
-                                                               ├── locked_av_latent ─► H3 sampler ─► video decode
-                                                               │
-                                                               └── exact_audio ───────────────┐
-                                                                                               ▼
-video decode ───────────────────────────────────────────────────────────────► Create Video / mux
-```
+![MiniMax H3 Exact Audio Lock — Ref2VA wiring](docs/diagrams/exact-lock-ref2v.svg)
 
 Then add timed audio:
 
@@ -467,21 +418,7 @@ ComfyUI's native display label is **`Add Guide for MiniMax H3`** (`MiniMaxH3AddG
 
 Use one frame value as the single source of truth:
 
-```text
-Approved AUDIO ────────┬────────► MiniMax H3 Timed Audio
-                       │                    │
-                       │                    ├── timed_audio ─► Exact/Dialogue Audio Lock
-                       │                    │
-                       │                    └── start_frame (INT) ──────────────┐
-                       │                                                       │
-                       └────────────────────────────► Add Guide for MiniMax H3 │
-                                                                             │
-Timed Audio.start_frame ───────────────────────────► Add Guide.frame_idx ◄────┘
-
-H3 positive conditioning ─► Add Guide.positive ─► Basic Guider
-H3 joint AV latent ────────► Add Guide.latent
-MiniMax H3 audio VAE ──────► Add Guide.audio_vae
-```
+![Add Guide for MiniMax H3 — same-frame native conditioning](docs/diagrams/add-guide.svg)
 
 Do not type one frame into Timed Audio and a different frame into Add Guide. The shipped examples wire the Timed Audio `start_frame` output directly into `Add Guide for MiniMax H3.frame_idx`.
 
@@ -497,13 +434,7 @@ The lock node expects an H3 joint AV latent, not a standalone image/video latent
 
 The lock nodes use ComfyUI's native `Autogrow` socket mechanism. This package explicitly raises the template maximum to **100 timed inputs**, which is ComfyUI's native `Autogrow` hard limit and avoids the default `TemplatePrefix` maximum of 10.
 
-```text
-Speaker 1 AUDIO -> MiniMax H3 Timed Audio --\
-Speaker 2 AUDIO -> MiniMax H3 Timed Audio ----\
-Speaker 3 AUDIO -> MiniMax H3 Timed Audio ------> MiniMax H3 Exact Audio Lock
-Speaker 4 AUDIO -> MiniMax H3 Timed Audio ----/
-...                                         --/
-```
+![Multi-track timing — one Add Guide per track, all tracks into one lock](docs/diagrams/multi-track.svg)
 
 The explicit 100-input ceiling is imposed by ComfyUI's native `Autogrow` API.
 
@@ -511,15 +442,7 @@ The explicit 100-input ceiling is imposed by ComfyUI's native `Autogrow` API.
 
 Overlapping sources are supported.
 
-```text
-24 fps target timeline
-
-Pippa     ----[ dialogue A ]---------------------------
-Magnus           ----[ dialogue B ]--------------------
-Cricket                    --[ dialogue C ]------------
-
-Mixed bus ----[ A + overlap(A,B) + overlap(B,C) ]------
-```
+![Layering and overlapping audio on the 24 fps target timeline](docs/diagrams/timeline-overlap.svg)
 
 Choose one `mix_policy`:
 
@@ -547,21 +470,7 @@ Every `start_frame` is converted to a waveform sample with deterministic integer
 
 The target waveform length is derived from the actual H3 target audio latent. Empty regions are real waveform-domain zero samples, so silence is encoded as silence instead of being represented by arbitrary zero-valued audio-latent vectors.
 
-```text
-Timed Audio 1 ----\
-Timed Audio 2 -----\
-Timed Audio 3 ------> deterministic waveform mixer
-...                /            |
-                            one exact waveform
-                                  |
-                             H3 Audio VAE
-                                  |
-                         target audio latent
-                                  |
-                    audio mask = 0 / video mask = 1
-                                  |
-                         MiniMax H3 sampling
-```
+![How timing works — deterministic waveform pipeline](docs/diagrams/waveform-pipeline.svg)
 
 ## Multi-speaker lip sync
 
